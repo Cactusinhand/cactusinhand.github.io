@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+
+<head>
+  <meta name="generator" content="Hexo 5.4.1">
+  <meta charset="utf-8">
+  
+
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  <link rel='dns-prefetch' href='https://cdn.jsdelivr.net'>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  <title>Git 插件：git-repo-clean - Cactusinhand</title>
+
+  
+    <meta name="description" content="本篇文章将从如何定义 Git 大仓库，大仓库如何产生，大仓库的负面影响等方面讨论起，然后介绍几款目前针对大仓库的处理工具，并讨论它们的优缺点，然后谈谈我们今天要介绍的新工具git repo-clean的一些设计目标，并重点介绍它的设计原理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git 插件：git-repo-clean">
+<meta property="og:url" content="https://cactusinhand.github.io/2022/02/11/Git%E6%8F%92%E4%BB%B6%EF%BC%9Agit-repo-clean/index.html">
+<meta property="og:site_name" content="Cactusinhand">
+<meta property="og:description" content="本篇文章将从如何定义 Git 大仓库，大仓库如何产生，大仓库的负面影响等方面讨论起，然后介绍几款目前针对大仓库的处理工具，并讨论它们的优缺点，然后谈谈我们今天要介绍的新工具git repo-clean的一些设计目标，并重点介绍它的设计原理。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://turun3y6z5.feishu.cn/space/api/box/stream/download/asynccode/?code=MWFlY2MxM2Y5NDU2NWVlOTEyNDE5YjJkN2RjNzYxZmRfbGFuZUNyU2xia1UwY1cweUxjeUJ4WnNpS2pTOVhYRFBfVG9rZW46Ym94Y25RT3RBUUJxbFByblZqdUwxNmhCQVZjXzE2NDQ1NzY5ODE6MTY0NDU4MDU4MV9WNA">
+<meta property="og:image" content="https://turun3y6z5.feishu.cn/space/api/box/stream/download/asynccode/?code=ZWNkNjE0MzBjNDIyODEyNTQwMGFjYTVjMmFiMjU4ZDlfOXRjQ0FsRDJDS3E5MGR4M0hTUGEwQ3JSOXVQQ2diRThfVG9rZW46Ym94Y245eXB2WDVBMDRKZFVHcGlxYTVkTUFoXzE2NDQ1NzY5ODE6MTY0NDU4MDU4MV9WNA">
+<meta property="og:image" content="https://turun3y6z5.feishu.cn/space/api/box/stream/download/asynccode/?code=NzBlYzBkNjE4ZDc0ZDc5Y2VjOTdmODQ0NjY1ZWJkOWZfZ2VxOGpMNml4MzdEdHQ5U05WVDFkWWRjVU9VVFZENDRfVG9rZW46Ym94Y25ZaTZPb2EzZGJJMlFxZ3N6d2JQQTJnXzE2NDQ1NzY5ODE6MTY0NDU4MDU4MV9WNA">
+<meta property="og:image" content="https://turun3y6z5.feishu.cn/space/api/box/stream/download/asynccode/?code=ZWFiOTQ5NTZkYzNkMTMzMTgxMWE5MDU4NGU4NjM4ZmVfM01lUTA1anhWOWUzdXBIcExhNDV1Q2pMQnRadVlZSkJfVG9rZW46Ym94Y25OdGtLbUh6dzlJQW9USUNDQnNQakdjXzE2NDQ1NzY5ODE6MTY0NDU4MDU4MV9WNA">
+<meta property="og:image" content="https://turun3y6z5.feishu.cn/space/api/box/stream/download/asynccode/?code=Njg2ZTg3NTRiOTE1YjVmOTYxMTA5NGQ1OGIzZjc3MDdfT2hyb25hRE5RdFpYZVMxdjRkYnRDUjdwRE9UVGpGdWtfVG9rZW46Ym94Y25GZDBGVkxoRmVYTk1QcElScXNJdjNkXzE2NDQ1NzY5ODE6MTY0NDU4MDU4MV9WNA">
+<meta property="og:image" content="https://turun3y6z5.feishu.cn/space/api/box/stream/download/asynccode/?code=MTM3OTlmNjc3OTczNzJmMzljMjg2MmM5ZTYyOWE0NzZfZG5DaE9hSm1VQjRMNVJBSExvUjNWNGx1SnZ0OVd1N2lfVG9rZW46Ym94Y25QUmFCdHhLblQ5cDZlT1BMdlFyYVpkXzE2NDQ1NzY5ODE6MTY0NDU4MDU4MV9WNA">
+<meta property="og:image" content="https://turun3y6z5.feishu.cn/space/api/box/stream/download/asynccode/?code=N2Q0Yzg0Mzg5MGFkNmY5ZjE2ZTYzMzRiY2U0MTlkMmFfSEl6SXRPaG9YeFdpclJuMDNDczlOS2NRaEg1Z2NJQU9fVG9rZW46Ym94Y25hQWRxdk1ReXFObHdNaG9YNTJJY3FjXzE2NDQ1NzY5ODE6MTY0NDU4MDU4MV9WNA">
+<meta property="og:image" content="https://turun3y6z5.feishu.cn/space/api/box/stream/download/asynccode/?code=ZWVjM2YwY2RmNDA5MDE2ZWM2NGY1Nzg1NTRiMTRhNDFfU1U2TWdPWjBEVXk5enVPU2IyUDRyTzEyOGIwaWxva3lfVG9rZW46Ym94Y25sVjV0R2FTdlJrVEJUUGNaQ1BXOGplXzE2NDQ1NzY5ODE6MTY0NDU4MDU4MV9WNA">
+<meta property="article:published_time" content="2022-02-11T11:00:00.000Z">
+<meta property="article:modified_time" content="2022-02-11T11:04:28.055Z">
+<meta property="article:author" content="Colin.Lee">
+<meta property="article:tag" content="git">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://turun3y6z5.feishu.cn/space/api/box/stream/download/asynccode/?code=MWFlY2MxM2Y5NDU2NWVlOTEyNDE5YjJkN2RjNzYxZmRfbGFuZUNyU2xia1UwY1cweUxjeUJ4WnNpS2pTOVhYRFBfVG9rZW46Ym94Y25RT3RBUUJxbFByblZqdUwxNmhCQVZjXzE2NDQ1NzY5ODE6MTY0NDU4MDU4MV9WNA">
+  
+  
+
+  <!-- feed -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/main.css">
+
+  
+
+  
+
+  
+</head>
+
+<body>
+  
+
+
+
+
+  <div class='l_body' id='start'>
+    <aside class='l_left' layout='post'>
+    
+
+
+<header class="header">
+
+<div class="logo-wrap"><a class="title" href="/"><div class="main"><img no-lazy height="32px" src="xxx"/ onerror="javascript:this.classList.add('error');this.src='https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/image/2659360.svg';"></div><div class="sub cap">fake it until make it.</div></a></div>
+<nav class="menu dis-select"><a class="nav-item active" href="/">文章</a><a class="nav-item" href="/wiki/">项目</a><a class="nav-item" href="/about/">关于</a><a class="nav-item" href="/notes/">笔记</a><a class="nav-item" href="/more/">更多</a></nav></header>
+
+<div class="widgets">
+
+<div class="widget-wrap single" id="toc"><div class="widget-header cap dis-select"><span class="name">本文目录</span></div><div class="widget-body fs14"><div class="doc-tree active"><ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E5%9C%BA%E6%99%AF%EF%BC%9A"><span class="toc-text">实际场景：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%EF%BC%9A"><span class="toc-text">问题：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%90%8C%E7%B1%BB%E5%B7%A5%E5%85%B7%E5%AF%B9%E6%AF%94%EF%BC%9A"><span class="toc-text">同类工具对比：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#git-repo-clean-%E8%AE%BE%E8%AE%A1%E7%9B%AE%E6%A0%87%EF%BC%9A"><span class="toc-text">git-repo-clean 设计目标：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#git-repo-clean-%E6%8A%80%E6%9C%AF%E5%8E%9F%E7%90%86%EF%BC%9A"><span class="toc-text">git-repo-clean 技术原理：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%BB%BA%E8%AE%AE%EF%BC%9A"><span class="toc-text">使用建议：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%90%8E%E7%BB%AD%EF%BC%9A"><span class="toc-text">后续：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%BC%95%E7%94%A8%E5%8F%82%E8%80%83"><span class="toc-text">引用参考</span></a></li></ol></div></div></div>
+
+
+</div>
+
+
+    </aside>
+    <div class='l_main'>
+      
+
+      
+
+
+<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a><span class="sep"></span><a class="cap breadcrumb" href="/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/git/">git</a></div><div id="post-meta">发布于&nbsp;<time datetime="2022-02-11T11:00:00.000Z">2022-02-11</time></div></div>
+
+<article class='content md post'>
+<h1 class="article-title"><span>Git 插件：git-repo-clean</span></h1>
+<p>本篇文章将从如何定义 Git 大仓库，大仓库如何产生，大仓库的负面影响等方面讨论起，然后介绍几款目前针对大仓库的处理工具，并讨论它们的优缺点，然后谈谈我们今天要介绍的新工具<strong>git repo-clean</strong>的一些设计目标，并重点介绍它的设计原理。</p>
+<span id="more"></span>
+
+
+
+<p>作为国内最大的代码托管平台，Gitee 每天都有大量不同行业的人在上面围绕 Git 仓库进行各种 Git 操作实践。</p>
+<p>但是我们经常收到用户的帮助请求，他们的问题往往是其 Git 仓库变得非常大，这影响了他们对仓库做进一步的操作，甚至会导致开发进度落后。</p>
+<h5 id="实际场景："><a href="#实际场景：" class="headerlink" title="实际场景："></a>实际场景：</h5><ul>
+<li><strong>场景一：</strong></li>
+</ul>
+<p> 用户不小心使用 <code>git add .</code> 将当前工作区中的所有文件加入到 Git 仓库，并做了提交，但是后来意识到有些文件并不是想要的，如 <code>build/</code>、<code>ThirdPart/</code>、<code>vendor/</code>等目录下的文件，于是想删除掉之前的提交中的部分文件。一般情况下，可以使用 <code>git reset</code>或者 <code>git revert</code>回退当前的 <code>bad commit</code>到它的前一次 <code>commit</code>。但是，由于已经提交了很多正常的有用的 <code>commit</code>，这个时候再回退就需要小心了，因为所有 <code>bad commit</code> 之后的所有正常提交也会被回退。</p>
+<ul>
+<li><strong>场景二：</strong></li>
+</ul>
+<p> 在一个成熟的项目中经过多年的迭代，项目的功能变得与以前非常不同，不断地代码迭代也使得 Git 仓库变得臃肿，再加上在用 Git 管理项目的前期由于使用的不成熟，向仓库提交了很多不必要的文件，这些文件长期存在，而且如果对一个大文件进行过多次修改，每个版本都会完整保存在仓库中，则体积也会成倍增长。之后推送到服务端仓库，也会占用相当大的服务端仓库资源。同时，在协作开发的情况下，意味着每个人都会克隆一个巨大的仓库到本地，而且由于数据量很大，该过程变得很慢。</p>
+<h5 id="问题："><a href="#问题：" class="headerlink" title="问题："></a>问题：</h5><p>基于以上场景，可以归纳出 Git 仓库的几种常见的问题：</p>
+<ul>
+<li><p>向仓库中提交了大量不必要的文件。如：项目编译过程文件，第三方库文件，多媒体文件等。这导致 Git 仓库的提交文件被污染。</p>
+</li>
+<li><p>向仓库中提交的单个文件非常大。假如提交了一个 100M 的文件，一方面平台会限制用户推送单个文件大小超过 100M 的文件；另一方面，如果多次修改过这个文件，仓库中将会存在多个版本，比如经过10次修改，每个版本大约还是 100M，那仓库就会因为这个文件，体积变为 <code>10 * 100M</code>，这样仓库总的大小也会变得巨大，也将超过推送限额。</p>
+</li>
+</ul>
+<p>以上都属于是 Git 大仓库问题，根据经验法则，大仓库的衡量维度包括：</p>
+<ol>
+<li>单个文件是否过大</li>
+<li>文件数量是否过多, 如数量超过100k</li>
+<li>提交数量是否过多，如数量超过100K</li>
+<li>分支数/标签数是否过多，如数量超过10K</li>
+<li>子模块是否过多，如超过25个子模块</li>
+</ol>
+<blockquote>
+<p>关于 Git 大仓库的详细说明，可见这篇文章[<a target="_blank" rel="noopener" href="https://gitee.com/cactusinhand/all-about-git/blob/master/doc/large-git-repos-zh.md">1]</a>。</p>
+</blockquote>
+<p>以上衡量标准并不是固定的，只是根据经验所得，是一种参考值，其衡量值往往随着电脑的性能，系统的类型，以及Git 的版本不同而不同。</p>
+<p>但是根据这种衡量标准，我们大致能知道怎么样的仓库才算得上大仓库。</p>
+<p>我们收到的大仓库问题反馈一般集中在前两种。通常，当出现仓库数据过大的信号后，用户一开始往往会选择删除仓库当前工作区下的文件，而忽略了 Git 仓库是分为工作区，缓存区，对象存储区的结构。当文件提交后，不仅工作区存在该文件，对象存储区也存在该文件，所以只删除工作区的文件，虽然肉眼看不见文件了，但其实它还是存在仓库中，通过一些git命令很容易将它恢复到当前工作区。这说明仓库体积并没用有效的减少。</p>
+<p>一方面，Git 是生来是为源代码文件而设计和优化的，而源代码文件一般都不会很大，对于大仓库，Git 的很多操作的性能产生非常大的影响，如果大仓库中问非常多，那么在有遍历操作的git命令的时候就非常耗时；另一方面，Git 是分布式的，一个仓库通常包含所有的修改版本、提交历史。大仓库的数据存储和传输会有一定压力，比如传输很慢，传输超时，或者存储空间不足导致传输失败等。</p>
+<p>我们很多时候很难避免制造Git大仓库，所以这些问题很容易出现。对Git的操作比较熟悉的人，会在项目刚开始的时候，通过<code>.gitignore</code> 文件[<a target="_blank" rel="noopener" href="https://git-scm.com/docs/gitignore">2]</a>来管理提交到仓库的文件。</p>
+<p>在Gitee上新建仓库时，也会提供<code>.gitignore</code>模板文件:</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://turun3y6z5.feishu.cn/space/api/box/stream/download/asynccode/?code=MWFlY2MxM2Y5NDU2NWVlOTEyNDE5YjJkN2RjNzYxZmRfbGFuZUNyU2xia1UwY1cweUxjeUJ4WnNpS2pTOVhYRFBfVG9rZW46Ym94Y25RT3RBUUJxbFByblZqdUwxNmhCQVZjXzE2NDQ1NzY5ODE6MTY0NDU4MDU4MV9WNA" alt="img"></p>
+<p>如果仓库中没有这个文件，需要手动新建。</p>
+<p>这个文件的作用是将指定类型，或者指定目录下的文件忽视掉，Git就不会将这些文件加入到仓库中，从而保持仓库干净。</p>
+<p>使用<code>.gitignore</code>管理仓库文件只是防止仓库污染、体积膨胀的手段之一。</p>
+<p>另外一种手段是使用<code>Git LFS</code> 专门来管理仓库大文件，从而避免仓库体积膨胀。</p>
+<p>该功能的原理是，使用专门的大文件存储服务器来管理仓库中特定的大文件，而本地仓库只管理大文件的指针。详情可参考：Git LFS 操作指南[<a target="_blank" rel="noopener" href="https://gitee.com/help/articles/4235">3]</a>。</p>
+<p>如果是仓库中已经存在大量非必要大文件而导致仓库体积膨胀，那么如何解决呢？其实已经有人做出了一些工具，来试图解决此类问题。</p>
+<p>我们先来看下几种常见的工具的对比：</p>
+<h5 id="同类工具对比："><a href="#同类工具对比：" class="headerlink" title="同类工具对比："></a>同类工具对比：</h5><ul>
+<li>git-filter-branch[<a target="_blank" rel="noopener" href="https://git-scm.com/docs/git-filter-branch">4]</a></li>
+</ul>
+<p>特点：</p>
+<p>Git 内部自带的命令，只要有 Git 环境，就能使用这个工具。</p>
+<p><strong>使用示例：</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$</span> git <span class="keyword">filter</span><span class="literal">-branch</span> <span class="literal">--tree-filter</span> <span class="string">&#x27;rm -f path/to/large/file&#x27;</span> <span class="literal">--tag-name-filter</span> <span class="built_in">cat</span> <span class="literal">--</span> <span class="literal">--all</span></span><br><span class="line"><span class="variable">$</span> git reflog expire <span class="literal">--expire</span>=now <span class="literal">--all</span></span><br><span class="line"><span class="variable">$</span> git <span class="built_in">gc</span> <span class="literal">--prune</span>=now <span class="literal">--aggressive</span></span><br><span class="line"><span class="variable">$</span> git push origin <span class="literal">--tags</span> <span class="literal">--force</span></span><br><span class="line"><span class="variable">$</span> git push origin <span class="literal">--all</span> <span class="literal">--force</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>问题：</strong></p>
+<ol>
+<li>使用起来比较复杂；</li>
+<li>如果不确定大文件，需要先使用其它命令手动扫描仓库中存在的大文件；</li>
+<li>处理过程特别慢[<a target="_blank" rel="noopener" href="https://git-scm.com/docs/git-filter-branch#PERFORMANCE">5]</a>!；</li>
+<li>如果存在特殊文件名，特殊文件路径，可能会出错，甚至误删文件；</li>
+<li>删除文件、重写历史之后，可能旧的和新的历史记录都存在，导致仓库体积反而变大[<a target="_blank" rel="noopener" href="https://git-scm.com/docs/git-filter-branch#SAFETY">6]</a>。</li>
+</ol>
+<ul>
+<li>git-filter-repo[<a target="_blank" rel="noopener" href="https://github.com/newren/git-filter-repo">7]</a></li>
+</ul>
+<p><strong>特点：</strong></p>
+<p>git filter-branch 的官方替代，官方推荐使用该工具来代替原生 <code>git-filter-branch</code> 命令。</p>
+<p>速度快，功能多，使用灵活。</p>
+<p><strong>使用示例：</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$</span> git <span class="keyword">filter</span><span class="literal">-repo</span> <span class="literal">--path</span> bigfile.zip <span class="literal">--path</span> big/files/<span class="built_in">dir</span>/ <span class="literal">--invert-paths</span></span><br><span class="line"><span class="variable">$</span> git push origin <span class="literal">--tags</span> <span class="literal">--force</span></span><br><span class="line"><span class="variable">$</span> git push origin <span class="literal">--all</span> <span class="literal">--force</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>问题：</strong></p>
+<ol>
+<li>需要删除的文件可能不在当前工作区，而是在历史提交中，用户无法直接提供文件名、文件 ID 进行删除；</li>
+<li>依赖 Python 环境。</li>
+</ol>
+<ul>
+<li>BFG Repo-Cleaner[<a target="_blank" rel="noopener" href="https://github.com/rtyley/bfg-repo-cleaner">8]</a></li>
+</ul>
+<p><strong>特点：</strong></p>
+<p>速度快，使用比较简单。</p>
+<p><strong>使用示例：</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$</span> java <span class="literal">-jar</span> bfg.jar <span class="literal">--strip-blobs-bigger-than</span> <span class="number">100</span>M my<span class="literal">-big-repo</span>.git</span><br><span class="line"><span class="variable">$</span> <span class="built_in">cd</span> my<span class="literal">-big-repo</span>.git</span><br><span class="line"><span class="variable">$</span> git reflog expire <span class="literal">--expire</span>=now <span class="literal">--all</span></span><br><span class="line"><span class="variable">$</span> git <span class="built_in">gc</span> <span class="literal">--prune</span>=now <span class="literal">--aggressive</span></span><br><span class="line"><span class="variable">$</span> git push origin <span class="literal">--tags</span> <span class="literal">--force</span></span><br><span class="line"><span class="variable">$</span> git push origin <span class="literal">--all</span> <span class="literal">--force</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>问题：</strong></p>
+<ol>
+<li>不会处理最新的 commit(HEAD commit)；</li>
+<li>会在所有被处理的 commit 信息中加入额外的信息。如：<code>Former-commit-id: xxxxx</code>，特别是如果多次运行该命令，则会在这些 commit 中加入多条额外信息，这会污染commit信息；</li>
+<li>处理之后会在 HEAD commit 中加入很多额外信息；</li>
+<li>对松散对象没有做处理；如果松散对象是要删除的大文件，则不会成功；</li>
+<li>需要额外手动进行 GC 操作；</li>
+<li>依赖 Java 环境。</li>
+</ol>
+<ul>
+<li>git-siezer[<a target="_blank" rel="noopener" href="https://github.com/github/git-sizer">9]</a></li>
+</ul>
+<p><strong>特点：</strong></p>
+<p>对 Git 仓库中的数据指标进行详细的统计。</p>
+<p><strong>使用实例：</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$</span> git sizer  <span class="literal">--threshold</span>=<span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>问题：</strong></p>
+<ol>
+<li>只是对仓库的数据信息做概括统计。如：总的 commit 数量，总的文件(blob)数量，最大的单个文件等，不能告诉用户最大的 N 个文件，不能进行文件删除、历史重写。</li>
+</ol>
+<h5 id="git-repo-clean-设计目标："><a href="#git-repo-clean-设计目标：" class="headerlink" title="git-repo-clean 设计目标："></a>git-repo-clean 设计目标：</h5><p>通过对以上工具的特点、问题进行总结，我们试图开发出一款工具，解决以下问题：</p>
+<ul>
+<li><p>纯命令行方式对有些用户不太友好，并且使用说明都是英文，阅读英文使用文档比较困难</p>
+</li>
+<li><p>没有自动对仓库进行备份，由于可能误操作，丢失仓库数据</p>
+</li>
+<li><p>对仓库历史文件不太了解，无法准确知道需要删除哪些文件</p>
+</li>
+<li><p>删除过程太慢。</p>
+</li>
+</ul>
+<p>这款工具就是：<code>git-repo-clean</code>[<a target="_blank" rel="noopener" href="https://gitee.com/oschina/git-repo-clean">10]</a>。</p>
+<p>总的来说，<code>git-repo-clean</code> 具备以下<strong>优势</strong>：</p>
+<ul>
+<li><p>使用简单。支持交互模式，用户操作起来比单纯的命令行方式更简单。</p>
+</li>
+<li><p>支持扫描模式。当对历史提交文件不太了解时，可以选择先扫描仓库，只需提供文件类型、大小、数量即可扫描出目标历史文件，再进行删除(交互模式下，也会使用扫描模式)，弥补了 <code>git-filter-branch</code>的缺点。</p>
+</li>
+<li><p>支持直接指定文件进行删除。</p>
+</li>
+<li><p>支持删除指定目录下的所有文件(包括目录本身)，及其提交记录。</p>
+</li>
+<li><p>速度快。从 <code>v1.2.0</code> 开始，<code>git-repo-clean</code>的速度可以达到与 <code>git-filter-repo</code> 同级别速度。</p>
+</li>
+<li><p>无其它依赖。源码使用 Golang 实现，通过交叉编译，最终可执行程序可在多平台兼容，不需要依赖特定的语言环境。</p>
+</li>
+<li><p>本地化。有中文文档，软件使用界面支持本地化。</p>
+</li>
+</ul>
+<h5 id="git-repo-clean-技术原理："><a href="#git-repo-clean-技术原理：" class="headerlink" title="git-repo-clean 技术原理："></a>git-repo-clean 技术原理：</h5><p>一般来说，我们要创建一个 Git 仓库，需要以下操作：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$</span> git init mini<span class="literal">-repo</span> &amp;&amp; <span class="built_in">cd</span> mini<span class="literal">-repo</span></span><br><span class="line"><span class="variable">$</span> touch README &amp;&amp; <span class="built_in">echo</span> <span class="string">&quot;first file in repo&quot;</span> &gt; README</span><br><span class="line"><span class="variable">$</span> git add README &amp;&amp; git commit <span class="literal">-m</span> <span class="string">&quot;init commit&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>Git 内部提供了两个命令: <code>git-fast-export</code>, <code>git-fast-import</code>， 他们分别的作用是将 Git 仓库数据(.git/objects)导出为特定格式的 <code>元数据</code>，然后流式读取这种特定格式的元数据，于是就成一个完整的 Git 仓库。</p>
+<p>任何符合格式的完整的元数据，输入给 <code>git-fast-import</code> 都能创建一个 Git 仓库。</p>
+<p>我们先来看下一组最小完整的 Git 元数据：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">blob</span>    <span class="comment"># blob类型，即文件</span></span><br><span class="line"><span class="string">mark</span> <span class="string">:1</span> <span class="comment"># 标号1</span></span><br><span class="line"><span class="string">data</span> <span class="number">32</span> <span class="comment"># 文件大小</span></span><br><span class="line"><span class="attr">FILE:</span> <span class="string">this</span> <span class="string">is</span> <span class="string">the</span> <span class="string">file</span> <span class="string">content.</span> <span class="comment"># 文件内容</span></span><br><span class="line"></span><br><span class="line"><span class="string">reset</span> <span class="string">refs/heads/master</span>  <span class="comment"># 分支</span></span><br><span class="line"><span class="string">commit</span> <span class="string">refs/heads/master</span> <span class="comment"># commit指向的分支</span></span><br><span class="line"><span class="string">mark</span> <span class="string">:2</span> <span class="comment"># 标号2</span></span><br><span class="line"><span class="string">author</span> <span class="string">Li</span> <span class="string">Linchao</span> <span class="string">&lt;lilinchao@oschina.cn&gt;</span> <span class="number">1633749750</span> <span class="string">+0800</span>        <span class="comment"># commit作者</span></span><br><span class="line"><span class="string">committer</span> <span class="string">Li</span> <span class="string">Linchao</span> <span class="string">&lt;lilinchao@oschina.cn&gt;</span> <span class="number">1633749750</span> <span class="string">+0800</span>     <span class="comment"># commit提交者</span></span><br><span class="line"><span class="string">data</span> <span class="number">65</span>                                                          <span class="comment"># commit信息大小</span></span><br><span class="line"><span class="attr">COMMIT:</span> <span class="string">this</span> <span class="string">is</span> <span class="string">the</span> <span class="string">commit</span> <span class="string">message.</span> <span class="string">The</span> <span class="string">file</span> <span class="string">name</span> <span class="string">will</span> <span class="string">be</span> <span class="string">README</span> <span class="comment"># commit信息</span></span><br><span class="line"><span class="string">M</span> <span class="number">100644</span> <span class="string">:1</span> <span class="string">README</span>                          <span class="comment"># commit修改的文件，相当于tree,即文件名</span></span><br><span class="line"><span class="comment"># M表示修改modify(新增也是修改)，100644表示文件类型，1表示指向标号为1的blob，README表示blob标号为1的文件名</span></span><br></pre></td></tr></table></figure>
+
+<p>通过这组元数据，使用 <code>git fast-import</code> 命令，就能创建出一个完整的仓库，里面包含:</p>
+<ol>
+<li>一个文件，文件大小是 32 Bytes, 内容是：<code>FILE: this is the file content.</code></li>
+<li>一个分支，分支名为 <code>master</code></li>
+<li>一个 commit 提交，表示对 README 文件的修改。提交信息是：<code>COMMIT: this is the commit message. The file name will be README</code></li>
+</ol>
+<p>口说无凭，我们来看下这组元数据实际怎么生成一个完整 Git 仓库的。</p>
+<p>首先需要在一个空的 Git 仓库中进行操作，然后将上述元数据输入到 <code>git fast-import</code> 中。</p>
+<p>假设上述元数据存放在文件 <code>meatadata</code> 中。</p>
+<p>接下来，具体操作如下：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$</span> git init fake<span class="literal">-repo</span> &amp;&amp; <span class="built_in">cd</span> fake<span class="literal">-repo</span></span><br><span class="line"><span class="variable">$</span> git fast<span class="literal">-import</span> <span class="literal">--force</span> <span class="literal">--quiet</span> <span class="literal">--date-format</span>=raw<span class="literal">-permissive</span> &lt; ../metadata</span><br><span class="line"><span class="variable">$</span> git reset <span class="literal">--hard</span> HEAD <span class="comment"># 清除缓存区，和工作区，回到最新的commit上</span></span><br></pre></td></tr></table></figure>
+
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://turun3y6z5.feishu.cn/space/api/box/stream/download/asynccode/?code=ZWNkNjE0MzBjNDIyODEyNTQwMGFjYTVjMmFiMjU4ZDlfOXRjQ0FsRDJDS3E5MGR4M0hTUGEwQ3JSOXVQQ2diRThfVG9rZW46Ym94Y245eXB2WDVBMDRKZFVHcGlxYTVkTUFoXzE2NDQ1NzY5ODE6MTY0NDU4MDU4MV9WNA" alt="img"></p>
+<p>成功之后，刚创建的新仓库 <code>fake-repo</code> 下就有了一个 README 文件，一个 commit 提交，一个 master 分支：</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://turun3y6z5.feishu.cn/space/api/box/stream/download/asynccode/?code=NzBlYzBkNjE4ZDc0ZDc5Y2VjOTdmODQ0NjY1ZWJkOWZfZ2VxOGpMNml4MzdEdHQ5U05WVDFkWWRjVU9VVFZENDRfVG9rZW46Ym94Y25ZaTZPb2EzZGJJMlFxZ3N6d2JQQTJnXzE2NDQ1NzY5ODE6MTY0NDU4MDU4MV9WNA" alt="img"></p>
+<p>README 文件信息和 commit 信息都是根据元数据 <code>metadata</code> 中的定义而来，我们可以任意修改。</p>
+<p>可以说，Git 元数据是对 Git 仓库中的底层数据(blob, tree, commit, tag)进行结构化表示。</p>
+<p>那么，如果我们想对一个现存的 Git 仓库进行有目的修改，可以先获得该仓库的元数据，然后进行相应操作。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">如何获得一个 Git 仓库的元数据呢？</span><br></pre></td></tr></table></figure>
+
+<p>那就是前面提到的 <code>git fast-export</code> 命令。</p>
+<p><code>git fast-export</code> 命令可以接受很多参数，比如：</p>
+<ul>
+<li><p><code>--show-original-ids</code> 用于在输出中加入每个数据类型的原始 hash ID, 这个对于重写 commit 历史，或者通过 ID 裁剪 blob 有帮助。</p>
+</li>
+<li><p><code>--reencode=(yes|no|abort)</code> 用于处理 commit 信息中的编码问题， yes 表示将 commit message 重新编码为 <code>UTF-8</code>。</p>
+</li>
+<li><p><code>--no-data</code> 会在输出中省略 <code>blob</code> 类型数据。</p>
+</li>
+</ul>
+<p>具体应该使用什么参数，可以根据修改的目的来调整。</p>
+<p>例如， 使用<code>--show-original-ids</code>, <code>--reencode</code>, <code>--use-done-feature</code>,<code> --all</code> 选项时的输出如下：</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://turun3y6z5.feishu.cn/space/api/box/stream/download/asynccode/?code=ZWFiOTQ5NTZkYzNkMTMzMTgxMWE5MDU4NGU4NjM4ZmVfM01lUTA1anhWOWUzdXBIcExhNDV1Q2pMQnRadVlZSkJfVG9rZW46Ym94Y25OdGtLbUh6dzlJQW9USUNDQnNQakdjXzE2NDQ1NzY5ODE6MTY0NDU4MDU4MV9WNA" alt="img"></p>
+<p>到目前为止，我们已经知道如何获取仓库元数据，也知道怎么根据元数据生成一个新的仓库，那么如果我们想要对仓库进行修改，只需要在这个过程中进行<strong>元数据过滤</strong>即可。</p>
+<p>所以 <code>git-clean-repo</code> 的大致流程如下：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">git-fast-export</span><br><span class="line">     |<span class="string"></span></span><br><span class="line"><span class="string">     </span>|<span class="string"> output stream</span></span><br><span class="line"><span class="string">     V</span></span><br><span class="line"><span class="string">     ---&gt; parser(blob, tree, commit...)</span></span><br><span class="line"><span class="string">             </span>|</span><br><span class="line">             |<span class="string"></span></span><br><span class="line"><span class="string">             V</span></span><br><span class="line"><span class="string">             ----&gt; filter(blob size, blob id, blob diectory...)</span></span><br><span class="line"><span class="string">                         </span>|</span><br><span class="line">                         |<span class="string">  input stream</span></span><br><span class="line"><span class="string">                         V</span></span><br><span class="line"><span class="string">                         ----&gt; git-fast-import</span></span><br><span class="line"><span class="string">                                            </span>|</span><br><span class="line">                                            |<span class="string"></span></span><br><span class="line"><span class="string">                                            V</span></span><br><span class="line"><span class="string">                                         new repo</span></span><br></pre></td></tr></table></figure>
+
+<p>要解析的元数据中存在不同的数据类型， 它们的格式为：</p>
+<ul>
+<li><strong>blob</strong></li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">blob</span></span><br><span class="line"><span class="string">mark</span> [<span class="string">mark</span> <span class="string">id</span>]</span><br><span class="line"><span class="string">data</span> [<span class="string">file</span> <span class="string">size</span>]</span><br><span class="line">[<span class="string">file</span> <span class="string">content</span>]</span><br><span class="line"><span class="comment"># LF换行</span></span><br></pre></td></tr></table></figure>
+
+<p>其中，mark id 的格式为 <code>:n</code>, 比如：<code>:2</code></p>
+<ul>
+<li><strong>reset</strong></li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">reset</span> [<span class="string">ref</span> <span class="string">name</span>]</span><br><span class="line"><span class="string">from</span> [<span class="string">parent</span> <span class="string">id</span>] <span class="string">(optional)</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>commit</strong></li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">commit</span> [<span class="string">ref</span> <span class="string">name</span>]</span><br><span class="line"><span class="string">mark</span> [<span class="string">mark</span> <span class="string">id</span>]</span><br><span class="line"><span class="string">author</span> [<span class="string">author</span> <span class="string">info</span>]</span><br><span class="line"><span class="string">committer</span> [<span class="string">committer</span> <span class="string">info</span>]</span><br><span class="line"><span class="string">data</span> [<span class="string">commit</span> <span class="string">message</span> <span class="string">info</span> <span class="string">size</span>]</span><br><span class="line">[<span class="string">commit</span> <span class="string">message</span> <span class="string">info</span>]</span><br><span class="line"><span class="string">merge</span> [<span class="string">merge</span> <span class="string">parent</span>]</span><br><span class="line"><span class="string">from</span> [<span class="string">from</span> <span class="string">parent</span>]</span><br><span class="line"><span class="string">filechanges</span></span><br><span class="line"><span class="comment"># LF</span></span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>filechanges</code> 格式如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">type</span>] [<span class="string">file-mode</span>] [<span class="string">file-id</span>] [<span class="string">file-path</span>]</span><br><span class="line"><span class="comment"># type:</span></span><br><span class="line"><span class="comment"># M: modify</span></span><br><span class="line"><span class="comment"># A: add</span></span><br><span class="line"><span class="comment"># C: copy</span></span><br><span class="line"><span class="comment"># D: delete</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># file mode:</span></span><br><span class="line"><span class="comment"># 100644 or 644: normal, but non executable file</span></span><br><span class="line"><span class="comment"># 100755 or 755: normal, but executable file</span></span><br><span class="line"><span class="comment"># 120000: symlink</span></span><br><span class="line"><span class="comment"># 160000: gitlink</span></span><br><span class="line"><span class="comment"># 040000: *subdirectory</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>tag</strong></li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">tag</span> [<span class="string">tag</span> <span class="string">name</span>]</span><br><span class="line"><span class="string">mark</span> [<span class="string">mark</span> <span class="string">id</span>]</span><br><span class="line"><span class="string">from</span> [<span class="string">parent</span> <span class="string">id</span>]</span><br><span class="line"><span class="string">original-oid</span> [<span class="string">original</span> <span class="string">object</span> <span class="string">id</span>]</span><br><span class="line"><span class="string">tagger</span> [<span class="string">tagger</span> <span class="string">info</span>]</span><br><span class="line"><span class="string">data</span> [<span class="string">tag</span> <span class="string">message</span> <span class="string">info</span> <span class="string">size</span>]</span><br><span class="line">[<span class="string">tag</span> <span class="string">message</span>]</span><br><span class="line"><span class="comment"># LF</span></span><br></pre></td></tr></table></figure>
+
+<p><code>git-fast-export</code> 的输出中，mark 标号(<code>mark ID</code>)比较关键，它是每种数据的原始顺序，以及引用时的索引号。</p>
+<p>每当从 <code>git-fast-export</code> 输出流中解析到一种完整的数据，需要对数据中我们关心的字段进行检查。</p>
+<p>比如，我们要根据文件大小来过滤掉仓库中的大文件，在解析到 <code>blob</code> 数据类型时，当获取到 <code>blob size</code> 信息时，可以与我们的预期大小进行对比，如果超过预期大小，则可以把这个 <code>blob</code> 标记为可删除状态，整条 <code>blob</code> 数据都不会输入到 <code>git-fast-import</code> 中，这样就做到了文件删除， 同时记住这个 <code>blob</code> 的 <code>mark ID</code>, 后续继续流式输出时，只要涉及到引用该 <code>mark ID</code> 的 <code>commit</code>，需要将其中的 <code>filechanges</code> 进行修改。如果一个 <code>commit</code> 的 <code>filechanges</code> 删减到为零，则整条 <code>commit</code> 需要丢掉，这样就实现了与删除文件相关的 <code>commit</code>的更新。</p>
+<p>我们用一组示意图进行说明：</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://turun3y6z5.feishu.cn/space/api/box/stream/download/asynccode/?code=Njg2ZTg3NTRiOTE1YjVmOTYxMTA5NGQ1OGIzZjc3MDdfT2hyb25hRE5RdFpYZVMxdjRkYnRDUjdwRE9UVGpGdWtfVG9rZW46Ym94Y25GZDBGVkxoRmVYTk1QcElScXNJdjNkXzE2NDQ1NzY5ODE6MTY0NDU4MDU4MV9WNA" alt="img"></p>
+<p>上图表示一个简单仓库中元数据的组织方式，为了方便展示，省略了tag、引用等数据结构，只突出文件及其提交。</p>
+<p>图中有4个文件：<code>Blob-A</code>, <code>Blob-B</code>, <code>Blob-C</code>, <code>Blob-D</code>。</p>
+<p>产生了3个提交：<code>Commit-A</code>, <code>Commit-B</code>,<code> Commit-C</code>。</p>
+<p><code>Commit-A</code>提交涉及文件<code>Blob-A</code>, <code>Blob-B</code>, <code>Commit-B</code>提交涉及文件<code>Blob-C</code>, <code>Commit-C</code>提交涉及文件<code>Blob-D</code>。</p>
+<p>使用<code>git-fast-export</code>导出仓库的元数据时，是按数据的先后顺序流式输出的，这个顺序即是<code>mark ID</code>的顺序。所以，本示例图中的数据顺序就是：</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://turun3y6z5.feishu.cn/space/api/box/stream/download/asynccode/?code=MTM3OTlmNjc3OTczNzJmMzljMjg2MmM5ZTYyOWE0NzZfZG5DaE9hSm1VQjRMNVJBSExvUjNWNGx1SnZ0OVd1N2lfVG9rZW46Ym94Y25QUmFCdHhLblQ5cDZlT1BMdlFyYVpkXzE2NDQ1NzY5ODE6MTY0NDU4MDU4MV9WNA" alt="img"></p>
+<p>现在的目标是要删除文件<code>Blob-C</code>，以及它涉及到的提交。</p>
+<p>删除的方式可以从文件的几个维度入手：</p>
+<ol>
+<li>文件的名称</li>
+<li>文件的ID, 即图中的 <code>original-oid</code></li>
+<li>文件的大小，即图中的 <code>data size</code></li>
+</ol>
+<p>无论哪种方式，目的是要先筛选出目标文件，然后进行标记。</p>
+<p>所谓标记，可以简单的认为是将它的<code>mark ID</code>从原有的序号系统中剔除，即标记为0。</p>
+<p>当<code>blob</code>的<code>mark ID</code>标记为0之后，后续解析到的<code>commit</code>时，会检查其中的<code>filechanges</code>，标记为0的<code>filechange</code>会被移除，如果最终的<code>filechanges</code>数量为0，说明该条<code>commit</code>所涉及到的所以修改文件都已经被删除，则整条<code>commit</code>也应该被删除。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://turun3y6z5.feishu.cn/space/api/box/stream/download/asynccode/?code=N2Q0Yzg0Mzg5MGFkNmY5ZjE2ZTYzMzRiY2U0MTlkMmFfSEl6SXRPaG9YeFdpclJuMDNDczlOS2NRaEg1Z2NJQU9fVG9rZW46Ym94Y25hQWRxdk1ReXFObHdNaG9YNTJJY3FjXzE2NDQ1NzY5ODE6MTY0NDU4MDU4MV9WNA" alt="img"></p>
+<p>在<code>Blob-C</code>, <code>Commit-B</code>标记为删除之后，后续所有数据的<code>mark ID</code>需要相应的改变, 以便保持一致。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://turun3y6z5.feishu.cn/space/api/box/stream/download/asynccode/?code=ZWVjM2YwY2RmNDA5MDE2ZWM2NGY1Nzg1NTRiMTRhNDFfU1U2TWdPWjBEVXk5enVPU2IyUDRyTzEyOGIwaWxva3lfVG9rZW46Ym94Y25sVjV0R2FTdlJrVEJUUGNaQ1BXOGplXzE2NDQ1NzY5ODE6MTY0NDU4MDU4MV9WNA" alt="img"></p>
+<p>如<code>Commit-C</code> 的<code>mark ID</code>变为5， <code>parent commit(from)</code>指向3，<code>filechanges</code>指向4。</p>
+<p>这样就完成了删除文件<code>Blob-C</code>，以及其涉及到的<code>Commit-C</code>。</p>
+<p>对于多文件，或者多分支删除，因为整个过程的数据是流式输出，所有的数据都按<code>出场顺序</code>有自己的唯一编号，所以处理起来是一样的。</p>
+<p>以上就是 <code>git-repo-clean</code>的内部原理。</p>
+<h5 id="使用建议："><a href="#使用建议：" class="headerlink" title="使用建议："></a>使用建议：</h5><p>不管是哪种重写历史的工具，都是对仓库进行破坏性操作，有些事项需要特别注意。</p>
+<ul>
+<li>事项 1：备份你的原始仓库</li>
+</ul>
+<blockquote>
+<p><code>git repo-clean</code> 在交互模式下，会询问用户是否进行备份，如果选择是，则会自动帮用户进行仓库备份。</p>
+</blockquote>
+<ul>
+<li>事项 2：重写历史会改变 commit 的 ID 值，可能会影响现存 PR，所以建议先关掉或者合并现存 PR。</li>
+<li>事项 3：在本地仓库重写历史并强制推送到远程仓库之后，应该告知所有使用该仓库进行协同开发的人，需要同步远程仓库，避免再将本地旧的历史提交到远程。</li>
+</ul>
+<blockquote>
+<p>参考远程仓库更改后如何更新本地仓库[<a target="_blank" rel="noopener" href="https://gitee.com/oschina/git-repo-clean/blob/main/docs/repo-update.md">11]</a>[<a target="_blank" rel="noopener" href="https://htmlpreview.github.io/?https://raw.githubusercontent.com/newren/git-filter-repo/docs/html/git-rebase.html">12]</a></p>
+</blockquote>
+<h5 id="后续："><a href="#后续：" class="headerlink" title="后续："></a>后续：</h5><p>在<code>v1.3.0</code>中我们已经实现将大文件转换为 <code>Git LFS</code> 文件的功能。</p>
+<h5 id="引用参考"><a href="#引用参考" class="headerlink" title="引用参考"></a>引用参考</h5><ul>
+<li><p>[1]. <a target="_blank" rel="noopener" href="https://gitee.com/cactusinhand/all-about-git/blob/master/doc/large-git-repos-zh.md">https://gitee.com/cactusinhand/all-about-git/blob/master/doc/large-git-repos-zh.md</a></p>
+</li>
+<li><p>[2]. <a target="_blank" rel="noopener" href="https://git-scm.com/docs/gitignore">https://git-scm.com/docs/gitignore</a></p>
+</li>
+<li><p>[3]. <a target="_blank" rel="noopener" href="https://gitee.com/help/articles/4235">https://gitee.com/help/articles/4235</a></p>
+</li>
+<li><p>[4]. <a target="_blank" rel="noopener" href="https://git-scm.com/docs/git-filter-branch">https://git-scm.com/docs/git-filter-branch</a></p>
+</li>
+<li><p>[5]. <a target="_blank" rel="noopener" href="https://git-scm.com/docs/git-filter-branch#PERFORMANCE">https://git-scm.com/docs/git-filter-branch#PERFORMANCE</a></p>
+</li>
+<li><p>[6]. <a target="_blank" rel="noopener" href="https://git-scm.com/docs/git-filter-branch#SAFETY">https://git-scm.com/docs/git-filter-branch#SAFETY</a></p>
+</li>
+<li><p>[7]. <a target="_blank" rel="noopener" href="https://github.com/newren/git-filter-repo">https://github.com/newren/git-filter-repo</a></p>
+</li>
+<li><p>[8]. <a target="_blank" rel="noopener" href="https://github.com/rtyley/bfg-repo-cleaner">https://github.com/rtyley/bfg-repo-cleaner</a></p>
+</li>
+<li><p>[9]. <a target="_blank" rel="noopener" href="https://github.com/github/git-sizer">https://github.com/github/git-sizer</a></p>
+</li>
+<li><p>[10]. <a target="_blank" rel="noopener" href="https://gitee.com/oschina/git-repo-clean">开源中国/git-repo-clean</a></p>
+</li>
+<li><p>[11]. <a target="_blank" rel="noopener" href="https://gitee.com/oschina/git-repo-clean/blob/main/docs/repo-update.md">https://gitee.com/oschina/git-repo-clean/blob/main/docs/repo-update.md</a></p>
+</li>
+<li><p>[12]. <a target="_blank" rel="noopener" href="https://htmlpreview.github.io/?https://raw.githubusercontent.com/newren/git-filter-repo/docs/html/git-rebase.html">https://htmlpreview.github.io/?https://raw.githubusercontent.com/newren/git-filter-repo/docs/html/git-rebase.html</a></p>
+</li>
+</ul>
+
+
+<div class="article-footer reveal fs14"><section id="license"><div class="header"><span>许可协议</span></div><div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div></section></div>
+
+</article>
+
+<div class="related-wrap reveal" id="read-next"><section class="header cap theme"><span>接下来阅读</span></section><section class="body fs14"><a id="next" href="/2022/02/11/Git-%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86-%E4%B8%8A/">Git 底层原理(上)<span class="note">较早</span></a><div class="line"></div></section></div>
+
+
+<div class="related-wrap reveal" id="related-posts">
+    <section class='header'>
+      <div class='title cap theme'>您可能感兴趣的文章</div>
+    </section>
+    <section class='body'>
+    <div class="related-posts"><a class="item" href="\2022\02\11\Git-底层原理-上\" title="Git 底层原理(上)"><div class="img"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/cover/76b86c0226ffd.svg" /></div><span class="title">Git 底层原理(上)</span><span class="excerpt">我们知道一个普通 Git 仓库分为工作区、暂存区、对象数据库区，这对于我们理解 Git 的某些命令有很大帮助。如果再深入一点，理解 Git 底层的核心数据结构，如blob, tree, tag, commit等就会更容易掌握相关 Gi...</span></a><a class="item" href="\2022\02\11\hello-world\" title="Hello World"><div class="img"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/cover/76b86c0226ffd.svg" /></div><span class="title">Hello World</span></a></div></section></div>
+
+
+
+  <div class='related-wrap md reveal' id="comments">
+    <div class='cmt-title cap theme'>
+      快来参与讨论吧
+    </div>
+    <div class='cmt-body utterances'>
+      
+
+<svg class="loading" style="vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2709"><path d="M832 512c0-176-144-320-320-320V128c211.2 0 384 172.8 384 384h-64zM192 512c0 176 144 320 320 320v64C300.8 896 128 723.2 128 512h64z" p-id="2710"></path></svg>
+
+<div id="utterances" repo="Cactusinhand/blog-comments" issue-term="pathname" theme="preferred-color-scheme"></div>
+
+    </div>
+  </div>
+
+
+
+      
+<footer class="page-footer reveal fs12"><hr><div class="text"><p>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+<p>本站由 <a href="https://cactusinhand.github.io/">@Colin.Lee</a> 创建，使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.6.1" title="v1.6.1">Stellar</a> 作为主题。</p>
+</div></footer>
+
+      <div class='float-panel mobile-only blur' style='display:none'>
+  <button type='button' class='sidebar-toggle mobile' onclick='sidebar.toggle()'>
+    <svg class="icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15301"><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 2.3 26.8 24.6 47.5 51.6 47.6h416.5v4z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15302"></path><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 1.9 27.7 23.9 49.7 51.6 51.6h416.5z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15303"></path></svg>
+  </button>
+</div>
+
+    </div>
+  </div>
+  <div class='scripts'>
+    <script type="text/javascript">
+  stellar = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    loadCSS: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    // 从 butterfly 和 volantis 获得灵感
+    loadScript: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    // https://github.com/jerryc127/hexo-theme-butterfly
+    jQuery: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        stellar.loadScript(stellar.plugins.jQuery).then(fn)
+      } else {
+        fn()
+      }
+    }
+  };
+  stellar.github = 'https://github.com/xaoxuu/hexo-theme-stellar/tree/1.6.1';
+  stellar.config = {
+    date_suffix: {
+      just: '刚刚',
+      min: '分钟前',
+      hour: '小时前',
+      day: '天前',
+      month: '个月前',
+    },
+  };
+
+  // required plugins (only load if needs)
+  stellar.plugins = {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js',
+    sitesjs: '/js/plugins/sites.js',
+    friendsjs: '/js/plugins/friends.js',
+  };
+
+  // optional plugins
+  if ('true' == 'true') {
+    stellar.plugins.lazyload = Object.assign({"enable":true,"js":"https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.3.1/dist/lazyload.min.js","transition":"blur"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.swiper = Object.assign({"enable":true,"css":"https://unpkg.com/swiper@6/swiper-bundle.min.css","js":"https://unpkg.com/swiper@6/swiper-bundle.min.js"});
+  }
+  if ('' == 'true') {
+    stellar.plugins.scrollreveal = Object.assign({"enable":null,"js":"https://cdn.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js","distance":"8px","duration":500,"interval":100,"scale":1});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.preload = Object.assign({"enable":true,"service":"flying_pages","instant_page":"https://cdn.jsdelivr.net/gh/volantis-x/cdn-volantis@4.1.2/js/instant_page.js","flying_pages":"https://cdn.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.fancybox = Object.assign({"enable":true,"js":"https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js","css":"https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css","selector":".swiper-slide img"});
+  }
+</script>
+
+<!-- required -->
+
+  
+<script src="/js/main.js" async></script>
+
+
+
+<!-- optional -->
+
+  <script>
+  function loadUtterances() {
+    const els = document.querySelectorAll("#comments #utterances");
+    if (els.length === 0) return;
+    els.forEach((el, i) => {
+      try {
+        el.innerHTML = '';
+      } catch (error) {
+        console.log(error);
+      }
+      var script = document.createElement('script');
+      script.src = 'https://utteranc.es/client.js';
+      script.async = true;
+      for (let key of Object.keys(el.attributes)) {
+        let attr = el.attributes[key];
+        if (['class', 'id'].includes(attr.name) === false) {
+          script.setAttribute(attr.name, attr.value);
+        }
+      }
+      el.appendChild(script);
+    });
+  }
+  window.addEventListener('DOMContentLoaded', (event) => {
+      loadUtterances();
+  });
+</script>
+
+
+
+
+<!-- inject -->
+
+
+  </div>
+</body>
+</html>
