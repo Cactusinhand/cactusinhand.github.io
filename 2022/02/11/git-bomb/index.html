@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+
+<head>
+  <meta name="generator" content="Hexo 5.4.1">
+  <meta charset="utf-8">
+  
+
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  <link rel='dns-prefetch' href='https://cdn.jsdelivr.net'>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  <title>Git 炸弹 - 高桥一郎</title>
+
+  
+    <meta name="description" content="&amp;#x4EC0;&amp;#x4E48;&amp;#x662F; Git &amp;#x70B8;&amp;#x5F39;(git bomb)&amp;#xFF1F; &amp;#x8D77;&amp;#x6E90;Git &amp;#x70B8;&amp;#x5F39;&amp;#x56E0; XML &amp;#x70B8;&amp;#x5F39;(AKA &amp;#x201C;billion laughs&amp;#x201D;)&amp;#x800C;&amp;#x5F97;&amp;#x540D;&amp;#xFF0C;&amp;#x">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git 炸弹">
+<meta property="og:url" content="https://cactusinhand.github.io/2022/02/11/git-bomb/index.html">
+<meta property="og:site_name" content="高桥一郎">
+<meta property="og:description" content="&amp;#x4EC0;&amp;#x4E48;&amp;#x662F; Git &amp;#x70B8;&amp;#x5F39;(git bomb)&amp;#xFF1F; &amp;#x8D77;&amp;#x6E90;Git &amp;#x70B8;&amp;#x5F39;&amp;#x56E0; XML &amp;#x70B8;&amp;#x5F39;(AKA &amp;#x201C;billion laughs&amp;#x201D;)&amp;#x800C;&amp;#x5F97;&amp;#x540D;&amp;#xFF0C;&amp;#x">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/git_bomb.png">
+<meta property="article:published_time" content="2022-02-11T12:04:09.000Z">
+<meta property="article:modified_time" content="2022-02-13T11:17:43.352Z">
+<meta property="article:author" content="Cactusinhand">
+<meta property="article:tag" content="git">
+<meta property="article:tag" content="xml">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/git_bomb.png">
+  
+  
+
+  <!-- feed -->
+  
+
+  
+    
+<link rel="stylesheet" href="../../../../css/main.css">
+
+  
+
+  
+
+  
+</head>
+
+<body>
+  
+
+
+
+
+  <div class='l_body' id='start'>
+    <aside class='l_left' layout='post'>
+    
+
+
+<header class="header">
+
+<div class="logo-wrap"><a class="avatar" href="../../../../about/"><div class="bg" style="opacity:0;background-image:url(https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.2/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/image-20220213142754407.png" onerror="javascript:this.classList.add('error');this.src='https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/image/2659360.svg';"></a><a class="title" href="../../../../index.html"><div class="main">高桥一郎</div><div class="sub cap">to be a better man.</div></a></div>
+<nav class="menu dis-select"><a class="nav-item active" href="../../../../index.html">文章</a><a class="nav-item" href="../../../../wiki/">项目</a><a class="nav-item" href="../../../../notes/">笔记</a><a class="nav-item" href="../../../../about/">关于</a></nav></header>
+
+<div class="widgets">
+
+<div class="widget-wrap single" id="toc"><div class="widget-header cap dis-select"><span class="name">本文目录</span></div><div class="widget-body fs14"><div class="doc-tree active"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B5%B7%E6%BA%90"><span class="toc-number">1.</span> <span class="toc-text">起源</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Git-%E7%82%B8%E5%BC%B9%E5%8E%9F%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">Git 炸弹原理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%B6%E4%BD%9C"><span class="toc-number">3.</span> <span class="toc-text">制作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%98%B2%E6%AD%A2"><span class="toc-number">4.</span> <span class="toc-text">如何防止</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3-CVE"><span class="toc-number">5.</span> <span class="toc-text">相关 CVE</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">6.</span> <span class="toc-text">参考链接</span></a></li></ol></div></div></div>
+
+
+</div>
+<footer class="footer dis-select"><div class="social-wrap"><a class="social" href="https://github.com/Cactusinhand" target="_blank" rel="external nofollow noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/github.png"/></a><a class="social" href="https://gitee.com/openbytes" target="_blank" rel="external nofollow noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/logo_gitee_red.jpg"/></a></div></footer>
+
+    </aside>
+    <div class='l_main'>
+      
+
+      
+
+
+<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a><span class="sep"></span><a class="cap breadcrumb" href="/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="../../../../categories/Git/">Git</a></div><div id="post-meta">发布于&nbsp;<time datetime="2022-02-11T12:04:09.000Z">2022-02-11</time></div></div>
+
+<article class='content md post'>
+<h1 class="article-title"><span>Git bomb</span></h1>
+<p>&#x4EC0;&#x4E48;&#x662F; Git &#x70B8;&#x5F39;(git bomb)&#xFF1F;</p>
+<h4 id="&#x8D77;&#x6E90;"><a href="#&#x8D77;&#x6E90;" class="headerlink" title="&#x8D77;&#x6E90;"></a>&#x8D77;&#x6E90;</h4><p>Git &#x70B8;&#x5F39;&#x56E0; XML &#x70B8;&#x5F39;(AKA &#x201C;billion laughs&#x201D;)&#x800C;&#x5F97;&#x540D;&#xFF0C;&#x6240;&#x4EE5;&#x8981;&#x7406;&#x89E3; Git &#x70B8;&#x5F39;&#xFF0C;&#x6211;&#x4EEC;&#x4E0D;&#x59A8;&#x5148;&#x4ECE; XML &#x70B8;&#x5F39;&#x8BF4;&#x8D77;&#x3002;</p>
+<span id="more"></span>
+
+<p>&#x4E0B;&#x9762;&#x662F;&#x4E00;&#x6BB5; XML &#x6587;&#x4EF6;&#x793A;&#x4F8B;&#xFF1A;</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot;?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">lolz</span> [</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol</span><span class="string">&quot;laugh out loud&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol2</span><span class="string">&quot;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol3</span><span class="string">&quot;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol4</span><span class="string">&quot;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol5</span><span class="string">&quot;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol6</span><span class="string">&quot;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol7</span><span class="string">&quot;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol8</span><span class="string">&quot;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol9</span><span class="string">&quot;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">lolz</span>&gt;</span>&amp;lol9;<span class="tag">&lt;/<span class="name">lolz</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>&#x4ECE; ENTITY &#x5B57;&#x6BB5;&#x770B;&#x8D77;&#xFF0C;&#x6BCF;&#x884C; ENTITY &#x4EE3;&#x8868;&#x4E00;&#x4E2A; XML &#x5B9E;&#x4F53;(entity)&#x5143;&#x7D20;&#xFF0C;&#x4E00;&#x5171;10&#x4E2A;&#x5B9E;&#x4F53;&#x5143;&#x7D20;&#xFF0C;&#x9664;&#x4E86;&#x7B2C;&#x4E00;&#x4E2A;&#x5B9E;&#x4F53;<code>lol</code>&#x5B9A;&#x4E49;&#x4E86;&#x5B57;&#x7B26;&#x4E32;&#x201D;laugh out loud&#x201D;(AKA lol)&#x5916;, &#x5176;&#x4F59;&#x5B9E;&#x4F53;&#x90FD;&#x662F;&#x5B9E;&#x4F53;&#x5F15;&#x7528;&#xFF0C;&#x5B83;&#x4EEC;&#x6BCF;&#x4E2A;&#x90FD;&#x5F15;&#x7528;&#x81EA;&#x4E0A;&#x4E00;&#x4E2A;&#x5B9E;&#x4F53;&#xFF0C;&#x4E14;&#x91CD;&#x590D;10&#x6B21;&#x3002;</p>
+<p>&#x6B64; XML &#x6587;&#x4EF6;&#x7684;&#x6587;&#x6863;&#x5185;&#x5BB9;&#x90E8;&#x5206;&#x4EC5;&#x5305;&#x542B;&#x5BF9;&#x5B9E;&#x4F53;<code>lol9</code>&#x7684;&#x4E00;&#x4E2A;&#x5B9E;&#x4F8B;&#x7684;&#x5F15;&#x7528;&#x3002;&#x4F46;&#x662F;&#xFF0C;&#x5F53;&#x5B83;&#x88AB; DOM &#x6216; SAX &#x89E3;&#x6790;&#x5668;&#x89E3;&#x6790;&#x65F6;&#xFF0C;&#x9047;&#x5230;<code>lol9</code>&#x65F6;&#xFF0C;&#x5B83;&#x4F1A;&#x6269;&#x5C55;&#x4E3A; 10 &#x4E2A;<code>lol8</code>&#xFF0C;&#x800C;&#x6BCF;&#x4E2A;<code>lol8</code>&#x4F1A;&#x6269;&#x5C55;&#x4E3A;10 &#x4E2A;<code>lol7</code>&#xFF0C;&#x4F9D;&#x6B64;&#x7C7B;&#x63A8;&#x3002;&#x5230;&#x5C06;&#x6240;&#x6709;&#x5185;&#x5BB9;&#x6269;&#x5C55;&#x4E3A;&#x6587;&#x672C;lol&#x65F6;&#xFF0C;&#x5B57;&#x7B26;&#x4E32;&#x201D;laugh out loud&#x201D;&#x7684;&#x6570;&#x91CF;&#x5DF2;&#x8FBE;100,000,000&#x3002;&#x5982;&#x679C;&#x518D;&#x589E;&#x52A0;&#x4E00;&#x4E2A;&#x7C7B;&#x4F3C;&#x7ED3;&#x6784;&#x7684;&#x5B9E;&#x4F53;&#xFF0C;&#x6216;&#x8005;&#x7B2C;&#x4E00;&#x4E2A;&#x5B9E;&#x4F53;<code>lol</code>&#x88AB;&#x5B9A;&#x4E49;&#x4E3A;10&#x4E2A;&#x201D;laugh out loud&#x201D;&#x5B57;&#x7B26;&#x4E32;&#x7684;&#x8BDD;&#xFF0C;&#x90A3;&#x4E48;&#x5C06;&#x6709;<code>10&#x4EBF;</code>&#x4E2A;&#x201D;laugh out loud&#x201D;&#xFF0C;&#x5373;&#x5341;&#x4EBF;&#x5927;&#x7B11;&#x3002;</p>
+<p>&#x8FD9;&#x6BB5;&#x6587;&#x672C;&#x770B;&#x4F3C;&#x5185;&#x5BB9;&#x4E0D;&#x591A;&#xFF0C;&#x5360;&#x7528;&#x5185;&#x5B58;&#x4E0D;&#x5927;&#xFF0C;&#x4F46;&#x662F;&#x5728;&#x89E3;&#x6790;&#x8FC7;&#x7A0B;&#x4E2D;&#x5185;&#x5BB9;&#x88AB;&#x6307;&#x6570;&#x7EA7;&#x5C55;&#x5F00;&#xFF0C;&#x4F1A;&#x6D88;&#x8017;&#x5927;&#x91CF;&#x5185;&#x5B58;&#x8D44;&#x6E90;&#xFF0C;&#x6240;&#x4EE5;&#x6709;&#x4EBA;&#x5229;&#x7528;&#x8FD9;&#x4E2A;&#x539F;&#x7406;&#x8FDB;&#x884C;DOS&#x653B;&#x51FB;&#xFF0C;&#x4F7F;&#x88AB;&#x653B;&#x51FB;&#x7684;&#x673A;&#x5668;&#x7684;&#x5185;&#x5B58;&#x8FC5;&#x901F;&#x8017;&#x5C3D;&#xFF0C;&#x4ECE;&#x800C;&#x505C;&#x6B62;&#x670D;&#x52A1;&#x3002;</p>
+<p>&#x4EE5;&#x4E0A;&#x8FD9;&#x79CD; XML &#x653B;&#x51FB;&#xFF0C;&#x88AB;&#x79F0;&#x4F5C; XML &#x70B8;&#x5F39;&#x3002;</p>
+<p>Git &#x70B8;&#x5F39;&#x7684;&#x539F;&#x7406;&#x5927;&#x81F4;&#x4E5F;&#x8DDF;XML&#x70B8;&#x5F39;&#x7C7B;&#x4F3C;&#xFF0C;&#x5B83;&#x5229;&#x7528;&#x4E86; Git &#x7684;&#x67D0;&#x79CD;&#x7279;&#x6027;&#xFF0C;&#x4F7F;&#x5F97;&#x91CD;&#x590D;&#x7684;&#x6587;&#x672C;&#x5185;&#x5BB9;&#x6DF1;&#x5EA6;&#x5D4C;&#x5957;&#x3002;&#x6240;&#x4EE5;&#x63A5;&#x4E0B;&#x6765;&#x518D;&#x6765;&#x770B;&#x4E00;&#x4E0B; Git &#x70B8;&#x5F39;&#x7684;&#x539F;&#x7406;&#x3002;</p>
+<h4 id="Git-&#x70B8;&#x5F39;&#x539F;&#x7406;"><a href="#Git-&#x70B8;&#x5F39;&#x539F;&#x7406;" class="headerlink" title="Git &#x70B8;&#x5F39;&#x539F;&#x7406;"></a>Git &#x70B8;&#x5F39;&#x539F;&#x7406;</h4><p>&#x6211;&#x4EEC;&#x90FD;&#x77E5;&#x9053; Git &#x7684;&#x57FA;&#x672C;&#x6570;&#x636E;&#x7ED3;&#x6784;&#x6709;<code>commit</code>,<code>tag</code>, <code>tree</code>, <code>blob</code>, blob &#x53EA;&#x5B58;&#x50A8;&#x6587;&#x4EF6;&#x5185;&#x5BB9;&#xFF0C;tree &#x5B58;&#x50A8;&#x6587;&#x4EF6;&#x540D;&#x79F0;&#xFF0C;&#x6587;&#x4EF6;&#x76EE;&#x5F55;&#x7ED3;&#x6784;&#xFF0C; commit &#x4E0E; tag &#x7C7B;&#x4F3C;&#x4E8E;&#x4E00;&#x79CD;&#x5F15;&#x7528;(reference),&#x6307;&#x5411; tree&#x3002;</p>
+<p>&#x6BCF;&#x4E2D;&#x6570;&#x636E;&#x90FD;&#x6709;&#x81EA;&#x5DF1;&#x7684;<code>hash ID</code>, &#x6240;&#x4EE5;&#x5BF9;&#x4E8E;<code>blob</code>&#x6765;&#x8BF4;&#xFF0C;&#x53EA;&#x8981;&#x5176;&#x4E2D;&#x7684;&#x5185;&#x5BB9;&#x662F;&#x4E00;&#x6837;&#x7684;&#xFF0C;&#x90A3;&#x4E48;&#x5176; ID &#x5C31;&#x662F;&#x4E00;&#x6837;&#x7684;&#xFF0C;&#x4E0D;&#x7BA1;&#x5176;&#x5185;&#x5BB9;&#x7684;&#x6587;&#x4EF6;&#x540D;&#xFF0C;&#x6587;&#x4EF6;&#x8DEF;&#x5F84;&#x662F;&#x5426;&#x76F8;&#x540C;&#x3002;&#x6362;&#x53E5;&#x8BDD;&#x8BF4;&#xFF0C;Git&#x6D88;&#x9664;&#x4E86;<code>blob</code>&#x7684;&#x91CD;&#x590D;&#xFF0C;&#x5141;&#x8BB8;&#x4E0D;&#x540C;&#x7684;&#x6587;&#x4EF6;(&#x6587;&#x4EF6;&#x540D;&#xFF0C;&#x6587;&#x4EF6;&#x8DEF;&#x5F84;&#x4E0D;&#x540C;)&#x4F7F;&#x7528;&#x76F8;&#x540C;&#x7684;<code>blob</code>&#xFF0C;&#x76EE;&#x7684;&#x662F;&#x51CF;&#x5C11;&#x6587;&#x4EF6;&#x5185;&#x5BB9;&#x7684;&#x91CD;&#x590D;&#x3002;&#x5BF9;&#x4E8E;<code>tree</code>&#x4E5F;&#x662F;&#x7C7B;&#x4F3C;&#x3002;</p>
+<p>&#x6240;&#x4EE5;&#x6709;&#x4EBA;&#x5C31;&#x5229;&#x7528;&#x8FD9;&#x4E2A;&#x7279;&#x6027;&#x5236;&#x4F5C;&#x4E86;&#x4E00;&#x4E2A; Git &#x4ED3;&#x5E93;, &#x5176;&#x7ED3;&#x6784;&#x7C7B;&#x4F3C;&#xFF1A;</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/git_bomb.png" alt="git bomb"></p>
+<p>&#x4E4B;&#x540E;&#xFF0C;&#x53EA;&#x8981;&#x8FD0;&#x884C;&#x5305;&#x542B;&#x6811;&#x7684;&#x904D;&#x5386;&#x64CD;&#x4F5C;&#x7684; Git &#x547D;&#x4EE4;&#xFF0C;&#x5982;<code>git status</code>, <code>git checkout</code>&#x7B49;&#x547D;&#x4EE4;&#xFF0C;Git &#x4F1A;&#x5148;&#x5728;&#x5185;&#x5B58;&#x4E2D;&#x6784;&#x9020;&#x51FA;&#x8BE5;&#x4ED3;&#x5E93;&#x7684;&#x6811;&#x7ED3;&#x6784;&#xFF0C;&#x5728;&#x8FD9;&#x79CD;&#x7279;&#x6B8A;&#x7684;&#x4ED3;&#x5E93;&#x4E2D;&#xFF0C;&#x8FD9;&#x4E2A;&#x8FC7;&#x7A0B;&#x4F1A;&#x6D88;&#x8017;&#x5927;&#x91CF;&#x5185;&#x5B58;&#xFF0C;&#x56E0;&#x6B64;&#x53EA;&#x8981;&#x8FD9;&#x4E2A;&#x4ED3;&#x5E93;&#x7684;&#x6811;&#x5D4C;&#x5957;&#x8DB3;&#x591F;&#x6DF1;&#xFF0C;&#x5185;&#x5B58;&#x5C31;&#x4F1A;&#x9A6C;&#x4E0A;&#x88AB;&#x6D88;&#x8017;&#x5B8C;&#xFF0C;&#x76F8;&#x5173;&#x8FDB;&#x7A0B;&#x4F1A;&#x88AB;&#x7EC8;&#x6B62;&#x3002;</p>
+<p>&#x4E0E;XML&#x70B8;&#x5F39;&#x7C7B;&#x4F3C;&#xFF0C;&#x53EA;&#x8981;&#x8FD9;&#x79CD;&#x5D4C;&#x5957;&#x7ED3;&#x6784;&#x8FBE;&#x5230;10&#x5C42;&#xFF0C;&#x6216;&#x8005;&#x5E95;&#x5C42;&#x7684;blob&#x6709;10&#x4E2A;&#xFF0C;&#x5219;&#x6574;&#x4E2A;&#x8FC7;&#x7A0B;&#x5C55;&#x5F00;&#x4F1A;&#x6709;10&#x4EBF;&#x6761;<code>tree</code>(&#x8DEF;&#x5F84;)&#x3002;</p>
+<h4 id="&#x5236;&#x4F5C;"><a href="#&#x5236;&#x4F5C;" class="headerlink" title="&#x5236;&#x4F5C;"></a>&#x5236;&#x4F5C;</h4><p>Git&#x70B8;&#x5F39;&#x7B2C;&#x4E00;&#x6B21;&#x516C;&#x5F00;&#x8BA8;&#x8BBA;&#x662F;&#x5728;2017&#x5E74;&#xFF0C;Kate &#x5728;&#x81EA;&#x5DF1;&#x7684;&#x535A;&#x5BA2;[2]&#x4E2D;&#x8BA8;&#x8BBA;&#x4E86;&#x5236;&#x4F5C; Git &#x70B8;&#x5F39;&#x7684;&#x539F;&#x7406;&#x4EE5;&#x53CA;&#x5236;&#x4F5C;&#x65B9;&#x6CD5;&#xFF0C;&#x5236;&#x4F5C;&#x7A0B;&#x5E8F;&#x662F;&#x7528; Python &#x5199;&#x7684;&#xFF0C;&#x89C1;&#xFF1A;</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://kate.io/blog/making-your-own-exploding-git-repos">https://kate.io/blog/making-your-own-exploding-git-repos</a></p>
+</blockquote>
+<h4 id="&#x5982;&#x4F55;&#x9632;&#x6B62;"><a href="#&#x5982;&#x4F55;&#x9632;&#x6B62;" class="headerlink" title="&#x5982;&#x4F55;&#x9632;&#x6B62;"></a>&#x5982;&#x4F55;&#x9632;&#x6B62;</h4><p>&#x7ECF;&#x8FC7; Github &#x4EE5;&#x53CA;&#x6F0F;&#x6D1E;&#x5E73;&#x53F0; Hackerone &#x540C;&#x610F;&#x540E;&#xFF0C;Kate &#x516C;&#x5F00;&#x4E86;&#x81EA;&#x5DF1;&#x5728; Github &#x4E0A;&#x81EA;&#x5DF1;&#x7684; git-bomb&#x4ED3;&#x5E93;[3]&#xFF0C;&#x5E76;&#x4E14;&#x5728;&#x81EA;&#x5DF1;&#x7684;&#x535A;&#x5BA2;&#x4E2D;&#x516C;&#x5F00;&#x8BA8;&#x8BBA;&#x4E86; Git &#x70B8;&#x5F39;&#x7684;&#x76F8;&#x5173;&#x4FE1;&#x606F;&#xFF0C;&#x4E4B;&#x540E;&#x9A6C;&#x4E0A;&#x5F15;&#x8D77;&#x4E86; Git &#x4E0A;&#x6E38;&#x793E;&#x533A;&#x7684;&#x5173;&#x6CE8;&#xFF0C;&#x5E76;&#x4E14;&#x9A6C;&#x4E0A;&#x8BA8;&#x8BBA;&#x4E86;&#x53EF;&#x80FD;&#x7684;&#x4FEE;&#x590D;&#x65B9;&#x6848;: [4]</p>
+<ul>
+<li>Git&#x4E0A;&#x6E38;&#x793E;&#x533A;&#xFF0C;&#x6700;&#x7EC8;&#x8865;&#x4E01;: [5]</li>
+</ul>
+<p>Git &#x5B98;&#x65B9;&#x7684;&#x4FEE;&#x590D;&#x662F;&#x5C06;&#x904D;&#x5386;&#x6811;&#x7684;&#x8FC7;&#x7A0B;&#x53D8;&#x5F97;&#x66F4;&#x5FEB;&#xFF0C;&#x4F7F;&#x5F97;&#x5BF9; Git &#x70B8;&#x5F39;&#x4ED3;&#x5E93;&#x505A;&#x4EFB;&#x4F55;&#x64CD;&#x4F5C;&#x4E0D;&#x81F3;&#x4E8E;&#x7B49;&#x5F85;&#x5F88;&#x4E45;&#x3002;<br>&#x5176;<code>commit message</code>&#x5199;&#x5230;&#xFF1A;</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">You can see this in a pathological case where a commit adds</span><br><span class="line">a very large number of entries, and we limit based on a</span><br><span class="line">broad pathspec. E.g.:</span><br><span class="line"></span><br><span class="line">  perl -e &apos;</span><br><span class="line">    chomp(my $blob = `git hash-object -w --stdin &lt;/dev/null`);</span><br><span class="line">    for my $a (1..1000) {</span><br><span class="line">      for my $b (1..1000) {</span><br><span class="line">        print &quot;100644 $blob\t$a/$b\n&quot;;</span><br><span class="line">      }</span><br><span class="line">    }</span><br><span class="line">  &apos; | git update-index --index-info</span><br><span class="line">  git commit -qm add</span><br><span class="line"></span><br><span class="line">  git rev-list HEAD -- .</span><br><span class="line"></span><br><span class="line">This case takes about 100ms now, but after this patch only</span><br><span class="line">needs 6ms. That&apos;s not a huge improvement, but it&apos;s easy to</span><br><span class="line">get and it protects us against even more pathological cases</span><br><span class="line">(e.g., going from 1 million to 10 million files would take</span><br><span class="line">ten times as long with the current code, but not increase at</span><br><span class="line">all after this patch).</span><br></pre></td></tr></table></figure>
+<p>&#x8FD9;&#x4E2A;&#x4FEE;&#x590D;&#x5E76;&#x6CA1;&#x6709;&#x89E3;&#x51B3;&#x5904;&#x7406;&#x8FD9;&#x79CD;&#x4ED3;&#x5E93;&#x5BFC;&#x81F4;&#x5185;&#x5B58;&#x6D88;&#x8017;&#x8FC7;&#x5927;&#x95EE;&#x9898;&#xFF0C;&#x53EA;&#x5BF9;&#x5904;&#x7406;&#x8FC7;&#x7A0B;&#x7684;&#x6D88;&#x8017;&#x65F6;&#x95F4;&#x505A;&#x4E86;&#x4E00;&#x6B21;&#x4F18;&#x5316;&#x3002;</p>
+<h4 id="&#x76F8;&#x5173;-CVE"><a href="#&#x76F8;&#x5173;-CVE" class="headerlink" title="&#x76F8;&#x5173; CVE"></a>&#x76F8;&#x5173; CVE</h4><ul>
+<li><a target="_blank" rel="noopener" href="https://ubuntu.com/security/CVE-2017-15298">CVE-2017-15298</a></li>
+</ul>
+<h4 id="&#x53C2;&#x8003;&#x94FE;&#x63A5;"><a href="#&#x53C2;&#x8003;&#x94FE;&#x63A5;" class="headerlink" title="&#x53C2;&#x8003;&#x94FE;&#x63A5;"></a>&#x53C2;&#x8003;&#x94FE;&#x63A5;</h4><ul>
+<li><p>[1] <a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/archive/msdn-magazine/2009/november/xml-denial-of-service-attacks-and-defenses">microsoft: xml-denial-of-service-attacks-and-defenses</a></p>
+</li>
+<li><p>[2] <a target="_blank" rel="noopener" href="https://kate.io/blog/git-bomb">kate&#x2019;s blog</a></p>
+</li>
+<li><p>[3] <a target="_blank" rel="noopener" href="https://github.com/Katee/git-bomb">kate: original git-bomb repo on Github</a></p>
+</li>
+<li><p>[4] <a target="_blank" rel="noopener" href="https://public-inbox.org/git/20171013123521.hop5hrfsyagu7znl@sigill.intra.peff.net/T/#m58c560c18f93476e23110a0656a8d525170d14a2">git upstream discussion</a></p>
+</li>
+<li><p>[5] <a target="_blank" rel="noopener" href="https://github.com/Cactusinhand/git/commit/a937b37e766479c8e780b17cce9c4b252fd97e40">git upstream fix</a></p>
+</li>
+</ul>
+
+
+<div class="article-footer reveal fs14"><section id="license"><div class="header"><span>许可协议</span></div><div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div></section><section id="share"><div class="header"><span>分享文章</span></div><div class="body"><div class="link"><input class="copy-area" readonly="true" id="copy-link" value="https://cactusinhand.github.io/2022/02/11/git-bomb/" /></div><div class="social-wrap dis-select"><a class="social share-item wechat" onclick="util.toggle(&quot;qrcode-wechat&quot)"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/social/b32ef3da1162a.svg"/></a><a class="social share-item weibo" target="_blank" rel="external nofollow noopener noreferrer" href="https://service.weibo.com/share/share.php?url=https://cactusinhand.github.io/2022/02/11/git-bomb/&title=Git 炸弹 - 高桥一郎&summary=&#x4EC0;&#x4E48;&#x662F; Git &#x70B8;&#x5F39;(git bomb)&#xFF1F;
+&#x8D77;&#x6E90;Git &#x70B8;&#x5F39;&#x56E0; XML &#x7..."><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/social/80c07e4dbb303.svg"/></a><a class="social share-item email" href="mailto:?subject=Git 炸弹 - 高桥一郎&amp;body=https://cactusinhand.github.io/2022/02/11/git-bomb/"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/social/a1b00e20f425d.svg"/></a><a class="social share-item link" onclick="util.copy(&quot;copy-link&quot;, &quot;复制成功&quot;)"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/social/8411ed322ced6.svg"/></a></div><div class="qrcode" id="qrcode-wechat" style="visibility:hidden;height:0"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=https://cactusinhand.github.io/2022/02/11/git-bomb/index.html"/></div></div></section></div>
+
+</article>
+
+<div class="related-wrap reveal" id="read-next"><section class="header cap theme"><span>接下来阅读</span></section><section class="body fs14"><a id="next" href="../../10/git-from-inside-to-outside/">Git 内部原理<span class="note">较早</span></a><div class="line"></div><a id="prev" href="../../12/Git-tool-git-repo-clean/">一种 Git 插件工具：git repo-clean<span class="note">较新</span></a></section></div>
+
+
+
+
+
+
+  <div class='related-wrap md reveal' id="comments">
+    <div class='cmt-title cap theme'>
+      快来参与讨论吧
+    </div>
+    <div class='cmt-body utterances'>
+      
+
+<svg class="loading" style="vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2709"><path d="M832 512c0-176-144-320-320-320V128c211.2 0 384 172.8 384 384h-64zM192 512c0 176 144 320 320 320v64C300.8 896 128 723.2 128 512h64z" p-id="2710"></path></svg>
+
+<div id="utterances" repo="Cactusinhand/blog-comments" issue-term="pathname" theme="preferred-color-scheme"></div>
+
+    </div>
+  </div>
+
+
+
+      
+<footer class="page-footer reveal fs12"><hr><div class="text"><p>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+<p>本站由 <a href="https://cactusinhand.github.io/">@Cactusinhand</a> 创建，使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.6.1" title="v1.6.1">Stellar</a> 作为主题。</p>
+</div></footer>
+
+      <div class='float-panel mobile-only blur' style='display:none'>
+  <button type='button' class='sidebar-toggle mobile' onclick='sidebar.toggle()'>
+    <svg class="icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15301"><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 2.3 26.8 24.6 47.5 51.6 47.6h416.5v4z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15302"></path><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 1.9 27.7 23.9 49.7 51.6 51.6h416.5z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15303"></path></svg>
+  </button>
+</div>
+
+    </div>
+  </div>
+  <div class='scripts'>
+    <script type="text/javascript">
+  stellar = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    loadCSS: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    // 从 butterfly 和 volantis 获得灵感
+    loadScript: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    // https://github.com/jerryc127/hexo-theme-butterfly
+    jQuery: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        stellar.loadScript(stellar.plugins.jQuery).then(fn)
+      } else {
+        fn()
+      }
+    }
+  };
+  stellar.github = 'https://github.com/xaoxuu/hexo-theme-stellar/tree/1.6.1';
+  stellar.config = {
+    date_suffix: {
+      just: '刚刚',
+      min: '分钟前',
+      hour: '小时前',
+      day: '天前',
+      month: '个月前',
+    },
+  };
+
+  // required plugins (only load if needs)
+  stellar.plugins = {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js',
+    sitesjs: '../../../../js/plugins/sites.js',
+    friendsjs: '../../../../js/plugins/friends.js',
+  };
+
+  // optional plugins
+  if ('true' == 'true') {
+    stellar.plugins.lazyload = Object.assign({"enable":true,"js":"https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.3.1/dist/lazyload.min.js","transition":"blur"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.swiper = Object.assign({"enable":true,"css":"https://unpkg.com/swiper@6/swiper-bundle.min.css","js":"https://unpkg.com/swiper@6/swiper-bundle.min.js"});
+  }
+  if ('' == 'true') {
+    stellar.plugins.scrollreveal = Object.assign({"enable":null,"js":"https://cdn.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js","distance":"8px","duration":500,"interval":100,"scale":1});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.preload = Object.assign({"enable":true,"service":"flying_pages","instant_page":"https://cdn.jsdelivr.net/gh/volantis-x/cdn-volantis@4.1.2/js/instant_page.js","flying_pages":"https://cdn.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.fancybox = Object.assign({"enable":true,"js":"https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js","css":"https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css","selector":".swiper-slide img"});
+  }
+</script>
+
+<!-- required -->
+
+  
+<script src="../../../../js/main.js" async></script>
+
+
+
+<!-- optional -->
+
+  <script>
+  function loadUtterances() {
+    const els = document.querySelectorAll("#comments #utterances");
+    if (els.length === 0) return;
+    els.forEach((el, i) => {
+      try {
+        el.innerHTML = '';
+      } catch (error) {
+        console.log(error);
+      }
+      var script = document.createElement('script');
+      script.src = 'https://utteranc.es/client.js';
+      script.async = true;
+      for (let key of Object.keys(el.attributes)) {
+        let attr = el.attributes[key];
+        if (['class', 'id'].includes(attr.name) === false) {
+          script.setAttribute(attr.name, attr.value);
+        }
+      }
+      el.appendChild(script);
+    });
+  }
+  window.addEventListener('DOMContentLoaded', (event) => {
+      loadUtterances();
+  });
+</script>
+
+
+
+
+<!-- inject -->
+
+
+  </div>
+</body>
+</html>
