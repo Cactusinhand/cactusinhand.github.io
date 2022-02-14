@@ -17,18 +17,18 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="theme-color" content="#f8f8f8">
-  <title>About me - 高桥一郎</title>
+  <title>git-repo-clean：一种Git仓库瘦身工具 - 高桥一郎</title>
 
   
-    <meta name="description" content="@CactusinhandLanguages: C&#x2F;C++&amp;#x3001;Golang&amp;#x3001;Python&amp;#x3001;Rust Favourite Thing: Movies, jogging, climbing">
+    <meta name="description" content="hi, there, welcome to my blog">
 <meta property="og:type" content="website">
-<meta property="og:title" content="About me">
-<meta property="og:url" content="https://cactusinhand.github.io/about/me.html">
+<meta property="og:title" content="一种Git仓库瘦身工具">
+<meta property="og:url" content="https://cactusinhand.github.io/wiki/git-tools/index.html">
 <meta property="og:site_name" content="高桥一郎">
-<meta property="og:description" content="@CactusinhandLanguages: C&#x2F;C++&amp;#x3001;Golang&amp;#x3001;Python&amp;#x3001;Rust Favourite Thing: Movies, jogging, climbing">
+<meta property="og:description" content="hi, there, welcome to my blog">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-02-11T13:06:36.000Z">
-<meta property="article:modified_time" content="2022-02-14T14:40:40.250Z">
+<meta property="article:published_time" content="2022-02-14T14:25:58.299Z">
+<meta property="article:modified_time" content="2022-02-14T14:25:58.299Z">
 <meta property="article:author" content="Cactusinhand">
 <meta name="twitter:card" content="summary">
   
@@ -39,7 +39,7 @@
 
   
     
-<link rel="stylesheet" href="../css/main.css">
+<link rel="stylesheet" href="../../css/main.css">
 
   
 
@@ -51,59 +51,48 @@
 <body>
   
 
+<div class="l_cover wiki"><article class="cover-wrap md"><div class="preview"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/git_workflow.jpg" height="512px"></div><div class="cover-title"><span>git-repo-clean</span></div><div class="description">git repo-clean 是用Golang开发的具备Git仓库大文件扫描，清理，并重写commit提交记录功能的Git拓展工具。</div><div class="start-wrap"><a class="button theme start" href="#start">开始使用</a></div></article></div><hr>
+
 
   <div class='l_body' id='start'>
-    <aside class='l_left' layout='page'>
+    <aside class='l_left' layout='wiki'>
     
 
 
 <header class="header">
 
-<div class="logo-wrap"><a class="avatar" href="../about/"><div class="bg" style="opacity:0;background-image:url(https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.2/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/image-20220213142754407.png" onerror="javascript:this.classList.add('error');this.src='https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/image/2659360.svg';"></a><a class="title" href="../index.html"><div class="main">高桥一郎</div><div class="sub cap">Great minds think different.</div></a></div>
-<nav class="menu dis-select"><a class="nav-item" href="../index.html">文章</a><a class="nav-item" href="../wiki/">项目</a><a class="nav-item" href="../notes/">笔记</a><a class="nav-item" href="../about/">关于</a></nav></header>
-
-<div class="widgets">
-<div class="widget-wrap" id="markdown"><div class="widget-header cap dis-select"><span class="name">欢迎来的高桥一郎的空间</span></div><div class="widget-body fs14"><p>该网站使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/">Stellar</a> 主题.<br>如果有任何疑问，请先查阅<a target="_blank" rel="noopener" href="https://xaoxuu.com/wiki/stellar/">文档</a>.</p>
-</div></div>
-
-
-
-<div class="widget-wrap" id="recent"><div class="widget-header cap dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><div class="more-item"><a class="title" href="../2022/02/13/learning-rust-notes/">学习 Rust 的一些笔记</a></div><div class="more-item"><a class="title" href="../2022/02/13/authentication-and-authorization/">认证(Authentication)和授权(Authorization)</a></div><div class="more-item"><a class="title" href="../2022/02/12/Git-tool-git-repo-clean/">一种 Git 插件工具：git repo-clean</a></div><div class="more-item"><a class="title" href="../2022/02/11/git-bomb/">Git 炸弹</a></div><div class="more-item"><a class="title" href="../2022/02/10/git-from-inside-to-outside/">Git 内部原理</a></div></div></div>
-
-</div>
-<footer class="footer dis-select"><div class="social-wrap"><a class="social" href="https://github.com/Cactusinhand" target="_blank" rel="external nofollow noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/github.png"/></a><a class="social" href="https://gitee.com/openbytes" target="_blank" rel="external nofollow noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/logo_gitee_red.jpg"/></a></div></footer>
-
-    </aside>
-    <div class='l_main'>
-      
-  
-
-<header class="header mobile-only">
-
-<div class="logo-wrap"><a class="avatar" href="../about/"><div class="bg" style="opacity:0;background-image:url(https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.2/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/image-20220213142754407.png" onerror="javascript:this.classList.add('error');this.src='https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/image/2659360.svg';"></a><a class="title" href="../index.html"><div class="main">高桥一郎</div><div class="sub cap">Great minds think different.</div></a></div>
+<div class="logo-wrap wiki"><a style="filter: grayscale(100%)" class="wiki-home cap" href="../../index.html"><svg aria-hidden="true" viewBox="0 0 16 16" width="1rem" height="1rem" fill="currentColor"><path fill-rule="evenodd" d="M7.78 12.53a.75.75 0 01-1.06 0L2.47 8.28a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 1.06L4.81 7h7.44a.75.75 0 010 1.5H4.81l2.97 2.97a.75.75 0 010 1.06z"></path></svg>所有项目</a><a class="title" href=""><div class="main">git-repo-clean</div><div class="sub cap">Git 仓库瘦身工具</div></a></div>
 </header>
 
+<div class="widgets"></div>
 
+
+    </aside>
+    <div class='l_main list'>
+      
 
       
 
   
-<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a><span class="sep"></span><a class="cap breadcrumb" href="">About me</a></div></div>
-
-  <article class='content md page'>
-  <h1 class="article-title"><span>About me</span></h1>
   
-    <p>@Cactusinhand<br>Languages: C/C++&#x3001;Golang&#x3001;Python&#x3001;Rust</p>
-<p>Favourite Thing: Movies, jogging, climbing</p>
+<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" id="home" href="/">主页</a><span class="sep"></span><a class="cap breadcrumb" id="menu" href="../../wiki/">项目</a><span class="sep"></span><a class="cap breadcrumb" id="proj" href="">git-repo-clean</a></div><div id="post-meta">更新于&nbsp;<time datetime="2022-02-14T14:25:58.299Z">2022-02-14</time></div></div>
 
+  <article class='content md wiki'>
+  <h1 class="article-title"><span>一种Git仓库瘦身工具</span></h1>
   
+  
+
+
   </article>
+  
+<br>
 
-
+  
 
   <div class='related-wrap md reveal' id="comments">
     <div class='cmt-title cap theme'>
-      快来参与讨论吧
+      <p>评论区仅供交流，有问题请提 <a target="_blank" rel="noopener" href="https://gitee.com/oschina/git-repo-clean/issues">issue</a> 反馈。</p>
+
     </div>
     <div class='cmt-body utterances'>
       
@@ -117,8 +106,9 @@
 
 
 
+
       
-<footer class="page-footer reveal fs12"><hr><div class="sitemap"><div class="sitemap-group"><span class="fs14">文章</span><a href="../index.html">近期发布</a><a href="../categories/">分类</a><a href="../tags/">标签</a><a href="../archives/">归档</a></div><div class="sitemap-group"><span class="fs14">项目</span><a href="../wiki/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE/">开源项目</a><a href="../wiki/tags/%E5%8D%9A%E5%AE%A2%E4%B8%BB%E9%A2%98/">博客主题</a></div><div class="sitemap-group"><span class="fs14">更多</span><a href="../about/">关于本站</a><a href="../about/">GitHub</a><a href="../about/">Gitee</a></div></div><div class="text"><p>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+<footer class="page-footer reveal fs12"><hr><div class="sitemap"><div class="sitemap-group"><span class="fs14">文章</span><a href="../../index.html">近期发布</a><a href="../../categories/">分类</a><a href="../../tags/">标签</a><a href="../../archives/">归档</a></div><div class="sitemap-group"><span class="fs14">项目</span><a href="../../wiki/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE/">开源项目</a><a href="../../wiki/tags/%E5%8D%9A%E5%AE%A2%E4%B8%BB%E9%A2%98/">博客主题</a></div><div class="sitemap-group"><span class="fs14">更多</span><a href="../../about/">关于本站</a><a href="../../about/">GitHub</a><a href="../../about/">Gitee</a></div></div><div class="text"><p>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
 <p>本站由 <a href="https://cactusinhand.github.io/">@Cactusinhand</a> 创建，使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.6.1" title="v1.6.1">Stellar</a> 作为主题。</p>
 </div></footer>
 
@@ -237,8 +227,8 @@
   // required plugins (only load if needs)
   stellar.plugins = {
     jQuery: 'https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js',
-    sitesjs: '../js/plugins/sites.js',
-    friendsjs: '../js/plugins/friends.js',
+    sitesjs: '../../js/plugins/sites.js',
+    friendsjs: '../../js/plugins/friends.js',
   };
 
   // optional plugins
@@ -262,7 +252,7 @@
 <!-- required -->
 
   
-<script src="../js/main.js" async></script>
+<script src="../../js/main.js" async></script>
 
 
 
