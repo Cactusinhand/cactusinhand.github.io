@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+
+<head>
+  <meta name="generator" content="Hexo 5.4.1">
+  <meta charset="utf-8">
+  
+
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  <link rel='dns-prefetch' href='https://cdn.jsdelivr.net'>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  <title>Install MacOS on VMware - 高桥一郎</title>
+
+  
+    <meta name="description" content="&amp;#x4E3A;&amp;#x4E86;&amp;#x5728;MacOS&amp;#x73AF;&amp;#x5883;&amp;#x4E2D;&amp;#x505A;&amp;#x6D4B;&amp;#x8BD5;&amp;#xFF0C;&amp;#x51C6;&amp;#x5907;&amp;#x5728;&amp;#x865A;&amp;#x62DF;&amp;#x673A;VMware&amp;#x4E2D;&amp;#x5B89;&amp;#x88C5;&amp;#x4E00;&amp;#x4E2A;&amp;#x82F9;&amp;#x679C;&amp;#x7C">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Install MacOS on VMware">
+<meta property="og:url" content="https://cactusinhand.github.io/2022/02/26/Install-MacOS-on-VMware/index.html">
+<meta property="og:site_name" content="高桥一郎">
+<meta property="og:description" content="&amp;#x4E3A;&amp;#x4E86;&amp;#x5728;MacOS&amp;#x73AF;&amp;#x5883;&amp;#x4E2D;&amp;#x505A;&amp;#x6D4B;&amp;#x8BD5;&amp;#xFF0C;&amp;#x51C6;&amp;#x5907;&amp;#x5728;&amp;#x865A;&amp;#x62DF;&amp;#x673A;VMware&amp;#x4E2D;&amp;#x5B89;&amp;#x88C5;&amp;#x4E00;&amp;#x4E2A;&amp;#x82F9;&amp;#x679C;&amp;#x7C">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-02-26T08:13:25.000Z">
+<meta property="article:modified_time" content="2022-02-26T11:26:34.178Z">
+<meta property="article:author" content="Cactusinhand">
+<meta property="article:tag" content="macos">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+
+  <!-- feed -->
+  
+
+  
+    
+<link rel="stylesheet" href="../../../../css/main.css">
+
+  
+
+  
+
+  
+</head>
+
+<body>
+  
+
+
+
+
+  <div class='l_body' id='start'>
+    <aside class='l_left' layout='post'>
+    
+
+
+<header class="header">
+
+<div class="logo-wrap"><a class="avatar" href="../../../../about/"><div class="bg" style="opacity:0;background-image:url(https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.2/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/image-20220213142754407.png" onerror="javascript:this.classList.add('error');this.src='https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/image/2659360.svg';"></a><a class="title" href="../../../../index.html"><div class="main">高桥一郎</div><div class="sub cap">Great minds think different.</div></a></div>
+<nav class="menu dis-select"><a class="nav-item active" href="../../../../index.html">文章</a><a class="nav-item" href="../../../../wiki/">Wiki</a><a class="nav-item" href="../../../../notes/">笔记</a><a class="nav-item" href="../../../../about/">关于</a></nav></header>
+
+<div class="widgets">
+
+<div class="widget-wrap single" id="toc"><div class="widget-header cap dis-select"><span class="name">本文目录</span></div><div class="widget-body fs14"><div class="doc-tree active"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%87%86%E5%A4%87%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">准备：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%EF%BC%9A"><span class="toc-number">2.</span> <span class="toc-text">安装：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%EF%BC%9A"><span class="toc-number">3.</span> <span class="toc-text">问题：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E8%80%83%EF%BC%9A"><span class="toc-number">4.</span> <span class="toc-text">参考：</span></a></li></ol></div></div></div>
+
+
+</div>
+<footer class="footer dis-select"><div class="social-wrap"><a class="social" href="https://github.com/Cactusinhand" target="_blank" rel="external nofollow noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/github.png"/></a><a class="social" href="https://gitee.com/openbytes" target="_blank" rel="external nofollow noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/logo_gitee_red.jpg"/></a></div></footer>
+
+    </aside>
+    <div class='l_main'>
+      
+
+      
+
+
+<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a><span class="sep"></span><a class="cap breadcrumb" href="/">文章</a></div><div id="post-meta">发布于&nbsp;<time datetime="2022-02-26T08:13:25.000Z">2022-02-26</time></div></div>
+
+<article class='content md post'>
+<h1 class="article-title"><span>Install MacOS on VMware</span></h1>
+<p>&#x4E3A;&#x4E86;&#x5728;MacOS&#x73AF;&#x5883;&#x4E2D;&#x505A;&#x6D4B;&#x8BD5;&#xFF0C;&#x51C6;&#x5907;&#x5728;&#x865A;&#x62DF;&#x673A;VMware&#x4E2D;&#x5B89;&#x88C5;&#x4E00;&#x4E2A;&#x82F9;&#x679C;&#x7CFB;&#x7EDF;&#x3002;</p>
+<h3 id="&#x51C6;&#x5907;&#xFF1A;"><a href="#&#x51C6;&#x5907;&#xFF1A;" class="headerlink" title="&#x51C6;&#x5907;&#xFF1A;"></a>&#x51C6;&#x5907;&#xFF1A;</h3><ul>
+<li>&#x89E3;&#x9501;&#x5DE5;&#x5177;&#xFF1A;macOS Unlocker&#x3002;&#x56E0;&#x4E3A;&#x9ED8;&#x8BA4;&#x7684;VMware&#x4E0D;&#x652F;&#x6301;&#x5B89;&#x88C5;macOS, &#x6240;&#x4EE5;&#x8FD8;&#x9700;&#x8981;&#x89E3;&#x9501;&#x5DE5;&#x5177;&#x3002;</li>
+<li>macOS&#x7CFB;&#x7EDF;&#x955C;&#x50CF;</li>
+</ul>
+<blockquote>
+<p>&#x955C;&#x50CF;&#x89C1;&#x767E;&#x5EA6;&#x76D8;&#xFF1A;<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1HYQjJvPN-0np2m402-Z2mg">https://pan.baidu.com/s/1HYQjJvPN-0np2m402-Z2mg</a></p>
+<p>&#x63D0;&#x53D6;&#x7801;&#xFF1A;apk4</p>
+<p>&#x89E3;&#x9501;&#x5DE5;&#x5177;&#x89C1;&#xFF1A;<a target="_blank" rel="noopener" href="https://github.com/BDisp/unlocker/releases">https://github.com/BDisp/unlocker/releases</a></p>
+<p>&#x89E3;&#x9501;&#x5DE5;&#x5177;&#x5EFA;&#x8BAE;&#x4F7F;&#x7528;&#x6700;&#x65B0;&#x7684;&#xFF0C;&#x4E0D;&#x7528;&#x767E;&#x5EA6;&#x4E91;&#x76D8;&#x91CC;&#x63D0;&#x4F9B;&#x7684;&#x3002;</p>
+</blockquote>
+<h3 id="&#x5B89;&#x88C5;&#xFF1A;"><a href="#&#x5B89;&#x88C5;&#xFF1A;" class="headerlink" title="&#x5B89;&#x88C5;&#xFF1A;"></a>&#x5B89;&#x88C5;&#xFF1A;</h3><p>&#x89C1;&#x6559;&#x7A0B;&#xFF1A;<a target="_blank" rel="noopener" href="https://www.cnblogs.com/xuexianqi/p/13463671.html">https://www.cnblogs.com/xuexianqi/p/13463671.html</a></p>
+<h3 id="&#x95EE;&#x9898;&#xFF1A;"><a href="#&#x95EE;&#x9898;&#xFF1A;" class="headerlink" title="&#x95EE;&#x9898;&#xFF1A;"></a>&#x95EE;&#x9898;&#xFF1A;</h3><p>&#x5B89;&#x88C5;&#x8FC7;&#x7A0B;&#x4E2D;&#x9047;&#x5230;&#x4E00;&#x4E2A;&#x95EE;&#x9898;&#xFF1A;</p>
+<blockquote>
+<p>&#x865A;&#x62DF;&#x673A;&#x63D0;&#x793A;&#xFF1A;&#x5BA2;&#x6237;&#x673A;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;&#x5DF2;&#x7981;&#x7528;CPU&#x3002;&#x8BF7;&#x5173;&#x95ED;&#x6216;&#x91CD;&#x542F;&#x865A;&#x62DF;&#x673A;&#x3002;</p>
+</blockquote>
+<p>&#x627E;&#x4E86;&#x4E0D;&#x5C11;&#x89E3;&#x51B3;&#x65B9;&#x6848;&#xFF0C;&#x4F46;&#x662F;&#x90FD;&#x65E0;&#x6548;&#x3002;</p>
+<p>&#x5927;&#x81F4;&#x6709;&#x51E0;&#x4E2A;&#x65B9;&#x5411;&#xFF1A;</p>
+<ol>
+<li>&#x6362;&#x7535;&#x8111; :joy: &#x5728;AMD&#x7684;CPU&#x4E0A;&#x73A9;&#x865A;&#x62DF;&#x673A;&#x53EF;&#x80FD;&#x4F1A;&#x51FA;&#x4E00;&#x4E9B;&#x5947;&#x602A;&#x7684;&#x65E0;&#x6CD5;&#x89E3;&#x51B3;&#x7684;&#x95EE;&#x9898;&#x3002;</li>
+<li>&#x865A;&#x62DF;&#x673A;&#x8BBE;&#x7F6E;&#x7684;&#x5185;&#x5B58;&#x8FC7;&#x4F4E;&#x3002;</li>
+<li>VMware&#x7248;&#x672C;&#x8FC7;&#x4F4E;&#x3002;</li>
+<li>&#x4F7F;&#x7528;&#x7684;&#x955C;&#x50CF;&#x6709;&#x95EE;&#x9898;&#xFF0C;&#x6362;&#x955C;&#x50CF;&#x3002;</li>
+<li>&#x5728;&#x542F;&#x52A8;&#x65F6;&#xFF0C;&#x9009;&#x62E9;&#xFF1A;&#x6253;&#x5F00;&#x7535;&#x6E90;&#x65F6;&#x8FDB;&#x5165;&#x56FA;&#x4EF6;&#xFF0C;&#x4FEE;&#x6539;BIOS&#x914D;&#x7F6E;&#x3002;</li>
+<li>&#x4FEE;&#x6539;&#x5904;&#x7406;&#x5668;&#x7684;&#x865A;&#x62DF;&#x5316;&#x5F15;&#x64CE;&#x8BBE;&#x7F6E;&#x3002;</li>
+<li>&#x4FEE;&#x6539;<code>.vmx</code>&#x6587;&#x4EF6;&#x7684;&#x914D;&#x7F6E;</li>
+</ol>
+<p>&#x524D;&#x9762;&#x7684;&#x65B9;&#x6CD5;&#x591A;&#x5C11;&#x6709;&#x70B9;&#x4E0D;&#x9760;&#x8C31;&#xFF0C;&#x8BD5;&#x8FC7;&#x4E00;&#x4E9B;&#x4ECD;&#x65E0;&#x6548;&#x4E4B;&#x540E;&#xFF0C;&#x805A;&#x7126;&#x5728;&#x6700;&#x540E;&#x4E00;&#x79CD;&#x65B9;&#x6CD5;&#x4E0A;&#x3002;&#x4F46;&#x662F;&#x770B;&#x4E86;&#x51E0;&#x7BC7;&#x4FEE;&#x6539;<code>.vmx</code>&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x7684;&#x6587;&#x7AE0;&#xFF0C;&#x540C;&#x8D28;&#x5316;&#x592A;&#x4E25;&#x91CD;&#x4E86;&#xFF0C;&#x6CA1;&#x6709;&#x89E3;&#x51B3;&#x95EE;&#x9898;&#x3002;</p>
+<p>&#x6700;&#x540E;&#x8FD9;&#x7BC7;&#x6587;&#x7AE0;&#x9A6C;&#x4E0A;&#x89E3;&#x51B3;&#x95EE;&#x9898;&#xFF1A;<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42848413/article/details/115260253?spm=1001.2014.3001.5502">https://blog.csdn.net/weixin_42848413/article/details/115260253?spm=1001.2014.3001.5502</a></p>
+<h3 id="&#x53C2;&#x8003;&#xFF1A;"><a href="#&#x53C2;&#x8003;&#xFF1A;" class="headerlink" title="&#x53C2;&#x8003;&#xFF1A;"></a>&#x53C2;&#x8003;&#xFF1A;</h3><ol>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/xuexianqi/p/13463671.html">https://www.cnblogs.com/xuexianqi/p/13463671.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42848413/article/details/115260253?spm=1001.2014.3001.5502">https://blog.csdn.net/weixin_42848413/article/details/115260253?spm=1001.2014.3001.5502</a></li>
+</ol>
+
+
+<div class="article-footer reveal fs14"><section id="license"><div class="header"><span>许可协议</span></div><div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div></section><section id="share"><div class="header"><span>分享文章</span></div><div class="body"><div class="link"><input class="copy-area" readonly="true" id="copy-link" value="https://cactusinhand.github.io/2022/02/26/Install-MacOS-on-VMware/" /></div><div class="social-wrap dis-select"><a class="social share-item wechat" onclick="util.toggle(&quot;qrcode-wechat&quot)"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/social/b32ef3da1162a.svg"/></a><a class="social share-item weibo" target="_blank" rel="external nofollow noopener noreferrer" href="https://service.weibo.com/share/share.php?url=https://cactusinhand.github.io/2022/02/26/Install-MacOS-on-VMware/&title=Install MacOS on VMware - 高桥一郎&summary=&#x4E3A;&#x4E86;&#x5728;MacOS&#x73AF;&#x5883;&#x4E2D;&#x505A;&#x6D4B;&#x8BD5;&#xFF0C;&#x51C6;&#x5907;&#x5728;&#x865A;..."><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/social/80c07e4dbb303.svg"/></a><a class="social share-item email" href="mailto:?subject=Install MacOS on VMware - 高桥一郎&amp;body=https://cactusinhand.github.io/2022/02/26/Install-MacOS-on-VMware/"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/social/a1b00e20f425d.svg"/></a><a class="social share-item link" onclick="util.copy(&quot;copy-link&quot;, &quot;复制成功&quot;)"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/social/8411ed322ced6.svg"/></a></div><div class="qrcode" id="qrcode-wechat" style="visibility:hidden;height:0"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=https://cactusinhand.github.io/2022/02/26/Install-MacOS-on-VMware/index.html"/></div></div></section></div>
+
+</article>
+
+<div class="related-wrap reveal" id="read-next"><section class="header cap theme"><span>接下来阅读</span></section><section class="body fs14"><a id="next" href="../../13/learning-rust-notes/">学习 Rust 的一些笔记<span class="note">较早</span></a><div class="line"></div></section></div>
+
+
+
+
+
+
+  <div class='related-wrap md reveal' id="comments">
+    <div class='cmt-title cap theme'>
+      快来参与讨论吧
+    </div>
+    <div class='cmt-body utterances'>
+      
+
+<svg class="loading" style="vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2709"><path d="M832 512c0-176-144-320-320-320V128c211.2 0 384 172.8 384 384h-64zM192 512c0 176 144 320 320 320v64C300.8 896 128 723.2 128 512h64z" p-id="2710"></path></svg>
+
+<div id="utterances" repo="Cactusinhand/blog-comments" issue-term="pathname" theme="preferred-color-scheme"></div>
+
+    </div>
+  </div>
+
+
+
+      
+<footer class="page-footer reveal fs12"><hr><div class="sitemap"><div class="sitemap-group"><span class="fs14">文章</span><a href="../../../../index.html">近期发布</a><a href="../../../../categories/">分类</a><a href="../../../../tags/">标签</a><a href="../../../../archives/">归档</a></div><div class="sitemap-group"><span class="fs14">Wiki</span><a href="../../../../wiki/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE/">开源项目</a><a href="../../../../wiki/tags/%E5%8D%9A%E5%AE%A2%E4%B8%BB%E9%A2%98/">博客主题</a></div><div class="sitemap-group"><span class="fs14">更多</span><a href="../../../../about/">关于本站</a><a href="../../../../about/">GitHub</a><a href="../../../../about/">Gitee</a></div></div><div class="text"><p>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+<p>本站由 <a href="https://cactusinhand.github.io/">@Cactusinhand</a> 创建，使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.6.1" title="v1.6.1">Stellar</a> 作为主题。</p>
+</div></footer>
+
+      <div class='float-panel mobile-only blur' style='display:none'>
+  <button type='button' class='sidebar-toggle mobile' onclick='sidebar.toggle()'>
+    <svg class="icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15301"><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 2.3 26.8 24.6 47.5 51.6 47.6h416.5v4z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15302"></path><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 1.9 27.7 23.9 49.7 51.6 51.6h416.5z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15303"></path></svg>
+  </button>
+</div>
+
+    </div>
+  </div>
+  <div class='scripts'>
+    <script type="text/javascript">
+  stellar = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    loadCSS: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    // 从 butterfly 和 volantis 获得灵感
+    loadScript: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    // https://github.com/jerryc127/hexo-theme-butterfly
+    jQuery: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        stellar.loadScript(stellar.plugins.jQuery).then(fn)
+      } else {
+        fn()
+      }
+    }
+  };
+  stellar.github = 'https://github.com/xaoxuu/hexo-theme-stellar/tree/1.6.1';
+  stellar.config = {
+    date_suffix: {
+      just: '刚刚',
+      min: '分钟前',
+      hour: '小时前',
+      day: '天前',
+      month: '个月前',
+    },
+  };
+
+  // required plugins (only load if needs)
+  stellar.plugins = {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js',
+    sitesjs: '../../../../js/plugins/sites.js',
+    friendsjs: '../../../../js/plugins/friends.js',
+  };
+
+  // optional plugins
+  if ('true' == 'true') {
+    stellar.plugins.lazyload = Object.assign({"enable":true,"js":"https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.3.1/dist/lazyload.min.js","transition":"blur"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.swiper = Object.assign({"enable":true,"css":"https://unpkg.com/swiper@6/swiper-bundle.min.css","js":"https://unpkg.com/swiper@6/swiper-bundle.min.js"});
+  }
+  if ('' == 'true') {
+    stellar.plugins.scrollreveal = Object.assign({"enable":null,"js":"https://cdn.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js","distance":"8px","duration":500,"interval":100,"scale":1});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.preload = Object.assign({"enable":true,"service":"flying_pages","instant_page":"https://cdn.jsdelivr.net/gh/volantis-x/cdn-volantis@4.1.2/js/instant_page.js","flying_pages":"https://cdn.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.fancybox = Object.assign({"enable":true,"js":"https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js","css":"https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css","selector":".swiper-slide img"});
+  }
+</script>
+
+<!-- required -->
+
+  
+<script src="../../../../js/main.js" async></script>
+
+
+
+<!-- optional -->
+
+  <script>
+  function loadUtterances() {
+    const els = document.querySelectorAll("#comments #utterances");
+    if (els.length === 0) return;
+    els.forEach((el, i) => {
+      try {
+        el.innerHTML = '';
+      } catch (error) {
+        console.log(error);
+      }
+      var script = document.createElement('script');
+      script.src = 'https://utteranc.es/client.js';
+      script.async = true;
+      for (let key of Object.keys(el.attributes)) {
+        let attr = el.attributes[key];
+        if (['class', 'id'].includes(attr.name) === false) {
+          script.setAttribute(attr.name, attr.value);
+        }
+      }
+      el.appendChild(script);
+    });
+  }
+  window.addEventListener('DOMContentLoaded', (event) => {
+      loadUtterances();
+  });
+</script>
+
+
+
+
+<!-- inject -->
+
+
+  </div>
+</body>
+</html>
