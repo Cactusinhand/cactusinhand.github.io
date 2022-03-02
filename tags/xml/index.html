@@ -61,10 +61,10 @@
 <nav class="menu dis-select"><a class="nav-item active" href="../../index.html">文章</a><a class="nav-item" href="../../wiki/">Wiki</a><a class="nav-item" href="../../notes/">笔记</a><a class="nav-item" href="../../about/">关于</a></nav></header>
 
 <div class="widgets">
-<div class="widget-wrap" id="markdown"><div class="widget-header cap dis-select"><span class="name">欢迎来的高桥一郎的空间</span></div><div class="widget-body fs14"><p>该网站使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/">Stellar</a> 主题.<br>网站还在施工建设之中，但是最近没空打理，大概4月之后才有空进行精装修 :)</p>
+<div class="widget-wrap" id="markdown"><div class="widget-header cap dis-select"><span class="name">欢迎来的高桥一郎的空间</span></div><div class="widget-body fs14"><p>该网站使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/">Stellar</a> 主题.<br>网站还在施工建设之中，但是最近没空折腾，大概4月之后才有空进行精装修 :)</p>
 </div></div>
 
-<div class="widget-wrap" id="recent"><div class="widget-header cap dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><div class="more-item"><a class="title" href="../../2022/02/26/Install-MacOS-on-VMware/">Install MacOS on VMware</a></div><div class="more-item"><a class="title" href="../../2022/02/13/learning-rust-notes/">学习 Rust 的一些笔记</a></div><div class="more-item"><a class="title" href="../../2022/02/13/authentication-and-authorization/">认证(Authentication)和授权(Authorization)</a></div><div class="more-item"><a class="title" href="../../2022/02/12/Git-tool-git-repo-clean/">一种 Git 插件工具：git repo-clean</a></div><div class="more-item"><a class="title" href="../../2022/02/11/git-bomb/">Git 炸弹</a></div></div></div>
+<div class="widget-wrap" id="recent"><div class="widget-header cap dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><div class="more-item"><a class="title" href="../../2022/03/01/git-bundle/">git bundle</a></div><div class="more-item"><a class="title" href="../../2022/02/13/learning-rust-notes/">学习 Rust 的一些笔记</a></div><div class="more-item"><a class="title" href="../../2022/02/26/Install-MacOS-on-VMware/">Install MacOS on VMware</a></div><div class="more-item"><a class="title" href="../../2022/02/13/authentication-and-authorization/">认证(Authentication)和授权(Authorization)</a></div><div class="more-item"><a class="title" href="../../2022/02/12/Git-tool-git-repo-clean/">一种 Git 插件工具：git repo-clean</a></div></div></div>
 </div>
 <footer class="footer dis-select"><div class="social-wrap"><a class="social" href="https://github.com/Cactusinhand" target="_blank" rel="external nofollow noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/github.png"/></a><a class="social" href="https://gitee.com/openbytes" target="_blank" rel="external nofollow noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/logo_gitee_red.jpg"/></a></div></footer>
 
@@ -82,10 +82,39 @@
 
       
 
-  @import 'partial/*'
-@import 'tag-plugins/*'
-@import 'sidebar/*'
-@import 'pages/*'
+  
+
+
+  <div class='nav-wrap'>
+  <nav class='sub post cap'>
+    
+      <a href='/'>近期发布</a>
+    
+    
+      
+        <a href='../../categories'>分类</a>
+      
+    
+    
+      
+        <a class='active' href='..'>标签：xml</a>
+      
+    
+    
+      
+        <a href='../../archives'>归档</a>
+      
+    
+  </nav>
+</div>
+
+  <div class="post-list post"><a class="post-card post " href="../../2022/02/11/git-bomb/">
+<article class="md"><div class="post-cover"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/hacked_green.jpg"/></div><h2 class="post-title">Git 炸弹</h2><div class="excerpt"><p>&#x4EC0;&#x4E48;&#x662F; Git &#x70B8;&#x5F39;(git bomb)&#xFF1F;
+&#x8D77;&#x6E90;Git &#x70B8;&#x5F39;&#x56E0; XML &#x70B8;&#x5F39;(AKA &#x201C;billion laughs&#x201D;)&#x800C;&#x5F97;&#x540D;&#xFF0C;&#x6240;&#x4EE5;&#x8981;&#x7406;&#x89E3; Git &#x70B8;&#x5F39;&#xFF0C;&#x6211;&#x4EEC;&#x4E0D;&#x59A8;&#x5148;&#x4ECE; XML &#x70B8;&#x5F39;&#x8BF4;&#x8D77;&#x3002;</p></div><div class="meta cap"><span class="cap" id="post-meta">发布于&nbsp;<time datetime="2022-02-11T12:04:09.000Z">2022-02-11</time></span><span class="cap breadcrumb">Git</span></div></article>
+</a></div>
+  
+
+
 
 
 
