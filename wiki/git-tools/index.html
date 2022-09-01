@@ -20,15 +20,15 @@
   <title>git-repo-clean：一种Git仓库瘦身工具 - 高桥一郎</title>
 
   
-    <meta name="description" content="&amp;#x89C1;&amp;#x5B98;&amp;#x7F51;">
+    <meta name="description" content="git repo-clean &amp;#x662F;&amp;#x7528; Golang &amp;#x5F00;&amp;#x53D1;&amp;#x7684;&amp;#x5177;&amp;#x5907; Git &amp;#x4ED3;&amp;#x5E93;&amp;#x5927;&amp;#x6587;&amp;#x4EF6;&amp;#x626B;&amp;#x63CF;&amp;#xFF0C;&amp;#x6E05;&amp;#x7406;&amp;#xFF0C;&amp;#x5E76;&amp;#x91CD;&amp;#x5199; com">
 <meta property="og:type" content="website">
 <meta property="og:title" content="一种Git仓库瘦身工具">
 <meta property="og:url" content="https://cactusinhand.github.io/wiki/git-tools/index.html">
 <meta property="og:site_name" content="高桥一郎">
-<meta property="og:description" content="&amp;#x89C1;&amp;#x5B98;&amp;#x7F51;">
+<meta property="og:description" content="git repo-clean &amp;#x662F;&amp;#x7528; Golang &amp;#x5F00;&amp;#x53D1;&amp;#x7684;&amp;#x5177;&amp;#x5907; Git &amp;#x4ED3;&amp;#x5E93;&amp;#x5927;&amp;#x6587;&amp;#x4EF6;&amp;#x626B;&amp;#x63CF;&amp;#xFF0C;&amp;#x6E05;&amp;#x7406;&amp;#xFF0C;&amp;#x5E76;&amp;#x91CD;&amp;#x5199; com">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-02-14T15:16:37.494Z">
-<meta property="article:modified_time" content="2022-02-14T15:16:37.472Z">
+<meta property="article:published_time" content="2022-09-01T15:30:49.175Z">
+<meta property="article:modified_time" content="2022-09-01T15:30:49.175Z">
 <meta property="article:author" content="Cactusinhand">
 <meta name="twitter:card" content="summary">
   
@@ -82,11 +82,11 @@
 
   
   
-<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" id="home" href="/">主页</a><span class="sep"></span><a class="cap breadcrumb" id="menu" href="../../wiki/">Wiki</a><span class="sep"></span><a class="cap breadcrumb" id="proj" href="">git-repo-clean</a></div><div id="post-meta">更新于&nbsp;<time datetime="2022-02-14T15:16:37.472Z">2022-02-14</time></div></div>
+<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" id="home" href="/">主页</a><span class="sep"></span><a class="cap breadcrumb" id="menu" href="../../wiki/">Wiki</a><span class="sep"></span><a class="cap breadcrumb" id="proj" href="">git-repo-clean</a></div><div id="post-meta">更新于&nbsp;<time datetime="2022-09-01T15:30:49.175Z">2022-09-01</time></div></div>
 
   <article class='content md wiki'>
   <h1 class="article-title"><span>一种Git仓库瘦身工具</span></h1>
-  <p>&#x89C1;<a target="_blank" rel="noopener" href="https://gitee.com/oschina/git-repo-clean">&#x5B98;&#x7F51;</a></p>
+  <p><code>git repo-clean</code> &#x662F;&#x7528; Golang &#x5F00;&#x53D1;&#x7684;&#x5177;&#x5907; Git &#x4ED3;&#x5E93;&#x5927;&#x6587;&#x4EF6;&#x626B;&#x63CF;&#xFF0C;&#x6E05;&#x7406;&#xFF0C;&#x5E76;&#x91CD;&#x5199; commit &#x63D0;&#x4EA4;&#x8BB0;&#x5F55;&#x529F;&#x80FD;&#x7684; Git &#x62D3;&#x5C55;&#x5DE5;&#x5177;&#x3002;<br>&#x8BE6;&#x7EC6;&#x4F7F;&#x7528;&#x60C5;&#x51B5;&#x89C1;&#xFF1A;<a target="_blank" rel="noopener" href="https://gitee.com/oschina/git-repo-clean">&#x5B98;&#x7F51;</a></p>
 
   
 
@@ -234,26 +234,26 @@
 
   // required plugins (only load if needs)
   stellar.plugins = {
-    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js',
+    jQuery: 'https://fastly.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js',
     sitesjs: '../../js/plugins/sites.js',
     friendsjs: '../../js/plugins/friends.js',
   };
 
   // optional plugins
   if ('true' == 'true') {
-    stellar.plugins.lazyload = Object.assign({"enable":true,"js":"https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.3.1/dist/lazyload.min.js","transition":"blur"});
+    stellar.plugins.lazyload = Object.assign({"enable":true,"js":"https://fastly.jsdelivr.net/npm/vanilla-lazyload@17.3.1/dist/lazyload.min.js","transition":"blur"});
   }
   if ('true' == 'true') {
     stellar.plugins.swiper = Object.assign({"enable":true,"css":"https://unpkg.com/swiper@6/swiper-bundle.min.css","js":"https://unpkg.com/swiper@6/swiper-bundle.min.js"});
   }
   if ('' == 'true') {
-    stellar.plugins.scrollreveal = Object.assign({"enable":null,"js":"https://cdn.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js","distance":"8px","duration":500,"interval":100,"scale":1});
+    stellar.plugins.scrollreveal = Object.assign({"enable":null,"js":"https://fastly.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js","distance":"8px","duration":500,"interval":100,"scale":1});
   }
   if ('true' == 'true') {
-    stellar.plugins.preload = Object.assign({"enable":true,"service":"flying_pages","instant_page":"https://cdn.jsdelivr.net/gh/volantis-x/cdn-volantis@4.1.2/js/instant_page.js","flying_pages":"https://cdn.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"});
+    stellar.plugins.preload = Object.assign({"enable":true,"service":"flying_pages","instant_page":"https://fastly.jsdelivr.net/gh/volantis-x/cdn-volantis@4.1.2/js/instant_page.js","flying_pages":"https://fastly.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"});
   }
   if ('true' == 'true') {
-    stellar.plugins.fancybox = Object.assign({"enable":true,"js":"https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js","css":"https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css","selector":".swiper-slide img"});
+    stellar.plugins.fancybox = Object.assign({"enable":true,"js":"https://fastly.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js","css":"https://fastly.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css","selector":".swiper-slide img"});
   }
 </script>
 
