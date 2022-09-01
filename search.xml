@@ -347,6 +347,18 @@
       </tags>
   </entry>
   <entry>
+    <title>How to contribute to git upstream(2)</title>
+    <url>/2022/08/30/How-to-contribute-to-git-upstream-2/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+        <tag>Workflow</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>如何向 Git 社区提交代码</title>
     <url>/2022/08/28/How-to-contribute-to-git-upstream/</url>
     <content><![CDATA[<h2 id="&#x524D;&#x8A00;"><a href="#&#x524D;&#x8A00;" class="headerlink" title="&#x524D;&#x8A00;"></a>&#x524D;&#x8A00;</h2><p>&#x4F5C;&#x4E3A;&#x76EE;&#x524D;&#x6700;&#x6D41;&#x884C;&#x7684;&#x5F00;&#x6E90;&#x5206;&#x5E03;&#x5F0F;<strong>&#x7248;&#x672C;&#x63A7;&#x5236;&#x7CFB;&#x7EDF;</strong>&#xFF0C;Git &#x7684;&#x8BDE;&#x751F;&#x8D85;&#x8FC7;17&#x5E74;&#xFF0C;&#x4F46;&#x76EE;&#x524D;&#x4ECD;&#x7136;&#x5177;&#x6709;&#x975E;&#x5E38;&#x6D3B;&#x8DC3;&#x7684;&#x5F00;&#x53D1;&#x8005;&#x793E;&#x533A;&#xFF0C;&#x8FDC;&#x8D85;&#x51FA;&#x4E00;&#x822C;&#x5F00;&#x6E90;&#x8F6F;&#x4EF6;&#x7684;&#x751F;&#x547D;&#x5468;&#x671F;&#xFF0C;&#x5176;&#x4EE3;&#x7801;&#x8D21;&#x732E;&#x8005;&#x4E5F;&#x5DF2;&#x7ECF;&#x8D85;&#x8FC7; 1.5K&#xFF0C;&#x5E76;&#x4E14;&#x4ECD;&#x6E90;&#x6E90;&#x4E0D;&#x65AD;&#x6709;&#x65B0;&#x589E;&#x8D21;&#x732E;&#x8005;&#xFF0C;&#x8FD9;&#x4F7F;&#x5F97; Git &#x80FD;&#x591F;&#x6301;&#x7EED;&#x4E0D;&#x65AD;&#x5730;&#x6709;&#x5404;&#x79CD;&#x66F4;&#x65B0;&#x3001;&#x529F;&#x80FD;&#x4F18;&#x5316;&#x7B49;&#x7B49;&#x3002;</p>
