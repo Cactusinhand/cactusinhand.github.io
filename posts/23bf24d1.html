@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+
+<head>
+  <meta name="generator" content="Hexo 5.4.1">
+  <meta charset="utf-8">
+  
+
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  <link rel='dns-prefetch' href='https://cdn.jsdelivr.net'>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  <title>如何向 Git 社区提交代码(2) - 高桥一郎</title>
+
+  
+    <meta name="description" content="第一次向 Git 社区提交代码起源于 Gitee 的一个需求">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何向 Git 社区提交代码(2)">
+<meta property="og:url" content="https://cactusinhand.github.io/posts/23bf24d1.html">
+<meta property="og:site_name" content="高桥一郎">
+<meta property="og:description" content="第一次向 Git 社区提交代码起源于 Gitee 的一个需求">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-08-29T16:02:28.000Z">
+<meta property="article:modified_time" content="2022-09-02T16:50:35.358Z">
+<meta property="article:author" content="Cactusinhand">
+<meta property="article:tag" content="Git">
+<meta property="article:tag" content="Workflow">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+
+  <!-- feed -->
+  
+
+  
+    
+<link rel="stylesheet" href="../css/main.css">
+
+  
+
+  
+
+  
+</head>
+
+<body>
+  
+
+
+
+
+  <div class='l_body' id='start'>
+    <aside class='l_left' layout='post'>
+    
+
+
+<header class="header">
+
+<div class="logo-wrap"><a class="avatar" href="../about/"><div class="bg" style="opacity:0;background-image:url(https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.2/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/image-20220213142754407.png" onerror="javascript:this.classList.add('error');this.src='https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/image/2659360.svg';"></a><a class="title" href="../index.html"><div class="main">高桥一郎</div><div class="sub cap">Great minds think different.</div></a></div>
+<nav class="menu dis-select"><a class="nav-item active" href="../index.html">文章</a><a class="nav-item" href="../wiki/">Wiki</a><a class="nav-item" href="../notes/">笔记</a><a class="nav-item" href="../about/">关于</a></nav></header>
+
+<div class="widgets">
+
+<div class="widget-wrap single" id="toc"><div class="widget-header cap dis-select"><span class="name">本文目录</span></div><div class="widget-body fs14"><div class="doc-tree active"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-number">1.</span> <span class="toc-text">背景</span></a></li></ol></div></div></div>
+
+
+</div>
+<footer class="footer dis-select"><div class="social-wrap"><a class="social" href="https://github.com/Cactusinhand" target="_blank" rel="external nofollow noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/github.png"/></a><a class="social" href="https://gitee.com/openbytes" target="_blank" rel="external nofollow noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/logo_gitee_red.jpg"/></a></div></footer>
+
+    </aside>
+    <div class='l_main'>
+      
+
+      
+
+
+<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a><span class="sep"></span><a class="cap breadcrumb" href="/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="../categories/Git/">Git</a></div><div id="post-meta">发布于&nbsp;<time datetime="2022-08-29T16:02:28.000Z">2022-08-30</time></div></div>
+
+<article class='content md post'>
+<h1 class="article-title"><span>向 Git 社区提交代码(二)</span></h1>
+<h3 id="背景">背景</h3>
+<p>第一次向 Git 社区提交代码起源于 Gitee 的一个需求。Gitee 创建新仓库有多种方式，其中一种是根据用户提供的仓库 URL 导入新仓库，Gitee 首先会对用户提供的 URL 进行校验，只有合格的仓库地址才会生成新仓库。但是有种情况比较特别，若用户确实提供了一个合法的 Git 仓库地址，但是这个仓库不是完整的，常见的情况就是浅仓库(shallow repo)，这类仓库缺乏足够的历史提交信息，因此会带来一些问题。为了避免这种情况，在服务端就需要对用户导入的仓库进行特别处理。在服务端后台，导入仓库的动作本质上就是执行 <code>git clone --mirror</code> 命令，那么有没有可能在执行这个克隆命令的过程中就对仓库进行判断呢？如果能，这将避免克隆完整个仓库再进行判断仓库是否为浅仓库，这样无疑更有效。于是我开始研究 Git 源码，琢磨如何给 <code>git-clone</code> 命令赋予一项新的能力。</p>
+<p>按照前面的方法向 Git 社区提交了第一版代码：<a target="_blank" rel="noopener" href="https://public-inbox.org/git/pull.865.git.1612409491842.gitgitgadget@gmail.com/#t">v1</a></p>
+<p>很快收到 <strong><a target="_blank" rel="noopener" href="https://public-inbox.org/git/xmqq35yc9yan.fsf@gitster.c.googlers.com/#t">Junio C Hamano</a></strong> 反馈，主要问题有：</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>commit 信息中说明不清，英文语法错误：</p>
+</li>
+</ul>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&gt; This patch add a new option that reject to clone a shallow repository.</span><br><span class="line"></span><br><span class="line">A canonical form of our log message starts by explaining the need,</span><br><span class="line">and then presents the solution at the end.</span><br><span class="line">一条规范的 commit 信息格式应该是在开始就解释更改需求，然后在结尾提供解决方案。</span><br><span class="line"></span><br><span class="line">&gt; Clients don&#x27;t know it&#x27;s a shallow repository until they download it</span><br><span class="line">&gt; locally, in some scenariors, clients just don&#x27;t want to clone this kind</span><br><span class="line"></span><br><span class="line">&quot;scenarios&quot;.  &quot;in some scenarios&quot; would have to be clarified a bit</span><br><span class="line">more to justify why it is a good idea to have such a feature.</span><br><span class="line">这里的需求场景描述地不够有说服力。</span><br><span class="line"></span><br><span class="line">&gt; of repository, and want to exit the process immediately without creating</span><br><span class="line">&gt; any unnecessary files.</span><br><span class="line"></span><br><span class="line">&quot;clients don&#x27;t know it&#x27;s a shallow repository until they download&quot;</span><br><span class="line">leading to &quot;so let&#x27;s reject immediately upon finding out that they</span><br><span class="line">are shallow&quot; does make sense as a flow of thought, though.</span><br><span class="line">这里表述不够清晰，Junio 顺便提供了他的建议</span><br><span class="line">&gt; +--no-shallow::</span><br><span class="line">&gt; +	Don&#x27;t clone a shallow source repository. In some scenariors, clients</span><br><span class="line"></span><br><span class="line">&quot;scenarios&quot; (no &#x27;r&#x27;).</span><br></pre></td></tr></table></figure>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>新增选项 <code>--no-shallow</code> 不对，应该考虑到布尔类选项存在反选情况，即 <code>--no-no-shallow</code> ，因此不应该这么写，建议改为 <code>--reject-shallow</code>， 它的反选即为 <code>--no-reject-shallow</code>，这样语义上也更符合直觉。</p>
+</li>
+</ul>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">&gt; diff --git a/builtin/clone.c b/builtin/clone.c</span><br><span class="line"></span><br><span class="line">&gt; @@ -90,6 +91,7 @@ static struct option builtin_clone_options[] = &#123;</span><br><span class="line">&gt;  	OPT__VERBOSITY(&amp;option_verbosity),</span><br><span class="line">&gt;  	OPT_BOOL(0, &quot;progress&quot;, &amp;option_progress,</span><br><span class="line">&gt;  		 N_(&quot;force progress reporting&quot;)),</span><br><span class="line">&gt; +	OPT_BOOL(0, &quot;no-shallow&quot;, &amp;option_no_shallow, N_(&quot;don&#x27;t clone shallow repository&quot;)),</span><br><span class="line">&gt;  	OPT_BOOL(&#x27;n&#x27;, &quot;no-checkout&quot;, &amp;option_no_checkout,</span><br><span class="line">&gt;  		 N_(&quot;don&#x27;t create a checkout&quot;)),</span><br><span class="line">&gt;  	OPT_BOOL(0, &quot;bare&quot;, &amp;option_bare, N_(&quot;create a bare repository&quot;)),</span><br><span class="line"></span><br><span class="line">It is a bad idea to give a name that begins with &quot;no-&quot; to an option</span><br><span class="line">whose default can be tweaked by a configuration variable [*].  If</span><br><span class="line">the configuration is named &quot;rejectshallow&quot;, perhaps it is better to</span><br><span class="line">call it &quot;--reject-shallow&quot; instead.</span><br><span class="line"></span><br><span class="line">This is because configured default must be overridable from the</span><br><span class="line">command line.  I.e. even if you have in your ~/.gitconfig this:</span><br><span class="line"></span><br><span class="line">    [clone]</span><br><span class="line">        rejectshallow = true</span><br><span class="line"></span><br><span class="line">you should be able to say &quot;allow it only this time&quot;, with</span><br><span class="line"></span><br><span class="line">    $ git clone --no-reject-shallow http://github.com/git/git/ git</span><br><span class="line"></span><br><span class="line">and you do not want to have to say &quot;--no-no-shallow&quot;, which sounds</span><br><span class="line">just silly.</span><br><span class="line"></span><br><span class="line">	Side note. it is a bad idea in general, even if the option</span><br><span class="line">	does not have corresponding configuration variable.  The</span><br><span class="line">	existing &quot;no-checkout&quot; is a historical accident that</span><br><span class="line">	happened long time ago and cannot be removed due to</span><br><span class="line">	compatibility.  Let&#x27;s not introduce a new option that</span><br><span class="line">	follows such a bad pattern.</span><br><span class="line"></span><br><span class="line">	Junio 进一步解释：现存的选项 `no-checkout` 是一个很久之前的历史错误，</span><br><span class="line">	由于兼容性，已经无法移除这个错误了，现在新的选项不应该按照这种模式命名。</span><br><span class="line">	P.S. 刚好我就是按照`no-checkout`选项的模式创造出`no-shllow`选项的-:)</span><br></pre></td></tr></table></figure>
+<p>更重要的是，<strong>命令行优先于配置</strong>，即命令行选项要能够覆盖配置文件选项。当配置文件从全局上不允许克隆 shllow 仓库时，而用户想要允许单次克隆 shallow 仓库时，自然地，他会使用 <code>--no-shallow</code> 选项的反选项 <code>--no-no-shallow</code> 来覆盖掉配置中的选项 。但这样 <code>--no-no-shallow</code> 听来去就很傻。</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>由于 Git 存在多种传输协议，目前的修改只是解决了本地克隆问题，因此仍需改进。</p>
+</li>
+</ul>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">&gt; @@ -963,6 +968,7 @@ static int path_exists(const char *path)</span><br><span class="line">&gt;  int cmd_clone(int argc, const char **argv, const char *prefix)</span><br><span class="line">&gt;  &#123;</span><br><span class="line">&gt;  	int is_bundle = 0, is_local;</span><br><span class="line">&gt; +	int is_shallow = 0;</span><br><span class="line">&gt;  	const char *repo_name, *repo, *work_tree, *git_dir;</span><br><span class="line">&gt;  	char *path, *dir, *display_repo = NULL;</span><br><span class="line">&gt;  	int dest_exists, real_dest_exists = 0;</span><br><span class="line">&gt; @@ -1215,6 +1221,7 @@ int cmd_clone(int argc, const char **argv, const char *prefix)</span><br><span class="line">&gt;  		if (filter_options.choice)</span><br><span class="line">&gt;  			warning(_(&quot;--filter is ignored in local clones; use file:// instead.&quot;));</span><br><span class="line">&gt;  		if (!access(mkpath(&quot;%s/shallow&quot;, path), F_OK)) &#123;</span><br><span class="line">&gt; +			is_shallow = 1;</span><br><span class="line">&gt;  			if (option_local &gt; 0)</span><br><span class="line">&gt;  				warning(_(&quot;source repository is shallow, ignoring --local&quot;));</span><br><span class="line">&gt;  			is_local = 0;</span><br><span class="line"></span><br><span class="line">This change is to the local clone codepath.  Cloning over the wire</span><br><span class="line">would not go through this part.  And throughout the patch, this is</span><br><span class="line">the only place that sets is_shallow to 1.</span><br><span class="line"></span><br><span class="line">Also let&#x27;s note that this is after we called parse_options(), so the</span><br><span class="line">value of option_no_shallow is known at this point.</span><br><span class="line"></span><br><span class="line">So, this patch does not even *need* to introduce a new &quot;is_shallow&quot;</span><br><span class="line">variable at all.  It only needs to add</span><br><span class="line"></span><br><span class="line">                        if (option_no_shallow)</span><br><span class="line">                                die(...);</span><br><span class="line"></span><br><span class="line">instead of adding &quot;is_shallow = 1&quot; to the above hunk.</span><br><span class="line"></span><br><span class="line">I somehow think that this is only half a feature---wouldn&#x27;t it be</span><br><span class="line">more useful if we also rejected a non-local clone from a shallow</span><br><span class="line">repository?</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>测试代码中的问题</p>
+</li>
+</ul>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line">And for that ...</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt; diff --git a/t/t5606-clone-options.sh b/t/t5606-clone-options.sh</span><br><span class="line">&gt; index 7f082fb23b6a..9d310dbb158a 100755</span><br><span class="line">&gt; --- a/t/t5606-clone-options.sh</span><br><span class="line">&gt; +++ b/t/t5606-clone-options.sh</span><br><span class="line">&gt; @@ -42,6 +42,13 @@ test_expect_success &#x27;disallows --bare with --separate-git-dir&#x27; &#x27;</span><br><span class="line">&gt;  </span><br><span class="line">&gt;  &#x27;</span><br><span class="line">&gt;  </span><br><span class="line">&gt; +test_expect_success &#x27;reject clone shallow repository&#x27; &#x27;</span><br><span class="line">&gt; +	git clone --depth=1 --no-local parent shallow-repo &amp;&amp;</span><br><span class="line">&gt; +	test_must_fail git clone --no-shallow shallow-repo out 2&gt;err &amp;&amp;</span><br><span class="line">&gt; +	test_i18ngrep -e &quot;source repository is shallow, reject to clone.&quot; err</span><br><span class="line">&gt; +</span><br><span class="line">&gt; +&#x27;</span><br><span class="line">&gt; +</span><br><span class="line"></span><br><span class="line">... in addition to the test for a local clone above, you&#x27;d also want</span><br><span class="line">to test a non-local clone, perhaps like so:</span><br><span class="line"></span><br><span class="line">test_expect_success &#x27;reject clone shallow repository&#x27; &#x27;</span><br><span class="line">	rm -fr shallow-repo &amp;&amp;</span><br><span class="line">	git clone --depth=1 --no-local parent shallow-repo &amp;&amp;</span><br><span class="line">	test_must_fail git clone --no-shallow --no-local shallow-repo out 2&gt;err &amp;&amp;</span><br><span class="line">	test_i18ngrep -e &quot;source repository is shallow, reject to clone.&quot; err</span><br><span class="line"></span><br><span class="line">&#x27;</span><br><span class="line"></span><br><span class="line">Ditto for the other test script.</span><br><span class="line"></span><br><span class="line">Also, you would want to make sure that the command line overrides</span><br><span class="line">the configured default.  I.e.</span><br><span class="line"></span><br><span class="line">	git -c clone.rejectshallow=false clone --reject-shallow</span><br><span class="line"></span><br><span class="line">should refuse to clone from a shallow one, while there should be a</span><br><span class="line">way to countermand a configured &quot;I always refuse to clone from a</span><br><span class="line">shallow repository&quot; with &quot;but let&#x27;s allow it only this time&quot;, i.e.</span><br><span class="line"></span><br><span class="line">	git -c clone.rejectshallow=true clone --no-reject-shallow</span><br><span class="line"></span><br><span class="line">or something along the line.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt; diff --git a/t/t5611-clone-config.sh b/t/t5611-clone-config.sh</span><br><span class="line">&gt; index 8e0fd398236b..3aab86ad4def 100755</span><br><span class="line">&gt; --- a/t/t5611-clone-config.sh</span><br><span class="line">&gt; +++ b/t/t5611-clone-config.sh</span><br><span class="line">&gt; @@ -92,6 +92,13 @@ test_expect_success &#x27;clone -c remote.&lt;remote&gt;.fetch=&lt;refspec&gt; --origin=&lt;name&gt;&#x27; &#x27;</span><br><span class="line">&gt;  	test_cmp expect actual</span><br><span class="line">&gt;  &#x27;</span><br><span class="line">&gt;  </span><br><span class="line">&gt; +test_expect_success &#x27;clone -c clone.rejectshallow&#x27; &#x27;</span><br><span class="line">&gt; +	rm -rf child &amp;&amp;</span><br><span class="line">&gt; +	git clone --depth=1 --no-local . child &amp;&amp;</span><br><span class="line">&gt; +	test_must_fail git clone -c clone.rejectshallow child out 2&gt;err &amp;&amp;</span><br><span class="line"></span><br><span class="line">This is not quite right, even though it may happen to work.  The</span><br><span class="line">&quot;clone.rejectshallow&quot; variable is a configuration about what should</span><br><span class="line">happen when creating a new repository by cloning, so letting &quot;git</span><br><span class="line">clone -c var[=val]&quot; to set the variable _in_ the resulting repository</span><br><span class="line">would not make much sense.  Even if the clone succeeded, nobody would</span><br><span class="line">look at that particular configuration variable that is set in the</span><br><span class="line">resulting repository.</span><br><span class="line"></span><br><span class="line">I think it would communicate to the readers better what we are</span><br><span class="line">trying to do, if we write</span><br><span class="line"></span><br><span class="line">	test_must_fail git -c clone.rejectshallow=true clone child out</span><br><span class="line"></span><br><span class="line">instead.</span><br><span class="line"></span><br><span class="line">Thanks.</span><br></pre></td></tr></table></figure>
+<p>通过测试代码 Junio 指出： <code>clone.rejectshallow</code> 配置和命令行选项 <code>--reject-shallow</code> 存在逻辑上的交叉重叠问题，因此测试时应该体现出这一点。</p>
+<p>以上就是我第一次提交的代码，没想到能很快收到那么多宝贵的检视建议。但是，这只是开始，后面还有更多的检视回合，收到了更加细致的检视意见。</p>
+<p>比如 <a target="_blank" rel="noopener" href="https://public-inbox.org/git/nycvar.QRO.7.76.6.2103311146210.52@tvgsbejvaqbjf.bet/">Johannes Schindelin</a> 给了一些意见：</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">/// 我觉得这个补丁大部分都很好，但我还有一点点改进建议</span><br><span class="line">I like most of the patch, and will only point out a couple of things that</span><br><span class="line">I think can be improved even further.</span><br><span class="line"></span><br><span class="line">&gt; diff --git a/Documentation/git-clone.txt b/Documentation/git-clone.txt</span><br><span class="line">&gt; index 02d9c19cec75..0adc98fa7eee 100644</span><br><span class="line">&gt; --- a/Documentation/git-clone.txt</span><br><span class="line">&gt; +++ b/Documentation/git-clone.txt</span><br><span class="line">&gt; @@ -149,6 +149,11 @@ objects from the source repository into a pack in t=</span><br><span class="line">he cloned repository.</span><br><span class="line">&gt;  --no-checkout::</span><br><span class="line">&gt;  	No checkout of HEAD is performed after the clone is complete.</span><br><span class="line">&gt;</span><br><span class="line">&gt; +--[no-]reject-shallow::</span><br><span class="line">&gt; +	Fail if the source repository is a shallow repository.</span><br><span class="line">&gt; +	The &#x27;clone.rejectShallow&#x27; configuration variable can be used to</span><br><span class="line">&gt; +	give the default.</span><br><span class="line"></span><br><span class="line">/// 使用 `to specify the default` 说起来更顺口一些</span><br><span class="line">I am not a native speaker, either, but I believe that it would &quot;roll off</span><br><span class="line">the tongue&quot; a bit better to say &quot;to specify the default&quot;.</span><br></pre></td></tr></table></figure>
+<p>变量命名问题：</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">&gt; diff --git a/builtin/clone.c b/builtin/clone.c</span><br><span class="line">&gt; index 51e844a2de0a..eeddd68a51f4 100644</span><br><span class="line">&gt; --- a/builtin/clone.c</span><br><span class="line">&gt; +++ b/builtin/clone.c</span><br><span class="line">&gt; @@ -50,6 +50,8 @@ static int option_no_checkout, option_bare, option_mir=</span><br><span class="line">ror, option_single_branch</span><br><span class="line">&gt;  static int option_local =3D -1, option_no_hardlinks, option_shared;</span><br><span class="line">&gt;  static int option_no_tags;</span><br><span class="line">&gt;  static int option_shallow_submodules;</span><br><span class="line">&gt; +static int option_shallow = -1;    /* unspecified */</span><br><span class="line">&gt; +static int config_shallow = -1;    /* unspecified */</span><br><span class="line"></span><br><span class="line">I would much prefer those variable names to include an indicator that this</span><br><span class="line">is about _rejecting_ shallow clones. I.e. `option_reject_shallow`.</span><br><span class="line"></span><br><span class="line">Also, I think that we can do with just a single `option_reject_shallow`</span><br><span class="line">(we do not even need that `reject_shallow` variable in `cmd_clone()`):</span><br><span class="line"></span><br><span class="line"><span class="deletion">- in `git_clone_config()`, only override it if it is still unspecified:</span></span><br><span class="line"></span><br><span class="line">	if (!strcmp(k, &quot;clone.rejectshallow&quot;) &amp;&amp; option_reject_shallow &lt; 0)</span><br><span class="line">		option_reject_shallow =3D git_config_bool(k,v);</span><br><span class="line"></span><br><span class="line"><span class="deletion">- in `cmd_clone()`, test for a _positive_ value:</span></span><br><span class="line"></span><br><span class="line">	if (option_reject_shallow &gt; 0)</span><br><span class="line">		die(_(&quot;source repository is shallow, reject to clone.&quot;));</span><br><span class="line"></span><br><span class="line">  and</span><br><span class="line"></span><br><span class="line">	if (option_reject_shallow &gt; 0)</span><br><span class="line"> 		transport_set_option(transport, TRANS_OPT_REJECT_SHALLOW, &quot;1&quot;);</span><br><span class="line"></span><br><span class="line">One thing to note (in the commit message, would be my preference) is that</span><br><span class="line">`cmd_clone()` is _particular_ in that it runs `git_config()` _twice_. Once</span><br><span class="line">before the command-line options are parsed, and once after the new Git</span><br><span class="line">repository has been initialized. Note that my suggestion still works with</span><br><span class="line">that: if either the original config, or the new config set</span><br><span class="line">`clone.rejectShallow`, it is picked up correctly, with the latter</span><br><span class="line">overriding the former if both configs want to set it.</span><br></pre></td></tr></table></figure>
+<p>使用 <code>option_reject_shallow</code> 比 <code>config_shallow</code> 更好一些，它能更直接地表明这个选项是要拒绝 <em>shallow clone</em> 的。<s>同时他提醒，在 <code>cmd_clone()</code>函数中 <code>git_config</code> 会被调用两次，使用 <code>option_reject_shallow</code> 能避免在 <code>cmd_clone</code> 中使用 <code>reject_shallow</code></s> 。</p>
+<p>P.S. 划线这段话是错误的，见 Johannes 本人回复：<a target="_blank" rel="noopener" href="https://public-inbox.org/git/nycvar.QRO.7.76.6.2104010021510.54@tvgsbejvaqbjf.bet/">Johannes’reply</a>，以及 Junio 的回复：<a target="_blank" rel="noopener" href="https://public-inbox.org/git/xmqqim5754rl.fsf@gitster.g/">Junio’s reply</a>。</p>
+<p>后面同样变量命名：</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&gt; diff --git a/fetch-pack.c b/fetch-pack.c</span><br><span class="line">&gt; index fb04a76ca263..34d0c2896e2e 100644</span><br><span class="line">&gt; --- a/fetch-pack.c</span><br><span class="line">&gt; +++ b/fetch-pack.c</span><br><span class="line">&gt; @@ -1129,9 +1129,11 @@ static struct ref *do_fetch_pack(struct fetch_pac=</span><br><span class="line">k_args *args,</span><br><span class="line">&gt;  	if (args-&gt;deepen)</span><br><span class="line">&gt;  		setup_alternate_shallow(&amp;shallow_lock, &amp;alternate_shallow_file,</span><br><span class="line">&gt;  					NULL);</span><br><span class="line">&gt; -	else if (si-&gt;nr_ours || si-&gt;nr_theirs)</span><br><span class="line">&gt; +	else if (si-&gt;nr_ours || si-&gt;nr_theirs) &#123;</span><br><span class="line">&gt; +		if (args-&gt;remote_shallow)</span><br><span class="line"></span><br><span class="line">Even as a non-casual reader, this name `remote_shallow` leads me to assume</span><br><span class="line">incorrect things. This option is not about wanting a remote shallow</span><br><span class="line">repository, it is about rejecting a remote shallow repository.</span><br><span class="line"></span><br><span class="line">Please name this attribute `reject_shallow` instead of `remote_shallow`.</span><br><span class="line">That will prevent future puzzlement.</span><br></pre></td></tr></table></figure>
+<p>Johannes 还对测试用例提出了一些检视意见，篇幅有限，这里省略。</p>
+<p>在最后几个回合，Junio 又给出了很多有意义的检视意见：</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">&gt; In some scenarios, users may want more history than the repository</span><br><span class="line">&gt; offered for cloning, which happens to be a shallow repository, can</span><br><span class="line">&gt; give them. But because users don&#x27;t know it is a shallow repository</span><br><span class="line">&gt; until they download it to local, users should have the option to</span><br><span class="line"></span><br><span class="line">### &#x27;should&#x27; 在这里语气太重了</span><br><span class="line">I find the &quot;should&quot; too strong, but let&#x27;s keep reading.</span><br><span class="line"></span><br><span class="line">&gt; refuse to clone this kind of repository, and may want to exit the</span><br><span class="line">&gt; process immediately without creating any unnecessary files.</span><br><span class="line">### 同样语气太重了，同时存在冗余</span><br><span class="line">Yes, that is too strong and also redundant.</span><br><span class="line"></span><br><span class="line">&gt; Althought there is an option &#x27;--depth=x&#x27; for users to decide how</span><br><span class="line">&gt; deep history they can fetch, but as the unshallow cloning&#x27;s depth</span><br><span class="line">### 句子若以 &#x27;although&#x27; 开头，则后面不应该用 `but`做转折。</span><br><span class="line">&quot;Although&quot;; if you begin with &quot;although&quot;, you shouldn&#x27;t write &quot;but&quot;.</span><br><span class="line"></span><br><span class="line">&gt; is INFINITY, we can&#x27;t know exactly the minimun &#x27;x&#x27; value that can</span><br><span class="line">&gt; satisfy the minimum integrity,</span><br><span class="line">&gt; so we can&#x27;t pass &#x27;x&#x27; value to --depth,</span><br><span class="line">&gt; and expect this can obtain a complete history of a repository.</span><br><span class="line"></span><br><span class="line">If the argument were &quot;we might start with depth x, and the source</span><br><span class="line">may be deep enough to give us x right now, but we may want to deepen</span><br><span class="line">more than they can offer, and such a user would want to be able to</span><br><span class="line">say &#x27;I want depth=x now, but make sure they are not shallow&#x27;&quot;, I</span><br><span class="line">would understand it, but I do not see where the &quot;minimum integrity&quot;</span><br><span class="line">comes from---there doesn&#x27;t appear to be anything related to</span><br><span class="line">integrity here.</span><br><span class="line"></span><br><span class="line">&gt; In other scenarios, if we have an API that allow us to import external</span><br><span class="line"></span><br><span class="line">&quot;allows&quot;</span><br><span class="line"></span><br><span class="line">&gt; repository, and then perform various operations on the repo.</span><br><span class="line">&gt; But if the imported is a shallow one(which is actually possible), it</span><br><span class="line">&gt; will affect the subsequent operations. So we can choose to refuse to</span><br><span class="line">&gt; clone, and let&#x27;s just import a normal repository.</span><br><span class="line"></span><br><span class="line">I&#x27;d suggest dropping this entire paragraph.  That is not any new</span><br><span class="line">scenario at all.  API or not, you essentially just said &quot;you can do</span><br><span class="line">various things on your clone once you have it, but some things you</span><br><span class="line">may want to do you would want a full history&quot;.  That is what you</span><br><span class="line">started the whole discussion above and does not add any new</span><br><span class="line">information.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt; @@ -858,6 +861,9 @@ static int git_clone_config(const char *k, const char *v, void *cb)</span><br><span class="line">&gt;  		free(remote_name);</span><br><span class="line">&gt;  		remote_name = xstrdup(v);</span><br><span class="line">&gt;  	&#125;</span><br><span class="line">&gt; +	if (!strcmp(k, &quot;clone.rejectshallow&quot;) &amp;&amp; option_reject_shallow &lt; 0)</span><br><span class="line">&gt; +		option_reject_shallow = git_config_bool(k, v);</span><br><span class="line"></span><br><span class="line">Does this &quot;single variable is enough&quot; really work?</span><br><span class="line"></span><br><span class="line">Imagine that the first time around we&#x27;d read from $HOME/.gitconfig</span><br><span class="line">that says true (flips the variable from &quot;unspecified&quot;).  Further</span><br><span class="line">imagine that we are running &quot;git clone -c config.rejectShallow=no&quot;</span><br><span class="line">to countermand the global config.  We call write_config() to write</span><br><span class="line">the extra configuration value out, and then call git_config() to</span><br><span class="line">read from the repository configuration again.</span><br><span class="line"></span><br><span class="line">Because of the value taken from $HOME/.gitconfig, however, the</span><br><span class="line">attempt to override is silently ignored, isn&#x27;t it?</span><br><span class="line"></span><br><span class="line">Other than that, the changes to the code from the previous round</span><br><span class="line">looked sensible.</span><br></pre></td></tr></table></figure>
+
+
+<div class="article-footer reveal fs14"><section id="license"><div class="header"><span>许可协议</span></div><div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div></section><section id="share"><div class="header"><span>分享文章</span></div><div class="body"><div class="link"><input class="copy-area" readonly="true" id="copy-link" value="https://cactusinhand.github.io/posts/23bf24d1.html" /></div><div class="social-wrap dis-select"><a class="social share-item wechat" onclick="util.toggle(&quot;qrcode-wechat&quot)"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/social/b32ef3da1162a.svg"/></a><a class="social share-item weibo" target="_blank" rel="external nofollow noopener noreferrer" href="https://service.weibo.com/share/share.php?url=https://cactusinhand.github.io/posts/23bf24d1.html&title=如何向 Git 社区提交代码(2) - 高桥一郎&summary=第一次向 Git 社区提交代码起源于 Gitee 的一个需求"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/social/80c07e4dbb303.svg"/></a><a class="social share-item email" href="mailto:?subject=如何向 Git 社区提交代码(2) - 高桥一郎&amp;body=https://cactusinhand.github.io/posts/23bf24d1.html"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/social/a1b00e20f425d.svg"/></a><a class="social share-item link" onclick="util.copy(&quot;copy-link&quot;, &quot;复制成功&quot;)"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/social/8411ed322ced6.svg"/></a></div><div class="qrcode" id="qrcode-wechat" style="visibility:hidden;height:0"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=https://cactusinhand.github.io/posts/23bf24d1.html"/></div></div></section></div>
+
+</article>
+
+<div class="related-wrap reveal" id="read-next"><section class="header cap theme"><span>接下来阅读</span></section><section class="body fs14"><a id="next" href="d699447b.html">如何向 Git 社区提交代码<span class="note">较早</span></a><div class="line"></div></section></div>
+
+
+
+
+
+
+  <div class='related-wrap md reveal' id="comments">
+    <div class='cmt-title cap theme'>
+      快来参与讨论吧
+    </div>
+    <div class='cmt-body utterances'>
+      
+
+<svg class="loading" style="vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2709"><path d="M832 512c0-176-144-320-320-320V128c211.2 0 384 172.8 384 384h-64zM192 512c0 176 144 320 320 320v64C300.8 896 128 723.2 128 512h64z" p-id="2710"></path></svg>
+
+<div id="utterances" repo="Cactusinhand/blog-comments" issue-term="pathname" theme="preferred-color-scheme"></div>
+
+    </div>
+  </div>
+
+
+
+      
+<footer class="page-footer reveal fs12"><hr><div class="sitemap"><div class="sitemap-group"><span class="fs14">文章</span><a href="../index.html">近期发布</a><a href="../categories/">分类</a><a href="../tags/">标签</a><a href="../archives/">归档</a></div><div class="sitemap-group"><span class="fs14">Wiki</span><a href="../wiki/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE/">开源项目</a><a href="../wiki/tags/%E5%8D%9A%E5%AE%A2%E4%B8%BB%E9%A2%98/">博客主题</a></div><div class="sitemap-group"><span class="fs14">更多</span><a href="../about/">关于本站</a><a href="../about/">GitHub</a><a href="../about/">Gitee</a></div></div><div class="text"><p>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+<p>本站由 <a href="https://cactusinhand.github.io/">@Cactusinhand</a> 创建，使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.6.1" title="v1.6.1">Stellar</a> 作为主题。</p>
+</div></footer>
+
+      <div class='float-panel mobile-only blur' style='display:none'>
+  <button type='button' class='sidebar-toggle mobile' onclick='sidebar.toggle()'>
+    <svg class="icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15301"><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 2.3 26.8 24.6 47.5 51.6 47.6h416.5v4z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15302"></path><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 1.9 27.7 23.9 49.7 51.6 51.6h416.5z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15303"></path></svg>
+  </button>
+</div>
+
+    </div>
+  </div>
+  <div class='scripts'>
+    <script type="text/javascript">
+  stellar = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    loadCSS: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    // 从 butterfly 和 volantis 获得灵感
+    loadScript: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    // https://github.com/jerryc127/hexo-theme-butterfly
+    jQuery: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        stellar.loadScript(stellar.plugins.jQuery).then(fn)
+      } else {
+        fn()
+      }
+    }
+  };
+  stellar.github = 'https://github.com/xaoxuu/hexo-theme-stellar/tree/1.6.1';
+  stellar.config = {
+    date_suffix: {
+      just: '刚刚',
+      min: '分钟前',
+      hour: '小时前',
+      day: '天前',
+      month: '个月前',
+    },
+  };
+
+  // required plugins (only load if needs)
+  stellar.plugins = {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js',
+    sitesjs: '../js/plugins/sites.js',
+    friendsjs: '../js/plugins/friends.js',
+  };
+
+  // optional plugins
+  if ('true' == 'true') {
+    stellar.plugins.lazyload = Object.assign({"enable":true,"js":"https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.3.1/dist/lazyload.min.js","transition":"blur"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.swiper = Object.assign({"enable":true,"css":"https://unpkg.com/swiper@6/swiper-bundle.min.css","js":"https://unpkg.com/swiper@6/swiper-bundle.min.js"});
+  }
+  if ('' == 'true') {
+    stellar.plugins.scrollreveal = Object.assign({"enable":null,"js":"https://cdn.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js","distance":"8px","duration":500,"interval":100,"scale":1});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.preload = Object.assign({"enable":true,"service":"flying_pages","instant_page":"https://cdn.jsdelivr.net/gh/volantis-x/cdn-volantis@4.1.2/js/instant_page.js","flying_pages":"https://cdn.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.fancybox = Object.assign({"enable":true,"js":"https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js","css":"https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css","selector":".swiper-slide img"});
+  }
+</script>
+
+<!-- required -->
+
+  
+<script src="../js/main.js" async></script>
+
+
+
+<!-- optional -->
+
+  <script>
+  function loadUtterances() {
+    const els = document.querySelectorAll("#comments #utterances");
+    if (els.length === 0) return;
+    els.forEach((el, i) => {
+      try {
+        el.innerHTML = '';
+      } catch (error) {
+        console.log(error);
+      }
+      var script = document.createElement('script');
+      script.src = 'https://utteranc.es/client.js';
+      script.async = true;
+      for (let key of Object.keys(el.attributes)) {
+        let attr = el.attributes[key];
+        if (['class', 'id'].includes(attr.name) === false) {
+          script.setAttribute(attr.name, attr.value);
+        }
+      }
+      el.appendChild(script);
+    });
+  }
+  window.addEventListener('DOMContentLoaded', (event) => {
+      loadUtterances();
+  });
+</script>
+
+
+
+
+<!-- inject -->
+
+
+  </div>
+</body>
+</html>

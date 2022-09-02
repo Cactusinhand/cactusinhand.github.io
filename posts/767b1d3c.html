@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+
+<head>
+  <meta name="generator" content="Hexo 5.4.1">
+  <meta charset="utf-8">
+  
+
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  <link rel='dns-prefetch' href='https://cdn.jsdelivr.net'>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  <title>学习 Rust 的一些笔记 - 高桥一郎</title>
+
+  
+    <meta name="description" content="Rust是一门偏底层的，安全的，高效的开源编程语言。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习 Rust 的一些笔记">
+<meta property="og:url" content="https://cactusinhand.github.io/posts/767b1d3c.html">
+<meta property="og:site_name" content="高桥一郎">
+<meta property="og:description" content="Rust是一门偏底层的，安全的，高效的开源编程语言。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-02-13T11:26:44.000Z">
+<meta property="article:modified_time" content="2022-09-02T16:31:44.515Z">
+<meta property="article:author" content="Cactusinhand">
+<meta property="article:tag" content="Rust">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+
+  <!-- feed -->
+  
+
+  
+    
+<link rel="stylesheet" href="../css/main.css">
+
+  
+
+  
+
+  
+</head>
+
+<body>
+  
+
+
+
+
+  <div class='l_body' id='start'>
+    <aside class='l_left' layout='post'>
+    
+
+
+<header class="header">
+
+<div class="logo-wrap"><a class="avatar" href="../about/"><div class="bg" style="opacity:0;background-image:url(https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.2/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/image-20220213142754407.png" onerror="javascript:this.classList.add('error');this.src='https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/image/2659360.svg';"></a><a class="title" href="../index.html"><div class="main">高桥一郎</div><div class="sub cap">Great minds think different.</div></a></div>
+<nav class="menu dis-select"><a class="nav-item active" href="../index.html">文章</a><a class="nav-item" href="../wiki/">Wiki</a><a class="nav-item" href="../notes/">笔记</a><a class="nav-item" href="../about/">关于</a></nav></header>
+
+<div class="widgets">
+
+<div class="widget-wrap single" id="toc"><div class="widget-header cap dis-select"><span class="name">本文目录</span></div><div class="widget-body fs14"><div class="doc-tree active"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E9%93%BE"><span class="toc-number">1.</span> <span class="toc-text">工具链</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Hello-World"><span class="toc-number">2.</span> <span class="toc-text">Hello, World!</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E5%AE%9A%E4%B9%89"><span class="toc-number">3.</span> <span class="toc-text">一些定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E7%AC%94%E8%AE%B0"><span class="toc-number">4.</span> <span class="toc-text">一些笔记</span></a></li></ol></div></div></div>
+
+
+</div>
+<footer class="footer dis-select"><div class="social-wrap"><a class="social" href="https://github.com/Cactusinhand" target="_blank" rel="external nofollow noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/github.png"/></a><a class="social" href="https://gitee.com/openbytes" target="_blank" rel="external nofollow noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/Cactusinhand/images_repo/images/logo_gitee_red.jpg"/></a></div></footer>
+
+    </aside>
+    <div class='l_main'>
+      
+
+      
+
+
+<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a><span class="sep"></span><a class="cap breadcrumb" href="/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="../categories/Rust/">Rust</a></div><div id="post-meta">发布于&nbsp;<time datetime="2022-02-13T11:26:44.000Z">2022-02-13</time></div></div>
+
+<article class='content md post'>
+<h1 class="article-title"><span>learning Rust notes</span></h1>
+<p>Rust是一门偏底层的，安全的，高效的开源编程语言。</p>
+<span id="more"></span>
+<h3 id="工具链">工具链</h3>
+<p><code>rustup</code> 是管理<code>Rust</code>版本和相关工具的命令行工具(rust toolchain installer)</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><code>rustup update</code> 更新<code>Rust</code>版本</p>
+</li>
+<li class="lvl-2">
+<p><code>rustup self uninstall</code> 卸载<code>Rust</code>以及<code>rustup</code>本身</p>
+</li>
+</ul>
+<p><code>Rust</code>工具链中包括<code>rustc</code>编译器工具，<code>rustfmt</code>格式化工具，<code>rustdoc</code>文档化工具等。</p>
+<p><code>rustc</code>类似于C/C++中的<code>gcc/clang</code></p>
+<p><code>Cargo</code> 是 <code>Rust</code> 的构建系统和包管理器。可以进行构建代码、下载依赖库并编译这些库等。</p>
+<p><code>cargo new rust-proj</code> 创建一个Rust项目，</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ cargo new rust-proj</span><br><span class="line">     Created binary (application) `rust-proj` package</span><br><span class="line">$ tree rust-proj</span><br><span class="line">rust-proj</span><br><span class="line">├── Cargo.toml</span><br><span class="line">└── src</span><br><span class="line">    └── main.rs</span><br><span class="line"></span><br><span class="line">1 directory, 2 files</span><br></pre></td></tr></table></figure>
+<p><code>Cargo</code>会在 <em>hello_cargo</em> 目录初始化一个 git 仓库，以及一个<code>.gitignore</code>文件。如果你在现有的 git 仓库中运行 <code>cargo new</code>，则不会生成 git 文件；你可以通过使用<code>cargo new --vcs=git</code> 来覆盖此行为。</p>
+<p>可以通过 <code>--vcs</code> 参数使 <code>cargo new</code> 切换到其它版本控制系统（<code>VCS</code>），或者不使用 <code>VCS</code>。运行 <code>cargo new --help</code> 参看可用的选项。</p>
+<p><code>cargo build</code>构建项目，目标可执行文件在<code>target/debug/</code>下</p>
+<p><code>cargo run</code>则是构建项目并运行。</p>
+<p><code>cargo check</code> 检查项目代码正确，确保可编译。不会产生可执行文件。</p>
+<p><code>cargo build</code>默认构建是debug模式。如果项目一切都OK，可以运行<code>cargo build --release</code>执行发布构建，这会对项目进行一定编译优化，从而使得代码运行得更快，但是相应地，编译时间会更长。</p>
+<p><code>cargo doc --open</code> 会生成当前项目中的依赖库(crate)的文档，并转到浏览器可以查询。</p>
+<h3 id="Hello-World">Hello, World!</h3>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><code>println!</code> 调用了一个 Rust 宏（macro）。如果是调用函数，则应输入 <code>println</code>（没有<code>!</code>）。我们将在第十九章详细讨论宏。现在你只需记住，当看到符号 <code>!</code> 的时候，就意味着调用的是宏而不是普通函数，并且宏并不总是遵循与函数相同的规则。</p>
+</li>
+</ul>
+<p><code>cargo new</code>生成的项目中，包含配置文件<code>Cargo.toml</code></p>
+<p>文件名: <code>Cargo.toml</code></p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"></span><br><span class="line"><span class="attr">rand</span> = <span class="string">&quot;0.8.3&quot;</span></span><br></pre></td></tr></table></figure>
+<p>其中“0.8.3”指定依赖版本，其语法遵循语义化版本<a target="_blank" rel="noopener" href="http://semver.org/">（Semantic Versioning）</a></p>
+<p>这里的<code>0.8.3</code> 实际上是 <code>^0.8.3</code> 的简写，它表示 任何不低于 <code>0.8.3</code>， 但是低于 <code>0.9.0</code> 的版本。Cargo将这些版本视作与 <code>0.8.3</code> 版本公有 API 相兼容的版本，这个声明确保你将获得最新的补丁版本，它仍然可以与本章中的代码正常编译。<code>0.9.0</code> 或以上版本不保证拥有接下来示例中使用到的API。</p>
+<hr>
+<h3 id="一些定义">一些定义</h3>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>Rust变量默认是不可改变的（immutable），如果想声明可变变量，需要使用<code>mut</code>关键字。</p>
+</li>
+<li class="lvl-2">
+<p>Rust不允许对常量使用 <code>mut</code>。常量不光默认不能变，它总是不能变。其声明使用<code>const</code>，且必须标注类型。</p>
+</li>
+<li class="lvl-2">
+<p>整型变量分有符号和无符号，如<code>i8</code>表示有符号8位整数，<code>u8</code>表示无符号8位整数，<code>i128</code>表示有符号128位整数。</p>
+</li>
+<li class="lvl-2">
+<p>还有一种整型依赖计算机架构，<code>isize</code>, <code>usize</code>在不同的架构中表示的长度会不同。</p>
+</li>
+<li class="lvl-2">
+<p>整型字面值有十六进制(<code>0xff</code>)，八进制(<code>0o77</code>)，二进制(<code>0b11</code>)，以及十进制(99_999)，单字节字符(仅限<code>u8</code>)</p>
+</li>
+<li class="lvl-2">
+<p>Rust默认数字类型是<code>i32</code></p>
+</li>
+<li class="lvl-2">
+<p>浮点型变量有两种，<code>f32</code>表示单精度浮点小数，<code>f64</code>表示双精度浮点小数。默认是<code>f64</code>。</p>
+</li>
+<li class="lvl-2">
+<p>字符类型（char）用单引号表示，其大小为4个字节，表示了一个Unicode标量值。</p>
+</li>
+<li class="lvl-2">
+<p>复合类型元组(tuple)一旦声明，其长度不变，其中每一个位置都有一个类型的值，类型可以不同。</p>
+</li>
+<li class="lvl-2">
+<p>复合类型数组(array)长度也是固定的，而且其中类型必须相同。</p>
+</li>
+</ul>
+<p><strong>语句(statement)和表达式(expression)</strong></p>
+<p>Rust是一门基于表达式的语言。</p>
+<p>语句是执行一些操作，但是不返回值的指令。</p>
+<p><code>函数定义</code>就是一个语句。</p>
+<p>表达式计算并产生一个值，可以赋予其它变量。</p>
+<p><code>函数调用</code>是一个表达式，大括号创建的块作用域也是一个表达式。</p>
+<p><code>表达式的结尾没有分号，如果结尾加上分号，则变成了语句。</code></p>
+<p>数字本身就是一个表达式，所以它可以返回本身的值赋值给其它变量。</p>
+<p>栈(stack)中的数据必须占用已知且大小固定的大小。</p>
+<p>当数据大小未知，或大小可能变化的时候，需要用堆(heap)。比如使用内存分配器memory allocator分配指定大小的内存，此时该块内存会被标记为已用，并且以指针来表示这块内存。</p>
+<p>而将数据放入栈中的过程并不叫做分配内存，因为这个过程并没有新的内存被分配。</p>
+<p>堆的指针可以存储在栈上。</p>
+<p>入栈比在堆上分配内存要快。</p>
+<p>访问堆中的数据比访问栈上的数据要慢，因为访问堆首先要通过指针来访问，而指针在栈上。</p>
+<hr>
+<h3 id="一些笔记">一些笔记</h3>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>定义变量用动词let</p>
+</li>
+<li class="lvl-2">
+<p>借鉴Python的元组</p>
+</li>
+<li class="lvl-2">
+<p>借鉴C++的指针</p>
+</li>
+<li class="lvl-2">
+<p>完善的包管理工具cargo</p>
+</li>
+<li class="lvl-2">
+<p>友好的文档管理</p>
+</li>
+<li class="lvl-2">
+<p>使用先进的VCS管理项目</p>
+</li>
+<li class="lvl-2">
+<p>无垃圾回收机制，使用变量所有权管理内存</p>
+</li>
+<li class="lvl-2">
+<p>编译与执行分开，更早的发现错误</p>
+</li>
+<li class="lvl-2">
+<p>浅拷贝与深拷贝，默认不进行数据的深拷贝，深拷贝使用clone方法</p>
+</li>
+<li class="lvl-2">
+<p>移动(move)操作</p>
+</li>
+<li class="lvl-2">
+<p>Copy trait</p>
+</li>
+<li class="lvl-2">
+<p>栈上数据；堆上数据；既在栈上，又在推上(数据指针在栈上，数据内容在堆上)数据</p>
+</li>
+<li class="lvl-2">
+<p>默认行为：默认变量不可变</p>
+</li>
+<li class="lvl-2">
+<p>引用(ref)变量默认也不能修改其引用的值</p>
+</li>
+<li class="lvl-2">
+<p>一个引用的作用域从声明的地方开始一直持续到最后一次使用为止</p>
+</li>
+<li class="lvl-2">
+<p>字符串slice</p>
+</li>
+</ul>
+<hr>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>Rust可以直接将数据附加到枚举的每个成员上，这样就不需要一个额外的结构体了。</p>
+</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">IpAddr</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">V4</span>(<span class="type">String</span>),</span><br><span class="line">    <span class="title function_ invoke__">V6</span>(<span class="type">String</span>),</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">home</span> = IpAddr::<span class="title function_ invoke__">V4</span>(String::<span class="title function_ invoke__">from</span>(<span class="string">&quot;127.0.0.1&quot;</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">loopback</span> = IpAddr::<span class="title function_ invoke__">V6</span>(String::<span class="title function_ invoke__">from</span>(<span class="string">&quot;::1&quot;</span>));</span><br></pre></td></tr></table></figure>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>Rust没有空值(Null)，因为空值会导致很多错误，而是实现了一个枚举变量<code>Option&lt;T&gt;</code>：</p>
+</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">Option</span>&lt;T&gt; &#123;</span><br><span class="line">    <span class="title function_ invoke__">Some</span>(T),</span><br><span class="line">    <span class="literal">None</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">some_number</span> = <span class="title function_ invoke__">Some</span>(<span class="number">5</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">some_string</span> = <span class="title function_ invoke__">Some</span>(<span class="string">&quot;a string&quot;</span>);</span><br><span class="line"># 当为<span class="literal">None</span>时，必须显示指定类型&lt;T&gt;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">absent_number</span>: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; = <span class="literal">None</span>;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>关于字符串方法，以下两种方法等效：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">s1</span> = String::<span class="title function_ invoke__">from</span>(<span class="string">&quot;initial contents&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">s2</span> = <span class="string">&quot;initial contents&quot;</span>.<span class="title function_ invoke__">to_string</span>();</span><br></pre></td></tr></table></figure>
+<p>参考链接：</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><a target="_blank" rel="noopener" href="https://www.rust-lang.org/zh-CN">rust中文官网</a></p>
+</li>
+<li class="lvl-2">
+<p><a target="_blank" rel="noopener" href="https://kaisery.github.io/trpl-zh-cn/">rust book</a></p>
+</li>
+<li class="lvl-2">
+<p><a target="_blank" rel="noopener" href="https://book.rust.team/into-rust.html">rust course</a></p>
+</li>
+</ul>
+
+
+<div class="article-footer reveal fs14"><section id="license"><div class="header"><span>许可协议</span></div><div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div></section><section id="share"><div class="header"><span>分享文章</span></div><div class="body"><div class="link"><input class="copy-area" readonly="true" id="copy-link" value="https://cactusinhand.github.io/posts/767b1d3c.html" /></div><div class="social-wrap dis-select"><a class="social share-item wechat" onclick="util.toggle(&quot;qrcode-wechat&quot)"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/social/b32ef3da1162a.svg"/></a><a class="social share-item weibo" target="_blank" rel="external nofollow noopener noreferrer" href="https://service.weibo.com/share/share.php?url=https://cactusinhand.github.io/posts/767b1d3c.html&title=学习 Rust 的一些笔记 - 高桥一郎&summary=Rust是一门偏底层的，安全的，高效的开源编程语言。"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/social/80c07e4dbb303.svg"/></a><a class="social share-item email" href="mailto:?subject=学习 Rust 的一些笔记 - 高桥一郎&amp;body=https://cactusinhand.github.io/posts/767b1d3c.html"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/social/a1b00e20f425d.svg"/></a><a class="social share-item link" onclick="util.copy(&quot;copy-link&quot;, &quot;复制成功&quot;)"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://cdn.jsdelivr.net/gh/cdn-x/placeholder@1.0.1/social/8411ed322ced6.svg"/></a></div><div class="qrcode" id="qrcode-wechat" style="visibility:hidden;height:0"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=https://cactusinhand.github.io/posts/767b1d3c.html"/></div></div></section></div>
+
+</article>
+
+<div class="related-wrap reveal" id="read-next"><section class="header cap theme"><span>接下来阅读</span></section><section class="body fs14"><a id="next" href="3be69b54.html">认证(Authentication)和授权(Authorization)<span class="note">较早</span></a><div class="line"></div><a id="prev" href="32c910d1.html">git bundle 格式及应用<span class="note">较新</span></a></section></div>
+
+
+
+
+
+
+  <div class='related-wrap md reveal' id="comments">
+    <div class='cmt-title cap theme'>
+      快来参与讨论吧
+    </div>
+    <div class='cmt-body utterances'>
+      
+
+<svg class="loading" style="vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2709"><path d="M832 512c0-176-144-320-320-320V128c211.2 0 384 172.8 384 384h-64zM192 512c0 176 144 320 320 320v64C300.8 896 128 723.2 128 512h64z" p-id="2710"></path></svg>
+
+<div id="utterances" repo="Cactusinhand/blog-comments" issue-term="pathname" theme="preferred-color-scheme"></div>
+
+    </div>
+  </div>
+
+
+
+      
+<footer class="page-footer reveal fs12"><hr><div class="sitemap"><div class="sitemap-group"><span class="fs14">文章</span><a href="../index.html">近期发布</a><a href="../categories/">分类</a><a href="../tags/">标签</a><a href="../archives/">归档</a></div><div class="sitemap-group"><span class="fs14">Wiki</span><a href="../wiki/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE/">开源项目</a><a href="../wiki/tags/%E5%8D%9A%E5%AE%A2%E4%B8%BB%E9%A2%98/">博客主题</a></div><div class="sitemap-group"><span class="fs14">更多</span><a href="../about/">关于本站</a><a href="../about/">GitHub</a><a href="../about/">Gitee</a></div></div><div class="text"><p>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+<p>本站由 <a href="https://cactusinhand.github.io/">@Cactusinhand</a> 创建，使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.6.1" title="v1.6.1">Stellar</a> 作为主题。</p>
+</div></footer>
+
+      <div class='float-panel mobile-only blur' style='display:none'>
+  <button type='button' class='sidebar-toggle mobile' onclick='sidebar.toggle()'>
+    <svg class="icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15301"><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 2.3 26.8 24.6 47.5 51.6 47.6h416.5v4z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15302"></path><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 1.9 27.7 23.9 49.7 51.6 51.6h416.5z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15303"></path></svg>
+  </button>
+</div>
+
+    </div>
+  </div>
+  <div class='scripts'>
+    <script type="text/javascript">
+  stellar = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    loadCSS: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    // 从 butterfly 和 volantis 获得灵感
+    loadScript: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    // https://github.com/jerryc127/hexo-theme-butterfly
+    jQuery: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        stellar.loadScript(stellar.plugins.jQuery).then(fn)
+      } else {
+        fn()
+      }
+    }
+  };
+  stellar.github = 'https://github.com/xaoxuu/hexo-theme-stellar/tree/1.6.1';
+  stellar.config = {
+    date_suffix: {
+      just: '刚刚',
+      min: '分钟前',
+      hour: '小时前',
+      day: '天前',
+      month: '个月前',
+    },
+  };
+
+  // required plugins (only load if needs)
+  stellar.plugins = {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js',
+    sitesjs: '../js/plugins/sites.js',
+    friendsjs: '../js/plugins/friends.js',
+  };
+
+  // optional plugins
+  if ('true' == 'true') {
+    stellar.plugins.lazyload = Object.assign({"enable":true,"js":"https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.3.1/dist/lazyload.min.js","transition":"blur"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.swiper = Object.assign({"enable":true,"css":"https://unpkg.com/swiper@6/swiper-bundle.min.css","js":"https://unpkg.com/swiper@6/swiper-bundle.min.js"});
+  }
+  if ('' == 'true') {
+    stellar.plugins.scrollreveal = Object.assign({"enable":null,"js":"https://cdn.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js","distance":"8px","duration":500,"interval":100,"scale":1});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.preload = Object.assign({"enable":true,"service":"flying_pages","instant_page":"https://cdn.jsdelivr.net/gh/volantis-x/cdn-volantis@4.1.2/js/instant_page.js","flying_pages":"https://cdn.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.fancybox = Object.assign({"enable":true,"js":"https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js","css":"https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css","selector":".swiper-slide img"});
+  }
+</script>
+
+<!-- required -->
+
+  
+<script src="../js/main.js" async></script>
+
+
+
+<!-- optional -->
+
+  <script>
+  function loadUtterances() {
+    const els = document.querySelectorAll("#comments #utterances");
+    if (els.length === 0) return;
+    els.forEach((el, i) => {
+      try {
+        el.innerHTML = '';
+      } catch (error) {
+        console.log(error);
+      }
+      var script = document.createElement('script');
+      script.src = 'https://utteranc.es/client.js';
+      script.async = true;
+      for (let key of Object.keys(el.attributes)) {
+        let attr = el.attributes[key];
+        if (['class', 'id'].includes(attr.name) === false) {
+          script.setAttribute(attr.name, attr.value);
+        }
+      }
+      el.appendChild(script);
+    });
+  }
+  window.addEventListener('DOMContentLoaded', (event) => {
+      loadUtterances();
+  });
+</script>
+
+
+
+
+<!-- inject -->
+
+
+  </div>
+</body>
+</html>
