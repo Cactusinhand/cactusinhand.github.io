@@ -479,7 +479,8 @@ repo: gitaly: <a href="https://gitlab.com/gitlab-org/gitaly">https://gitlab.com/
   <entry>
     <title>GitOps: 一种 DevOps 的最佳实践</title>
     <url>/posts/f8df64f6.html</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<p>近几年很流行的 <code>DevOps</code> 其实早在</p>
+]]></content>
       <categories>
         <category>Git</category>
       </categories>
@@ -798,8 +799,8 @@ sn(Surname): 名字前缀(姓)</p>
         <category>Git</category>
       </categories>
       <tags>
-        <tag>Git</tag>
         <tag>Xml</tag>
+        <tag>Git-bomb</tag>
       </tags>
   </entry>
   <entry>
@@ -884,7 +885,7 @@ sn(Surname): 名字前缀(姓)</p>
         <category>Git</category>
       </categories>
       <tags>
-        <tag>Git</tag>
+        <tag>Git-bundle</tag>
       </tags>
   </entry>
   <entry>
@@ -1087,7 +1088,7 @@ sn(Surname): 名字前缀(姓)</p>
         <category>Git</category>
       </categories>
       <tags>
-        <tag>Git</tag>
+        <tag>Git-inside</tag>
       </tags>
   </entry>
   <entry>
