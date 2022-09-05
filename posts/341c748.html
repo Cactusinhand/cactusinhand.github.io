@@ -28,7 +28,7 @@
 <meta property="og:description" content="这篇文章源于偶然看到的一篇文章# Golang技巧之默认值设置的高阶玩法，它讲的是 GRPC 中的设计模式。而我没有研究过 GRPC 源码，看起来稍显陌生。但好在手头上有 Gitaly 源码，算是稍微熟悉它的源码，因此想看看这个项目里面是不是也应用到了前面文章里讲的高阶用法，简单搜索一下源码后，发现这种代码模式还挺多的，于是趁热记录了其中一小段阅读结果。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-05-25T02:51:51.000Z">
-<meta property="article:modified_time" content="2022-09-02T16:31:44.470Z">
+<meta property="article:modified_time" content="2022-09-05T02:56:30.038Z">
 <meta property="article:author" content="Cactusinhand">
 <meta property="article:tag" content="Design-Pattern">
 <meta name="twitter:card" content="summary_large_image">
@@ -68,7 +68,7 @@
 <div class="widgets">
 
 
-<div class="widget-wrap" id="recent"><div class="widget-header cap dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><div class="more-item"><a class="title" href="23bf24d1.html">如何向 Git 社区提交代码(2)</a></div><div class="more-item"><a class="title" href="767b1d3c.html">学习 Rust 的一些笔记</a></div><div class="more-item"><a class="title" href="c5ceb3cc.html">Git 炸弹</a></div><div class="more-item"><a class="title" href="32c910d1.html">git bundle 格式及应用</a></div><div class="more-item"><a class="title" href="4fad1e06.html">Git 内部原理</a></div></div></div>
+<div class="widget-wrap" id="recent"><div class="widget-header cap dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><div class="more-item"><a class="title" href="23bf24d1.html">如何向 Git 社区提交代码(2)</a></div><div class="more-item"><a class="title" href="4fad1e06.html">Git 内部原理</a></div><div class="more-item"><a class="title" href="767b1d3c.html">学习 Rust 的一些笔记</a></div><div class="more-item"><a class="title" href="32c910d1.html">git bundle 格式及应用</a></div><div class="more-item"><a class="title" href="3be69b54.html">认证(Authentication)和授权(Authorization)</a></div></div></div>
 
 
 
