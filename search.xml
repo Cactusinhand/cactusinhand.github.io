@@ -1,6 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Design pattern in Gitlay(Git PRC service)</title>
+    <url>/posts/341c748.html</url>
+    <content><![CDATA[<p>这篇文章源于偶然看到的一篇文章<a href="https://studygolang.com/articles/29501"># Golang技巧之默认值设置的高阶玩法</a>，它讲的是 GRPC 中的设计模式。而我没有研究过 GRPC 源码，看起来稍显陌生。但好在手头上有 Gitaly 源码，算是稍微熟悉它的源码，因此想看看这个项目里面是不是也应用到了前面文章里讲的高阶用法，简单搜索一下源码后，发现这种代码模式还挺多的，于是趁热记录了其中一小段阅读结果。</p>
+<span id="more"></span>
+<blockquote>
+<p>Gitaly is a Git RPC service for handling all the git calls made by GitLab<br>
+repo: gitaly: <a href="https://gitlab.com/gitlab-org/gitaly">https://gitlab.com/gitlab-org/gitaly</a></p>
+</blockquote>
+<p><code>git rev-list</code> 是 Git 中非常重要和有用的命令，它存在许多选项以及子命令，Gitaly 中对这些选项和命令进行了封装。</p>
+<p>首先定义了一个 config 结构体，包含不同的配置选项：</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">type</span> ObjectType <span class="type">string</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> revlistConfig <span class="keyword">struct</span> &#123;</span><br><span class="line">    blobLimit     <span class="type">int</span></span><br><span class="line">    objects       <span class="type">bool</span></span><br><span class="line">    objectType    ObjectType</span><br><span class="line">    order         Order</span><br><span class="line">    reverse       <span class="type">bool</span></span><br><span class="line">    maxParents    <span class="type">uint</span></span><br><span class="line">    disabledWalk  <span class="type">bool</span></span><br><span class="line">    firstParent   <span class="type">bool</span></span><br><span class="line">    before, after time.Time</span><br><span class="line">    author        []<span class="type">byte</span></span><br><span class="line">    skipResult    <span class="function"><span class="keyword">func</span><span class="params">(*RevisionResult)</span></span> <span class="type">bool</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后定义一个函数，该函数的参数是上述结构体，且是指针类型参数，这点非常重要，它使得这个函数能够直接修改入参 <code>cfg</code>：</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">type</span> RevlistOption <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span></span><br></pre></td></tr></table></figure>
+<p>然后是一系列对 git-rev-list 参数进行修改的方法，每个 <code>WithXXX</code> 方法调用前面的匿名函数，并返回 RevlistOption 类型变量：</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithBlobLimit</span><span class="params">(limit <span class="type">int</span>)</span></span> RevlistOption &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span> &#123;</span><br><span class="line">        cfg.blobLimit = limit</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithObjectTypeFilter</span><span class="params">(t ObjectType)</span></span> RevlistOption &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span> &#123;</span><br><span class="line">        cfg.objectType = t</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithRevrse</span><span class="params">()</span></span> RevlistOption &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span> &#123;</span><br><span class="line">        cfg.reverse = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithMaxParents</span><span class="params">(p <span class="type">uint</span>)</span></span> RevlistOption &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span> &#123;</span><br><span class="line">        cfg.maxParents = p</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithDisabledWalk</span><span class="params">()</span></span> RevlistOption &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span> &#123;</span><br><span class="line">        cfg.disabledWalk = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithFirstParent</span><span class="params">()</span></span> RevlistOption &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span> &#123;</span><br><span class="line">        cfg.firstParent = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithBefore</span><span class="params">(t time.Time)</span></span> RevlistOption &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span> &#123;</span><br><span class="line">        cfg.before = t</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithAfter</span><span class="params">(t time.Time)</span></span> RevlistOption &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span> &#123;</span><br><span class="line">        cfg.after = t</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithAuthor</span><span class="params">(author []<span class="type">byte</span>)</span></span> RevlistOption &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span> &#123;</span><br><span class="line">        cfg.author = author</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 省略...</span></span><br></pre></td></tr></table></figure>
+<p>git-rev-list 方法定义如下：</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Revlist</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    ctx context.Context,</span></span></span><br><span class="line"><span class="params"><span class="function">    repo *localrepo.Repo,</span></span></span><br><span class="line"><span class="params"><span class="function">    revisions []<span class="type">string</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">    options ...RevlistOption,</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span> RevisionIterator</span><br></pre></td></tr></table></figure>
+<p>在 Revlist() 中最后一个参数 <code>options ...RevlistOption</code>，它表示是不定长变参列表具体参数数量交给调用者。</p>
+<p>具体实现如下：</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Revlist</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    ctx context.Context,</span></span></span><br><span class="line"><span class="params"><span class="function">    repo *localrepo.Repo,</span></span></span><br><span class="line"><span class="params"><span class="function">    revisions []<span class="type">string</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">    options ...RevlistOption,</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span> RevisionIterator &#123;</span><br><span class="line">    <span class="comment">// 定义一个config配置变量</span></span><br><span class="line">    <span class="keyword">var</span> cfg revlistConfig</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注意这里，遍历options中每一个方法，每个方法都会对config变量进行赋值、修改</span></span><br><span class="line">    <span class="keyword">for</span> _, option := <span class="keyword">range</span> options &#123;</span><br><span class="line">        option(&amp;cfg)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    resultChan := <span class="built_in">make</span>(<span class="keyword">chan</span> RevisionResult)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用goroutine丢到后台运行</span></span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> <span class="built_in">close</span>(resultChan)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 定义git option变量flags</span></span><br><span class="line">        flags := []git.Option&#123;&#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 下面几项都是根据cfg配置, 更新flag变量</span></span><br><span class="line">        <span class="keyword">if</span> cfg.objects &#123;</span><br><span class="line">            flags = <span class="built_in">append</span>(flags,</span><br><span class="line">                git.Flag&#123;Name: <span class="string">&quot;--in-commit-order&quot;</span>&#125;,</span><br><span class="line">                git.Flag&#123;Name: <span class="string">&quot;--objects&quot;</span>&#125;,</span><br><span class="line">                git.Flag&#123;Name: <span class="string">&quot;--object-names&quot;</span>&#125;,</span><br><span class="line">            )</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> cfg.blobLimit &gt; <span class="number">0</span> &#123;</span><br><span class="line">            flags = <span class="built_in">append</span>(flags, git.Flag&#123;</span><br><span class="line">                Name: fmt.Sprintf(<span class="string">&quot;--filter=blob:limit=%d&quot;</span>, cfg.blobLimit),</span><br><span class="line">            &#125;)</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> cfg.objectType != <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">            flags = <span class="built_in">append</span>(flags,</span><br><span class="line">                git.Flag&#123;Name: fmt.Sprintf(<span class="string">&quot;--filter=object:type=%s&quot;</span>, cfg.objectType)&#125;,</span><br><span class="line">                git.Flag&#123;Name: <span class="string">&quot;--filter-provided-objects&quot;</span>&#125;,</span><br><span class="line">            )</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/// 此处省略更多项cfg配置</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 配置完成后，执行git-rev-list命令</span></span><br><span class="line">        <span class="keyword">var</span> stderr strings.Builder</span><br><span class="line">        revlist, err := repo.Exec(ctx,</span><br><span class="line">            git.SubCmd&#123;</span><br><span class="line">                Name:  <span class="string">&quot;rev-list&quot;</span>,</span><br><span class="line">                Flags: flags,</span><br><span class="line">                Args:  revisions,</span><br><span class="line">            &#125;,</span><br><span class="line">            git.WithStderr(&amp;stderr),</span><br><span class="line">        )</span><br><span class="line">        <span class="comment">// 此处省略错误处理</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 对结果的每行进行处理</span></span><br><span class="line">        scanner := bufio.NewScanner(revlist)</span><br><span class="line">        <span class="keyword">for</span> scanner.Scan() &#123;</span><br><span class="line">            line := <span class="built_in">make</span>([]<span class="type">byte</span>, <span class="built_in">len</span>(scanner.Bytes()))</span><br><span class="line">            <span class="built_in">copy</span>(line, scanner.Bytes())</span><br><span class="line"></span><br><span class="line">            oidAndName := bytes.SplitN(line, []<span class="type">byte</span>&#123;<span class="string">&#x27; &#x27;</span>&#125;, <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">            result := RevisionResult&#123;</span><br><span class="line">                OID: git.ObjectID(oidAndName[<span class="number">0</span>]),</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 省略...</span></span><br><span class="line">            <span class="keyword">if</span> isDone := sendRevisionResult(ctx, resultChan, result); isDone &#123;</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// scan结束</span></span><br><span class="line">        <span class="keyword">if</span> err := scanner.Err(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">            sendRevisionResult(ctx, resultChan, RevisionResult&#123;</span><br><span class="line">                err: fmt.Errorf(<span class="string">&quot;scanning rev-list output: %w&quot;</span>, err),</span><br><span class="line">            &#125;)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 等待goruntine结束</span></span><br><span class="line">        <span class="keyword">if</span> err := revlist.Wait(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">            sendRevisionResult(ctx, resultChan, RevisionResult&#123;</span><br><span class="line">                err: fmt.Errorf(<span class="string">&quot;rev-list pipeline command: %w, stderr: %q&quot;</span>, err, stderr.String()),</span><br><span class="line">            &#125;)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回结果</span></span><br><span class="line">    <span class="keyword">return</span> &amp;revisionIterator&#123;</span><br><span class="line">        ch: resultChan,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么如何调用这个方法呢？搜索 Gitaly 源码可以看到：</p>
+<p>在<code>ListBlobs</code> 中是这样用的：</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *server)</span></span> ListBlobs(req *gitalypb.ListBlobsRequest, stream gitalypb.BlobService_ListBlobsServer) <span class="type">error</span> &#123;</span><br><span class="line">    <span class="comment">// 省略...</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义一个RevlistOption变量，向里面注入多个配置选项</span></span><br><span class="line">    revlistOptions := []gitpipe.RevlistOption&#123;</span><br><span class="line">        gitpipe.WithObjects(),</span><br><span class="line">        gitpipe.WithObjectTypeFilter(gitpipe.ObjectTypeBlob),</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 调用Revlist()</span></span><br><span class="line">    revlistIter := gitpipe.Revlist(ctx, repo, req.GetRevisions(), revlistOptions...)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>ListCommits</code> 中根据请求中不同的 case 分别向 revlistOptions 变量追加不同的配置选项：</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *server)</span></span> ListCommits(</span><br><span class="line">    request *gitalypb.ListCommitsRequest,</span><br><span class="line">    stream gitalypb.CommitService_ListCommitsServer,</span><br><span class="line">) <span class="type">error</span> &#123;</span><br><span class="line">    <span class="comment">// 省略...</span></span><br><span class="line">    ctx := stream.Context()</span><br><span class="line">    repo := s.localrepo(request.GetRepository())</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义一个revlistOptions变量</span></span><br><span class="line">    revlistOptions := []gitpipe.RevlistOption&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略...</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/// 根据不同的case向revlistOptions追加不同的配置</span></span><br><span class="line">    <span class="keyword">if</span> request.GetReverse() &#123;</span><br><span class="line">        revlistOptions = <span class="built_in">append</span>(revlistOptions, gitpipe.WithReverse())</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> request.GetMaxParents() &gt; <span class="number">0</span> &#123;</span><br><span class="line">        revlistOptions = <span class="built_in">append</span>(revlistOptions, gitpipe.WithMaxParents(<span class="type">uint</span>(request.GetMaxParents())))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> request.GetDisableWalk() &#123;</span><br><span class="line">        revlistOptions = <span class="built_in">append</span>(revlistOptions, gitpipe.WithDisabledWalk())</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> request.GetFirstParent() &#123;</span><br><span class="line">        revlistOptions = <span class="built_in">append</span>(revlistOptions, gitpipe.WithFirstParent())</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> request.GetBefore() != <span class="literal">nil</span> &#123;</span><br><span class="line">        revlistOptions = <span class="built_in">append</span>(revlistOptions, gitpipe.WithBefore(request.GetBefore().AsTime()))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> request.GetAfter() != <span class="literal">nil</span> &#123;</span><br><span class="line">        revlistOptions = <span class="built_in">append</span>(revlistOptions, gitpipe.WithAfter(request.GetAfter().AsTime()))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(request.GetAuthor()) != <span class="number">0</span> &#123;</span><br><span class="line">        revlistOptions = <span class="built_in">append</span>(revlistOptions, gitpipe.WithAuthor(request.GetAuthor()))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 调用Revlist()</span></span><br><span class="line">    revlistIter := gitpipe.Revlist(ctx, repo, request.GetRevisions(), revlistOptions...)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略后续...</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>ListLFSPointers</code> 中省略定义 RevlistOption 变量，直接利用 Revlist 方法中不定参数特性，添加不同的配置选项：</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *server)</span></span> ListLFSPointers(in *gitalypb.ListLFSPointersRequest, stream gitalypb.BlobService_ListLFSPointersServer) <span class="type">error</span> &#123;</span><br><span class="line">    ctx := stream.Context()</span><br><span class="line">    <span class="comment">// 省略...</span></span><br><span class="line">    repo := s.localrepo(in.GetRepository())</span><br><span class="line">    <span class="comment">// 省略...</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 调用Revlist()</span></span><br><span class="line">    revlistIter := gitpipe.Revlist(ctx, repo, in.GetRevisions(),</span><br><span class="line">        gitpipe.WithObjects(),</span><br><span class="line">        gitpipe.WithBlobLimit(lfsPointerMaxSize),</span><br><span class="line">        gitpipe.WithObjectTypeFilter(gitpipe.ObjectTypeBlob),</span><br><span class="line">    )</span><br><span class="line">    <span class="comment">/// 省略后续...</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>总结：</p>
+<p>这种设计模式对于多配置，多参数的方法非常适合，虽然代码实现起来有点麻烦，但是可读性强，使用灵活。这种模式还有一些变体，后面有时间再记录一下。</p>
+]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>Design-Pattern</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>一种 Git 插件工具：git repo-clean</title>
     <url>/posts/92e91caf.html</url>
     <content><![CDATA[<p>本篇文章将从如何定义 Git 大仓库，大仓库如何产生，大仓库的负面影响等方面讨论起，然后介绍几款目前针对大仓库的处理工具，并讨论它们的优缺点，然后谈谈我们今天要介绍的新工具<strong>git repo-clean</strong>的一些设计目标，并重点介绍它的设计原理。</p>
@@ -380,57 +418,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Design pattern in Gitlay(Git PRC service)</title>
-    <url>/posts/341c748.html</url>
-    <content><![CDATA[<p>这篇文章源于偶然看到的一篇文章<a href="https://studygolang.com/articles/29501"># Golang技巧之默认值设置的高阶玩法</a>，它讲的是 GRPC 中的设计模式。而我没有研究过 GRPC 源码，看起来稍显陌生。但好在手头上有 Gitaly 源码，算是稍微熟悉它的源码，因此想看看这个项目里面是不是也应用到了前面文章里讲的高阶用法，简单搜索一下源码后，发现这种代码模式还挺多的，于是趁热记录了其中一小段阅读结果。</p>
-<span id="more"></span>
-<blockquote>
-<p>Gitaly is a Git RPC service for handling all the git calls made by GitLab<br>
-repo: gitaly: <a href="https://gitlab.com/gitlab-org/gitaly">https://gitlab.com/gitlab-org/gitaly</a></p>
-</blockquote>
-<p><code>git rev-list</code> 是 Git 中非常重要和有用的命令，它存在许多选项以及子命令，Gitaly 中对这些选项和命令进行了封装。</p>
-<p>首先定义了一个 config 结构体，包含不同的配置选项：</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">type</span> ObjectType <span class="type">string</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> revlistConfig <span class="keyword">struct</span> &#123;</span><br><span class="line">    blobLimit     <span class="type">int</span></span><br><span class="line">    objects       <span class="type">bool</span></span><br><span class="line">    objectType    ObjectType</span><br><span class="line">    order         Order</span><br><span class="line">    reverse       <span class="type">bool</span></span><br><span class="line">    maxParents    <span class="type">uint</span></span><br><span class="line">    disabledWalk  <span class="type">bool</span></span><br><span class="line">    firstParent   <span class="type">bool</span></span><br><span class="line">    before, after time.Time</span><br><span class="line">    author        []<span class="type">byte</span></span><br><span class="line">    skipResult    <span class="function"><span class="keyword">func</span><span class="params">(*RevisionResult)</span></span> <span class="type">bool</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后定义一个函数，该函数的参数是上述结构体，且是指针类型参数，这点非常重要，它使得这个函数能够直接修改入参 <code>cfg</code>：</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">type</span> RevlistOption <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span></span><br></pre></td></tr></table></figure>
-<p>然后是一系列对 git-rev-list 参数进行修改的方法，每个 <code>WithXXX</code> 方法调用前面的匿名函数，并返回 RevlistOption 类型变量：</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithBlobLimit</span><span class="params">(limit <span class="type">int</span>)</span></span> RevlistOption &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span> &#123;</span><br><span class="line">        cfg.blobLimit = limit</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithObjectTypeFilter</span><span class="params">(t ObjectType)</span></span> RevlistOption &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span> &#123;</span><br><span class="line">        cfg.objectType = t</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithRevrse</span><span class="params">()</span></span> RevlistOption &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span> &#123;</span><br><span class="line">        cfg.reverse = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithMaxParents</span><span class="params">(p <span class="type">uint</span>)</span></span> RevlistOption &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span> &#123;</span><br><span class="line">        cfg.maxParents = p</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithDisabledWalk</span><span class="params">()</span></span> RevlistOption &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span> &#123;</span><br><span class="line">        cfg.disabledWalk = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithFirstParent</span><span class="params">()</span></span> RevlistOption &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span> &#123;</span><br><span class="line">        cfg.firstParent = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithBefore</span><span class="params">(t time.Time)</span></span> RevlistOption &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span> &#123;</span><br><span class="line">        cfg.before = t</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithAfter</span><span class="params">(t time.Time)</span></span> RevlistOption &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span> &#123;</span><br><span class="line">        cfg.after = t</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WithAuthor</span><span class="params">(author []<span class="type">byte</span>)</span></span> RevlistOption &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(cfg *revlistConfig)</span></span> &#123;</span><br><span class="line">        cfg.author = author</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 省略...</span></span><br></pre></td></tr></table></figure>
-<p>git-rev-list 方法定义如下：</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Revlist</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    ctx context.Context,</span></span></span><br><span class="line"><span class="params"><span class="function">    repo *localrepo.Repo,</span></span></span><br><span class="line"><span class="params"><span class="function">    revisions []<span class="type">string</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">    options ...RevlistOption,</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span> RevisionIterator</span><br></pre></td></tr></table></figure>
-<p>在 Revlist() 中最后一个参数 <code>options ...RevlistOption</code>，它表示是不定长变参列表具体参数数量交给调用者。</p>
-<p>具体实现如下：</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Revlist</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    ctx context.Context,</span></span></span><br><span class="line"><span class="params"><span class="function">    repo *localrepo.Repo,</span></span></span><br><span class="line"><span class="params"><span class="function">    revisions []<span class="type">string</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">    options ...RevlistOption,</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span> RevisionIterator &#123;</span><br><span class="line">    <span class="comment">// 定义一个config配置变量</span></span><br><span class="line">    <span class="keyword">var</span> cfg revlistConfig</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注意这里，遍历options中每一个方法，每个方法都会对config变量进行赋值、修改</span></span><br><span class="line">    <span class="keyword">for</span> _, option := <span class="keyword">range</span> options &#123;</span><br><span class="line">        option(&amp;cfg)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    resultChan := <span class="built_in">make</span>(<span class="keyword">chan</span> RevisionResult)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用goroutine丢到后台运行</span></span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> <span class="built_in">close</span>(resultChan)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 定义git option变量flags</span></span><br><span class="line">        flags := []git.Option&#123;&#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 下面几项都是根据cfg配置, 更新flag变量</span></span><br><span class="line">        <span class="keyword">if</span> cfg.objects &#123;</span><br><span class="line">            flags = <span class="built_in">append</span>(flags,</span><br><span class="line">                git.Flag&#123;Name: <span class="string">&quot;--in-commit-order&quot;</span>&#125;,</span><br><span class="line">                git.Flag&#123;Name: <span class="string">&quot;--objects&quot;</span>&#125;,</span><br><span class="line">                git.Flag&#123;Name: <span class="string">&quot;--object-names&quot;</span>&#125;,</span><br><span class="line">            )</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> cfg.blobLimit &gt; <span class="number">0</span> &#123;</span><br><span class="line">            flags = <span class="built_in">append</span>(flags, git.Flag&#123;</span><br><span class="line">                Name: fmt.Sprintf(<span class="string">&quot;--filter=blob:limit=%d&quot;</span>, cfg.blobLimit),</span><br><span class="line">            &#125;)</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> cfg.objectType != <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">            flags = <span class="built_in">append</span>(flags,</span><br><span class="line">                git.Flag&#123;Name: fmt.Sprintf(<span class="string">&quot;--filter=object:type=%s&quot;</span>, cfg.objectType)&#125;,</span><br><span class="line">                git.Flag&#123;Name: <span class="string">&quot;--filter-provided-objects&quot;</span>&#125;,</span><br><span class="line">            )</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/// 此处省略更多项cfg配置</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 配置完成后，执行git-rev-list命令</span></span><br><span class="line">        <span class="keyword">var</span> stderr strings.Builder</span><br><span class="line">        revlist, err := repo.Exec(ctx,</span><br><span class="line">            git.SubCmd&#123;</span><br><span class="line">                Name:  <span class="string">&quot;rev-list&quot;</span>,</span><br><span class="line">                Flags: flags,</span><br><span class="line">                Args:  revisions,</span><br><span class="line">            &#125;,</span><br><span class="line">            git.WithStderr(&amp;stderr),</span><br><span class="line">        )</span><br><span class="line">        <span class="comment">// 此处省略错误处理</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 对结果的每行进行处理</span></span><br><span class="line">        scanner := bufio.NewScanner(revlist)</span><br><span class="line">        <span class="keyword">for</span> scanner.Scan() &#123;</span><br><span class="line">            line := <span class="built_in">make</span>([]<span class="type">byte</span>, <span class="built_in">len</span>(scanner.Bytes()))</span><br><span class="line">            <span class="built_in">copy</span>(line, scanner.Bytes())</span><br><span class="line"></span><br><span class="line">            oidAndName := bytes.SplitN(line, []<span class="type">byte</span>&#123;<span class="string">&#x27; &#x27;</span>&#125;, <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">            result := RevisionResult&#123;</span><br><span class="line">                OID: git.ObjectID(oidAndName[<span class="number">0</span>]),</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 省略...</span></span><br><span class="line">            <span class="keyword">if</span> isDone := sendRevisionResult(ctx, resultChan, result); isDone &#123;</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// scan结束</span></span><br><span class="line">        <span class="keyword">if</span> err := scanner.Err(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">            sendRevisionResult(ctx, resultChan, RevisionResult&#123;</span><br><span class="line">                err: fmt.Errorf(<span class="string">&quot;scanning rev-list output: %w&quot;</span>, err),</span><br><span class="line">            &#125;)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 等待goruntine结束</span></span><br><span class="line">        <span class="keyword">if</span> err := revlist.Wait(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">            sendRevisionResult(ctx, resultChan, RevisionResult&#123;</span><br><span class="line">                err: fmt.Errorf(<span class="string">&quot;rev-list pipeline command: %w, stderr: %q&quot;</span>, err, stderr.String()),</span><br><span class="line">            &#125;)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回结果</span></span><br><span class="line">    <span class="keyword">return</span> &amp;revisionIterator&#123;</span><br><span class="line">        ch: resultChan,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>那么如何调用这个方法呢？搜索 Gitaly 源码可以看到：</p>
-<p>在<code>ListBlobs</code> 中是这样用的：</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *server)</span></span> ListBlobs(req *gitalypb.ListBlobsRequest, stream gitalypb.BlobService_ListBlobsServer) <span class="type">error</span> &#123;</span><br><span class="line">    <span class="comment">// 省略...</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义一个RevlistOption变量，向里面注入多个配置选项</span></span><br><span class="line">    revlistOptions := []gitpipe.RevlistOption&#123;</span><br><span class="line">        gitpipe.WithObjects(),</span><br><span class="line">        gitpipe.WithObjectTypeFilter(gitpipe.ObjectTypeBlob),</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 调用Revlist()</span></span><br><span class="line">    revlistIter := gitpipe.Revlist(ctx, repo, req.GetRevisions(), revlistOptions...)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><code>ListCommits</code> 中根据请求中不同的 case 分别向 revlistOptions 变量追加不同的配置选项：</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *server)</span></span> ListCommits(</span><br><span class="line">    request *gitalypb.ListCommitsRequest,</span><br><span class="line">    stream gitalypb.CommitService_ListCommitsServer,</span><br><span class="line">) <span class="type">error</span> &#123;</span><br><span class="line">    <span class="comment">// 省略...</span></span><br><span class="line">    ctx := stream.Context()</span><br><span class="line">    repo := s.localrepo(request.GetRepository())</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义一个revlistOptions变量</span></span><br><span class="line">    revlistOptions := []gitpipe.RevlistOption&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略...</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/// 根据不同的case向revlistOptions追加不同的配置</span></span><br><span class="line">    <span class="keyword">if</span> request.GetReverse() &#123;</span><br><span class="line">        revlistOptions = <span class="built_in">append</span>(revlistOptions, gitpipe.WithReverse())</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> request.GetMaxParents() &gt; <span class="number">0</span> &#123;</span><br><span class="line">        revlistOptions = <span class="built_in">append</span>(revlistOptions, gitpipe.WithMaxParents(<span class="type">uint</span>(request.GetMaxParents())))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> request.GetDisableWalk() &#123;</span><br><span class="line">        revlistOptions = <span class="built_in">append</span>(revlistOptions, gitpipe.WithDisabledWalk())</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> request.GetFirstParent() &#123;</span><br><span class="line">        revlistOptions = <span class="built_in">append</span>(revlistOptions, gitpipe.WithFirstParent())</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> request.GetBefore() != <span class="literal">nil</span> &#123;</span><br><span class="line">        revlistOptions = <span class="built_in">append</span>(revlistOptions, gitpipe.WithBefore(request.GetBefore().AsTime()))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> request.GetAfter() != <span class="literal">nil</span> &#123;</span><br><span class="line">        revlistOptions = <span class="built_in">append</span>(revlistOptions, gitpipe.WithAfter(request.GetAfter().AsTime()))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(request.GetAuthor()) != <span class="number">0</span> &#123;</span><br><span class="line">        revlistOptions = <span class="built_in">append</span>(revlistOptions, gitpipe.WithAuthor(request.GetAuthor()))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 调用Revlist()</span></span><br><span class="line">    revlistIter := gitpipe.Revlist(ctx, repo, request.GetRevisions(), revlistOptions...)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略后续...</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><code>ListLFSPointers</code> 中省略定义 RevlistOption 变量，直接利用 Revlist 方法中不定参数特性，添加不同的配置选项：</p>
-<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *server)</span></span> ListLFSPointers(in *gitalypb.ListLFSPointersRequest, stream gitalypb.BlobService_ListLFSPointersServer) <span class="type">error</span> &#123;</span><br><span class="line">    ctx := stream.Context()</span><br><span class="line">    <span class="comment">// 省略...</span></span><br><span class="line">    repo := s.localrepo(in.GetRepository())</span><br><span class="line">    <span class="comment">// 省略...</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 调用Revlist()</span></span><br><span class="line">    revlistIter := gitpipe.Revlist(ctx, repo, in.GetRevisions(),</span><br><span class="line">        gitpipe.WithObjects(),</span><br><span class="line">        gitpipe.WithBlobLimit(lfsPointerMaxSize),</span><br><span class="line">        gitpipe.WithObjectTypeFilter(gitpipe.ObjectTypeBlob),</span><br><span class="line">    )</span><br><span class="line">    <span class="comment">/// 省略后续...</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>总结：</p>
-<p>这种设计模式对于多配置，多参数的方法非常适合，虽然代码实现起来有点麻烦，但是可读性强，使用灵活。这种模式还有一些变体，后面有时间再记录一下。</p>
-]]></content>
-      <categories>
-        <category>Git</category>
-      </categories>
-      <tags>
-        <tag>Design-Pattern</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>GitOps: 一种 DevOps 的最佳实践</title>
-    <url>/posts/f8df64f6.html</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>Git</category>
-      </categories>
-      <tags>
-        <tag>GitOps</tag>
-        <tag>DevOps</tag>
-        <tag>Workflow</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>如何向 Git 社区提交代码(2)</title>
     <url>/posts/23bf24d1.html</url>
     <content><![CDATA[<h3 id="背景">背景</h3>
@@ -487,6 +474,19 @@ repo: gitaly: <a href="https://gitlab.com/gitlab-org/gitaly">https://gitlab.com/
       <tags>
         <tag>Git</tag>
         <tag>Workflow</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>GitOps: 一种 DevOps 的最佳实践</title>
+    <url>/posts/f8df64f6.html</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>Workflow</tag>
+        <tag>GitOps</tag>
+        <tag>DevOps</tag>
       </tags>
   </entry>
   <entry>
@@ -617,6 +617,192 @@ commit body 部分不超过 76 个字符</p>
       </tags>
   </entry>
   <entry>
+    <title>认证(Authentication)和授权(Authorization)</title>
+    <url>/posts/3be69b54.html</url>
+    <content><![CDATA[<h3 id="什么是认证和授权">什么是认证和授权</h3>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>认证(Authentication)，识别身份</p>
+</li>
+<li class="lvl-2">
+<p>授权(Authorization)，授予被识别的身份是否有权限获取指定资源，或授予其操作权限</p>
+</li>
+</ul>
+<p>认证的双方是访问者(User)、身份信息持有者(<strong>IdP</strong>/Identity Provider)。</p>
+<p>用户持有的唯一标识符(用户名，UUID 等)，密码信息（密码，指纹等）需要与IdP持有的信息匹配才能认证成功。</p>
+<p>资源持有者(Source Owner)，控制资源的获取，修改，删除等。</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>身份和资源的分离</p>
+</li>
+</ul>
+<p>资源可能是用户自己产生的，也可能是第三方服务器产生的，或者叫做 Service Provider(SP)，也称 Client。</p>
+<p>身份和资源的分离即为 <strong>IdP, SP 分离</strong>。</p>
+<p>IdP 与 IdP 之前也可以进行资源传递，并授权。这种方式一般称为<strong>联邦授权</strong>。</p>
+<br>
+<h3 id="LDAP">LDAP</h3>
+<p>LDAP(Light Directory Access Protocol)即轻量级目录访问协议，它是一种为<strong>查询</strong>、<strong>浏览</strong>和<strong>搜索</strong>而优化的专业分布式数据库，它呈树状结构组织数据，和<a href="https://so.csdn.net/so/search?q=%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E5%BA%93&amp;spm=1001.2101.3001.7020">关系数据库</a>不同，它有优异的读性能，但写性能差，并且没有事务处理、回滚等复杂功能，不适于存储修改频繁的数据，所以大多数是用来查询的。LDAP 只是一种协议，可以有多种实现。</p>
+<p>一般结构：</p>
+<p><img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/image-20220213014635093.png" alt=""></p>
+<p>DIT(Directory Information Tree）目录信息树<br>
+dn(Distinguished Name)：一条记录的详细位置，相当于绝对路径(唯一)<br>
+rdn(Relative dn) : 相对dn, 相对于相对路径<br>
+dc(Domain Component) ：一条记录所属区域 (哪一颗树)<br>
+ou(Organization Unit) ：一条记录所属组织 （哪一个分支）<br>
+cn/uid(Common Name/user id)：一条记录的名字/ID (哪一个苹果名字)<br>
+sn(Surname): 名字前缀(姓)</p>
+<p>基本模型：</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>信息模型，将信息以树状方式组织，基本数据单元是条目(Entry), 条目又由不同属性组成</p>
+</li>
+<li class="lvl-2">
+<p>命名模型，实现一种条目定位方式</p>
+</li>
+<li class="lvl-2">
+<p>功能模型，实现增删改查等功能</p>
+</li>
+<li class="lvl-2">
+<p>安全模型，实现身份认证，安全通道，访问控制</p>
+</li>
+</ul>
+<br>
+<h3 id="OAuth2-0">OAuth2.0</h3>
+<p><strong>OAuth 2.0</strong> 是一个授权标准协议，主要用于<strong>资源授权</strong>。</p>
+<p>前面提到的身份和资源的分离，OAuth 引入了一个授权层，用来分离两种不同的角色：客户端和资源所有者。资源所有者同意以后，资源服务器可以向客户端颁发令牌。客户端通过令牌，去请求数据。</p>
+<p>所以，<strong>OAuth 的核心就是向第三方应用颁发令牌</strong>。</p>
+<p>根据 OAuth 2.0 协议规范，主要有四个主体：</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><strong>授权服务器</strong>(Authorization Server)，负责颁发 Access Token，Authing 是授权服务器。</p>
+</li>
+<li class="lvl-2">
+<p><strong>资源所有者</strong>(Resource Owner)，即<strong>用户</strong>，授权其他人访问他的资源。</p>
+</li>
+<li class="lvl-2">
+<p><strong>调用方</strong>(Client)，即第三方应用。调用方请求获取 Access Token，经过用户授权后，授权服务器为其颁发 Access Token。调用方可以携带 Access Token 到资源服务器访问用户的资源。</p>
+</li>
+<li class="lvl-2">
+<p><strong>资源服务器</strong>(Resouce Server)，存储用户资源。收到 Access Token 后，验证它的被赋予的权限项目，最后返回资源。</p>
+</li>
+</ul>
+<p>这个过程可能还存在其它主体，如浏览器，也称用户代理(User Agent), 服务提供商(Server Provider)等。</p>
+<p>客户端必须得到用户的授权（authorization grant），才能获得令牌（access token）。OAuth 2.0 定义了四种授权方式。</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>授权码模式（authorization code）</p>
+</li>
+<li class="lvl-2">
+<p>简化模式（implicit）</p>
+</li>
+<li class="lvl-2">
+<p>密码模式（resource owner password credentials）</p>
+</li>
+<li class="lvl-2">
+<p>客户端模式（client credentials）</p>
+</li>
+</ul>
+<p>授权码模式（authorization code）是功能最完整、流程最严密的授权模式。它的特点就是通过客户端的后台服务器，与&quot;服务提供商&quot;的认证服务器进行互动。</p>
+<p><img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/auth2.0_code.png" alt=""></p>
+<p>它的步骤如下：</p>
+<blockquote>
+<p>（A）用户访问客户端，后者将前者导向认证服务器。</p>
+<p>（B）用户选择是否给予客户端授权。</p>
+<p>（C）假设用户给予授权，认证服务器将用户导向客户端事先指定的&quot;重定向URI&quot;（redirection URI），同时附上一个授权码。</p>
+<p>（D）客户端收到授权码，附上早先的&quot;重定向URI&quot;，向认证服务器申请令牌。这一步是在客户端的后台的服务器上完成的，对用户不可见。</p>
+<p>（E）认证服务器核对了授权码和重定向URI，确认无误后，向客户端发送访问令牌（access token）和更新令牌（refresh token）。</p>
+</blockquote>
+<br>
+<h3 id="OIDC">OIDC</h3>
+<p>OIDC(<strong>OpenID Connect</strong> ) 是 <code>OAuth 2.0</code> 协议的超集，能够认证用户并完成资源授权。OIDC的认证和授权分为<strong>四种模式</strong>：授权码模式（Code）、隐式模式（Implicit）、密码模式（Password）、客户端证书模式（Client Credential）</p>
+<p>除了 OIDC 协议之外，还存在着许多标准身份协议，例如 SAML 和 CAS。它们的存在意义都是类似的：为了能让素不相识的 SP 和 IdP 进行快速对接，在用户的许可下让 SP 在 IdP 处完成授权，从而访问 IdP 下资源提供者的资源。</p>
+<h3 id="参考链接">参考链接</h3>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><a href="https://www.bbsmax.com/A/RnJWNaBwzq/">理解OAuth 2.0 - 阮一峰的网络日志</a></p>
+</li>
+<li class="lvl-2">
+<p><a href="https://docs.authing.cn/v2/concepts/oidc/oidc-overview.html">OIDC 与 OAuth2.0 综述</a></p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Auth</category>
+      </categories>
+      <tags>
+        <tag>OAuth2.0</tag>
+        <tag>LDAP</tag>
+        <tag>OIDC</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git 炸弹</title>
+    <url>/posts/c5ceb3cc.html</url>
+    <content><![CDATA[<h4 id="起源">起源</h4>
+<p>Git 炸弹因 XML 炸弹(AKA “billion laughs”)而得名，所以要理解 Git 炸弹，我们不妨先从 XML 炸弹说起。</p>
+<p>下面是一段 XML 文件示例：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot;?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">lolz</span> [</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol</span><span class="string">&quot;laugh out loud&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol2</span><span class="string">&quot;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol3</span><span class="string">&quot;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol4</span><span class="string">&quot;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol5</span><span class="string">&quot;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol6</span><span class="string">&quot;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol7</span><span class="string">&quot;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol8</span><span class="string">&quot;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol9</span><span class="string">&quot;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">lolz</span>&gt;</span>&amp;lol9;<span class="tag">&lt;/<span class="name">lolz</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>从 ENTITY 字段看起，每行 ENTITY 代表一个 XML 实体(entity)元素，一共10个实体元素，除了第一个实体 <code>lol</code> 定义了字符串&quot;laugh out loud&quot;(AKA lol)外, 其余实体都是实体引用，它们每个都引用自上一个实体，且重复10次。</p>
+<p>此 XML 文件的文档内容部分仅包含对实体<code>lol9</code>的一个实例的引用。但是，当它被 DOM 或 SAX 解析器解析时，遇到<code>lol9</code>时，它会扩展为 10 个<code>lol8</code>，而每个<code>lol8</code>会扩展为10 个<code>lol7</code>，依此类推。到将所有内容扩展为文本lol时，字符串&quot;laugh out loud&quot;的数量已达100,000,000。如果再增加一个类似结构的实体，或者第一个实体<code>lol</code>被定义为10个&quot;laugh out loud&quot;字符串的话，那么将有<code>10亿</code>个&quot;laugh out loud&quot;，即十亿大笑。</p>
+<p>这段文本看似内容不多，占用内存不大，但是在解析过程中内容被指数级展开，会消耗大量内存资源，所以有人利用这个原理进行DOS攻击，使被攻击的机器的内存迅速耗尽，从而停止服务。</p>
+<p>以上这种 XML 攻击，被称作 XML 炸弹。</p>
+<p>Git 炸弹的原理大致也跟XML炸弹类似，它利用了 Git 的某种特性，使得重复的文本内容深度嵌套。所以接下来再来看一下 Git 炸弹的原理。</p>
+<h4 id="Git-炸弹原理">Git 炸弹原理</h4>
+<p>我们都知道 Git 的基本数据结构有<code>commit</code>,<code>tag</code>, <code>tree</code>, <code>blob</code>, blob 只存储文件内容，tree 存储文件名称，文件目录结构， commit 与 tag 类似于一种引用(reference),指向 tree。</p>
+<p>每中数据都有自己的<code>hash ID</code>, 所以对于<code>blob</code>来说，只要其中的内容是一样的，那么其 ID 就是一样的，不管其内容的文件名，文件路径是否相同。换句话说，Git消除了<code>blob</code>的重复，允许不同的文件(文件名，文件路径不同)使用相同的<code>blob</code>，目的是减少文件内容的重复。对于<code>tree</code>也是类似。</p>
+<p>所以有人就利用这个特性制作了一个 Git 仓库, 其结构类似：</p>
+<p><img src="https:%5Cfastly.jsdelivr.net%5Cgh%5CCactusinhand%5Cimages_repo%5Cimages%5Cgit_bomb.png" alt="git bomb"></p>
+<p>之后，只要运行包含树的遍历操作的 Git 命令，如<code>git status</code>, <code>git checkout</code> 等命令，Git 会先在内存中构造出该仓库的树结构，在这种特殊的仓库中，这个过程会消耗大量内存，因此只要这个仓库的树嵌套足够深，内存就会马上被消耗完，相关进程会被终止。</p>
+<p>与XML炸弹类似，只要这种嵌套结构达到10层，或者底层的 blob 有10个，则整个过程展开会有 10 亿条 <code>tree</code>(路径)。</p>
+<h4 id="制作">制作</h4>
+<p>Git炸弹第一次公开讨论是在 2017 年，Kate 在自己的博客[2]中讨论了制作 Git 炸弹的原理以及制作方法，制作程序是用 Python 写的，见：</p>
+<blockquote>
+<p><a href="https://kate.io/blog/making-your-own-exploding-git-repos">https://kate.io/blog/making-your-own-exploding-git-repos</a></p>
+</blockquote>
+<h4 id="如何防止">如何防止</h4>
+<p>经过 Github 以及漏洞平台 Hackerone 同意后，Kate 公开了自己在 Github 上自己的 git-bomb仓库[3]，并且在自己的博客中公开讨论了 Git 炸弹的相关信息，之后马上引起了 Git 上游社区的关注，并且马上讨论了可能的修复方案: [4]</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>Git上游社区，最终补丁: [5]</p>
+</li>
+</ul>
+<p>Git 官方的修复是将遍历树的过程变得更快，使得对 Git 炸弹仓库做任何操作不至于等待很久。其<code>commit message</code>写到：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">You can see this in a pathological case where a commit adds</span><br><span class="line">a very large number of entries, and we limit based on a</span><br><span class="line">broad pathspec. E.g.:</span><br><span class="line"></span><br><span class="line">  perl -e &#x27;</span><br><span class="line">    chomp(my $blob = `git hash-object -w --stdin &lt;/dev/null`);</span><br><span class="line">    for my $a (1..1000) &#123;</span><br><span class="line">      for my $b (1..1000) &#123;</span><br><span class="line">        print &quot;100644 $blob\t$a/$b\n&quot;;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#x27; | git update-index --index-info</span><br><span class="line">  git commit -qm add</span><br><span class="line"></span><br><span class="line">  git rev-list HEAD -- .</span><br><span class="line"></span><br><span class="line">This case takes about 100ms now, but after this patch only</span><br><span class="line">needs 6ms. That&#x27;s not a huge improvement, but it&#x27;s easy to</span><br><span class="line">get and it protects us against even more pathological cases</span><br><span class="line">(e.g., going from 1 million to 10 million files would take</span><br><span class="line">ten times as long with the current code, but not increase at</span><br><span class="line">all after this patch).</span><br></pre></td></tr></table></figure>
+<p><strong>这个修复并没有解决处理这种仓库导致内存消耗过大问题，只对处理过程的消耗时间做了一次优化</strong>。</p>
+<h4 id="相关-CVE">相关 CVE</h4>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><a href="https://ubuntu.com/security/CVE-2017-15298">CVE-2017-15298</a></p>
+</li>
+</ul>
+<h4 id="参考链接">参考链接</h4>
+<ol>
+<li class="lvl-3">
+<p><a href="https://docs.microsoft.com/en-us/archive/msdn-magazine/2009/november/xml-denial-of-service-attacks-and-defenses">microsoft: xml-denial-of-service-attacks-and-defenses</a></p>
+</li>
+<li class="lvl-3">
+<p><a href="https://kate.io/blog/git-bomb">kate’s blog</a></p>
+</li>
+<li class="lvl-3">
+<p><a href="https://github.com/Katee/git-bomb">kate: original git-bomb repo on Github</a></p>
+</li>
+<li class="lvl-3">
+<p><a href="https://public-inbox.org/git/20171013123521.hop5hrfsyagu7znl@sigill.intra.peff.net/T/#m58c560c18f93476e23110a0656a8d525170d14a2">git upstream discussion</a></p>
+</li>
+<li class="lvl-3">
+<p><a href="https://github.com/Cactusinhand/git/commit/a937b37e766479c8e780b17cce9c4b252fd97e40">git upstream fix</a></p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+        <tag>Xml</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git bundle 格式及应用</title>
     <url>/posts/32c910d1.html</url>
     <content><![CDATA[<p><code>git-bundle</code> 文件是一种将 <code>git objects</code> 数据(git packfile)与仓库引用 <code>refs</code> 结合在一起的一种数据包格式，通过 <code>objects + refs</code> 就能恢复出一个完整的 <code>git</code> 仓库，因此可以用 <code>git-bundle</code> 文件来备份 <code>git</code> 仓库。</p>
@@ -699,73 +885,6 @@ commit body 部分不超过 76 个字符</p>
       </categories>
       <tags>
         <tag>Git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Git 炸弹</title>
-    <url>/posts/c5ceb3cc.html</url>
-    <content><![CDATA[<h4 id="起源">起源</h4>
-<p>Git 炸弹因 XML 炸弹(AKA “billion laughs”)而得名，所以要理解 Git 炸弹，我们不妨先从 XML 炸弹说起。</p>
-<p>下面是一段 XML 文件示例：</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot;?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">lolz</span> [</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol</span><span class="string">&quot;laugh out loud&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol2</span><span class="string">&quot;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol3</span><span class="string">&quot;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol4</span><span class="string">&quot;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol5</span><span class="string">&quot;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol6</span><span class="string">&quot;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol7</span><span class="string">&quot;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol8</span><span class="string">&quot;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol9</span><span class="string">&quot;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">lolz</span>&gt;</span>&amp;lol9;<span class="tag">&lt;/<span class="name">lolz</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>从 ENTITY 字段看起，每行 ENTITY 代表一个 XML 实体(entity)元素，一共10个实体元素，除了第一个实体 <code>lol</code> 定义了字符串&quot;laugh out loud&quot;(AKA lol)外, 其余实体都是实体引用，它们每个都引用自上一个实体，且重复10次。</p>
-<p>此 XML 文件的文档内容部分仅包含对实体<code>lol9</code>的一个实例的引用。但是，当它被 DOM 或 SAX 解析器解析时，遇到<code>lol9</code>时，它会扩展为 10 个<code>lol8</code>，而每个<code>lol8</code>会扩展为10 个<code>lol7</code>，依此类推。到将所有内容扩展为文本lol时，字符串&quot;laugh out loud&quot;的数量已达100,000,000。如果再增加一个类似结构的实体，或者第一个实体<code>lol</code>被定义为10个&quot;laugh out loud&quot;字符串的话，那么将有<code>10亿</code>个&quot;laugh out loud&quot;，即十亿大笑。</p>
-<p>这段文本看似内容不多，占用内存不大，但是在解析过程中内容被指数级展开，会消耗大量内存资源，所以有人利用这个原理进行DOS攻击，使被攻击的机器的内存迅速耗尽，从而停止服务。</p>
-<p>以上这种 XML 攻击，被称作 XML 炸弹。</p>
-<p>Git 炸弹的原理大致也跟XML炸弹类似，它利用了 Git 的某种特性，使得重复的文本内容深度嵌套。所以接下来再来看一下 Git 炸弹的原理。</p>
-<h4 id="Git-炸弹原理">Git 炸弹原理</h4>
-<p>我们都知道 Git 的基本数据结构有<code>commit</code>,<code>tag</code>, <code>tree</code>, <code>blob</code>, blob 只存储文件内容，tree 存储文件名称，文件目录结构， commit 与 tag 类似于一种引用(reference),指向 tree。</p>
-<p>每中数据都有自己的<code>hash ID</code>, 所以对于<code>blob</code>来说，只要其中的内容是一样的，那么其 ID 就是一样的，不管其内容的文件名，文件路径是否相同。换句话说，Git消除了<code>blob</code>的重复，允许不同的文件(文件名，文件路径不同)使用相同的<code>blob</code>，目的是减少文件内容的重复。对于<code>tree</code>也是类似。</p>
-<p>所以有人就利用这个特性制作了一个 Git 仓库, 其结构类似：</p>
-<p><img src="https:%5Cfastly.jsdelivr.net%5Cgh%5CCactusinhand%5Cimages_repo%5Cimages%5Cgit_bomb.png" alt="git bomb"></p>
-<p>之后，只要运行包含树的遍历操作的 Git 命令，如<code>git status</code>, <code>git checkout</code> 等命令，Git 会先在内存中构造出该仓库的树结构，在这种特殊的仓库中，这个过程会消耗大量内存，因此只要这个仓库的树嵌套足够深，内存就会马上被消耗完，相关进程会被终止。</p>
-<p>与XML炸弹类似，只要这种嵌套结构达到10层，或者底层的 blob 有10个，则整个过程展开会有 10 亿条 <code>tree</code>(路径)。</p>
-<h4 id="制作">制作</h4>
-<p>Git炸弹第一次公开讨论是在 2017 年，Kate 在自己的博客[2]中讨论了制作 Git 炸弹的原理以及制作方法，制作程序是用 Python 写的，见：</p>
-<blockquote>
-<p><a href="https://kate.io/blog/making-your-own-exploding-git-repos">https://kate.io/blog/making-your-own-exploding-git-repos</a></p>
-</blockquote>
-<h4 id="如何防止">如何防止</h4>
-<p>经过 Github 以及漏洞平台 Hackerone 同意后，Kate 公开了自己在 Github 上自己的 git-bomb仓库[3]，并且在自己的博客中公开讨论了 Git 炸弹的相关信息，之后马上引起了 Git 上游社区的关注，并且马上讨论了可能的修复方案: [4]</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>Git上游社区，最终补丁: [5]</p>
-</li>
-</ul>
-<p>Git 官方的修复是将遍历树的过程变得更快，使得对 Git 炸弹仓库做任何操作不至于等待很久。其<code>commit message</code>写到：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">You can see this in a pathological case where a commit adds</span><br><span class="line">a very large number of entries, and we limit based on a</span><br><span class="line">broad pathspec. E.g.:</span><br><span class="line"></span><br><span class="line">  perl -e &#x27;</span><br><span class="line">    chomp(my $blob = `git hash-object -w --stdin &lt;/dev/null`);</span><br><span class="line">    for my $a (1..1000) &#123;</span><br><span class="line">      for my $b (1..1000) &#123;</span><br><span class="line">        print &quot;100644 $blob\t$a/$b\n&quot;;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#x27; | git update-index --index-info</span><br><span class="line">  git commit -qm add</span><br><span class="line"></span><br><span class="line">  git rev-list HEAD -- .</span><br><span class="line"></span><br><span class="line">This case takes about 100ms now, but after this patch only</span><br><span class="line">needs 6ms. That&#x27;s not a huge improvement, but it&#x27;s easy to</span><br><span class="line">get and it protects us against even more pathological cases</span><br><span class="line">(e.g., going from 1 million to 10 million files would take</span><br><span class="line">ten times as long with the current code, but not increase at</span><br><span class="line">all after this patch).</span><br></pre></td></tr></table></figure>
-<p><strong>这个修复并没有解决处理这种仓库导致内存消耗过大问题，只对处理过程的消耗时间做了一次优化</strong>。</p>
-<h4 id="相关-CVE">相关 CVE</h4>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p><a href="https://ubuntu.com/security/CVE-2017-15298">CVE-2017-15298</a></p>
-</li>
-</ul>
-<h4 id="参考链接">参考链接</h4>
-<ol>
-<li class="lvl-3">
-<p><a href="https://docs.microsoft.com/en-us/archive/msdn-magazine/2009/november/xml-denial-of-service-attacks-and-defenses">microsoft: xml-denial-of-service-attacks-and-defenses</a></p>
-</li>
-<li class="lvl-3">
-<p><a href="https://kate.io/blog/git-bomb">kate’s blog</a></p>
-</li>
-<li class="lvl-3">
-<p><a href="https://github.com/Katee/git-bomb">kate: original git-bomb repo on Github</a></p>
-</li>
-<li class="lvl-3">
-<p><a href="https://public-inbox.org/git/20171013123521.hop5hrfsyagu7znl@sigill.intra.peff.net/T/#m58c560c18f93476e23110a0656a8d525170d14a2">git upstream discussion</a></p>
-</li>
-<li class="lvl-3">
-<p><a href="https://github.com/Cactusinhand/git/commit/a937b37e766479c8e780b17cce9c4b252fd97e40">git upstream fix</a></p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Git</category>
-      </categories>
-      <tags>
-        <tag>Git</tag>
-        <tag>Xml</tag>
       </tags>
   </entry>
   <entry>
@@ -1143,125 +1262,6 @@ commit body 部分不超过 76 个字符</p>
       </categories>
       <tags>
         <tag>Rust</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>认证(Authentication)和授权(Authorization)</title>
-    <url>/posts/3be69b54.html</url>
-    <content><![CDATA[<h3 id="什么是认证和授权">什么是认证和授权</h3>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>认证(Authentication)，识别身份</p>
-</li>
-<li class="lvl-2">
-<p>授权(Authorization)，授予被识别的身份是否有权限获取指定资源，或授予其操作权限</p>
-</li>
-</ul>
-<p>认证的双方是访问者(User)、身份信息持有者(<strong>IdP</strong>/Identity Provider)。</p>
-<p>用户持有的唯一标识符(用户名，UUID 等)，密码信息（密码，指纹等）需要与IdP持有的信息匹配才能认证成功。</p>
-<p>资源持有者(Source Owner)，控制资源的获取，修改，删除等。</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>身份和资源的分离</p>
-</li>
-</ul>
-<p>资源可能是用户自己产生的，也可能是第三方服务器产生的，或者叫做 Service Provider(SP)，也称 Client。</p>
-<p>身份和资源的分离即为 <strong>IdP, SP 分离</strong>。</p>
-<p>IdP 与 IdP 之前也可以进行资源传递，并授权。这种方式一般称为<strong>联邦授权</strong>。</p>
-<br>
-<h3 id="LDAP">LDAP</h3>
-<p>LDAP(Light Directory Access Protocol)即轻量级目录访问协议，它是一种为<strong>查询</strong>、<strong>浏览</strong>和<strong>搜索</strong>而优化的专业分布式数据库，它呈树状结构组织数据，和<a href="https://so.csdn.net/so/search?q=%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E5%BA%93&amp;spm=1001.2101.3001.7020">关系数据库</a>不同，它有优异的读性能，但写性能差，并且没有事务处理、回滚等复杂功能，不适于存储修改频繁的数据，所以大多数是用来查询的。LDAP 只是一种协议，可以有多种实现。</p>
-<p>一般结构：</p>
-<p><img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/image-20220213014635093.png" alt=""></p>
-<p>DIT(Directory Information Tree）目录信息树<br>
-dn(Distinguished Name)：一条记录的详细位置，相当于绝对路径(唯一)<br>
-rdn(Relative dn) : 相对dn, 相对于相对路径<br>
-dc(Domain Component) ：一条记录所属区域 (哪一颗树)<br>
-ou(Organization Unit) ：一条记录所属组织 （哪一个分支）<br>
-cn/uid(Common Name/user id)：一条记录的名字/ID (哪一个苹果名字)<br>
-sn(Surname): 名字前缀(姓)</p>
-<p>基本模型：</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>信息模型，将信息以树状方式组织，基本数据单元是条目(Entry), 条目又由不同属性组成</p>
-</li>
-<li class="lvl-2">
-<p>命名模型，实现一种条目定位方式</p>
-</li>
-<li class="lvl-2">
-<p>功能模型，实现增删改查等功能</p>
-</li>
-<li class="lvl-2">
-<p>安全模型，实现身份认证，安全通道，访问控制</p>
-</li>
-</ul>
-<br>
-<h3 id="OAuth2-0">OAuth2.0</h3>
-<p><strong>OAuth 2.0</strong> 是一个授权标准协议，主要用于<strong>资源授权</strong>。</p>
-<p>前面提到的身份和资源的分离，OAuth 引入了一个授权层，用来分离两种不同的角色：客户端和资源所有者。资源所有者同意以后，资源服务器可以向客户端颁发令牌。客户端通过令牌，去请求数据。</p>
-<p>所以，<strong>OAuth 的核心就是向第三方应用颁发令牌</strong>。</p>
-<p>根据 OAuth 2.0 协议规范，主要有四个主体：</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p><strong>授权服务器</strong>(Authorization Server)，负责颁发 Access Token，Authing 是授权服务器。</p>
-</li>
-<li class="lvl-2">
-<p><strong>资源所有者</strong>(Resource Owner)，即<strong>用户</strong>，授权其他人访问他的资源。</p>
-</li>
-<li class="lvl-2">
-<p><strong>调用方</strong>(Client)，即第三方应用。调用方请求获取 Access Token，经过用户授权后，授权服务器为其颁发 Access Token。调用方可以携带 Access Token 到资源服务器访问用户的资源。</p>
-</li>
-<li class="lvl-2">
-<p><strong>资源服务器</strong>(Resouce Server)，存储用户资源。收到 Access Token 后，验证它的被赋予的权限项目，最后返回资源。</p>
-</li>
-</ul>
-<p>这个过程可能还存在其它主体，如浏览器，也称用户代理(User Agent), 服务提供商(Server Provider)等。</p>
-<p>客户端必须得到用户的授权（authorization grant），才能获得令牌（access token）。OAuth 2.0 定义了四种授权方式。</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>授权码模式（authorization code）</p>
-</li>
-<li class="lvl-2">
-<p>简化模式（implicit）</p>
-</li>
-<li class="lvl-2">
-<p>密码模式（resource owner password credentials）</p>
-</li>
-<li class="lvl-2">
-<p>客户端模式（client credentials）</p>
-</li>
-</ul>
-<p>授权码模式（authorization code）是功能最完整、流程最严密的授权模式。它的特点就是通过客户端的后台服务器，与&quot;服务提供商&quot;的认证服务器进行互动。</p>
-<p><img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/auth2.0_code.png" alt=""></p>
-<p>它的步骤如下：</p>
-<blockquote>
-<p>（A）用户访问客户端，后者将前者导向认证服务器。</p>
-<p>（B）用户选择是否给予客户端授权。</p>
-<p>（C）假设用户给予授权，认证服务器将用户导向客户端事先指定的&quot;重定向URI&quot;（redirection URI），同时附上一个授权码。</p>
-<p>（D）客户端收到授权码，附上早先的&quot;重定向URI&quot;，向认证服务器申请令牌。这一步是在客户端的后台的服务器上完成的，对用户不可见。</p>
-<p>（E）认证服务器核对了授权码和重定向URI，确认无误后，向客户端发送访问令牌（access token）和更新令牌（refresh token）。</p>
-</blockquote>
-<br>
-<h3 id="OIDC">OIDC</h3>
-<p>OIDC(<strong>OpenID Connect</strong> ) 是 <code>OAuth 2.0</code> 协议的超集，能够认证用户并完成资源授权。OIDC的认证和授权分为<strong>四种模式</strong>：授权码模式（Code）、隐式模式（Implicit）、密码模式（Password）、客户端证书模式（Client Credential）</p>
-<p>除了 OIDC 协议之外，还存在着许多标准身份协议，例如 SAML 和 CAS。它们的存在意义都是类似的：为了能让素不相识的 SP 和 IdP 进行快速对接，在用户的许可下让 SP 在 IdP 处完成授权，从而访问 IdP 下资源提供者的资源。</p>
-<h3 id="参考链接">参考链接</h3>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p><a href="https://www.bbsmax.com/A/RnJWNaBwzq/">理解OAuth 2.0 - 阮一峰的网络日志</a></p>
-</li>
-<li class="lvl-2">
-<p><a href="https://docs.authing.cn/v2/concepts/oidc/oidc-overview.html">OIDC 与 OAuth2.0 综述</a></p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>Auth</category>
-      </categories>
-      <tags>
-        <tag>OAuth2.0</tag>
-        <tag>LDAP</tag>
-        <tag>OIDC</tag>
       </tags>
   </entry>
 </search>
