@@ -936,6 +936,247 @@ sn(Surname): 名字前缀(姓)</p>
       </tags>
   </entry>
   <entry>
+    <title>学习 Rust 的一些笔记</title>
+    <url>/posts/767b1d3c.html</url>
+    <content><![CDATA[<p>Rust是一门偏底层的，安全的，高效的开源编程语言。</p>
+<span id="more"></span>
+<h3 id="工具链">工具链</h3>
+<p><code>rustup</code> 是管理<code>Rust</code>版本和相关工具的命令行工具(rust toolchain installer)</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><code>rustup update</code> 更新<code>Rust</code>版本</p>
+</li>
+<li class="lvl-2">
+<p><code>rustup self uninstall</code> 卸载<code>Rust</code>以及<code>rustup</code>本身</p>
+</li>
+</ul>
+<p><code>Rust</code>工具链中包括<code>rustc</code>编译器工具，<code>rustfmt</code>格式化工具，<code>rustdoc</code>文档化工具等。</p>
+<p><code>rustc</code>类似于C/C++中的<code>gcc/clang</code></p>
+<p><code>Cargo</code> 是 <code>Rust</code> 的构建系统和包管理器。可以进行构建代码、下载依赖库并编译这些库等。</p>
+<p><code>cargo new rust-proj</code> 创建一个Rust项目，</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ cargo new rust-proj</span><br><span class="line">     Created binary (application) `rust-proj` package</span><br><span class="line">$ tree rust-proj</span><br><span class="line">rust-proj</span><br><span class="line">├── Cargo.toml</span><br><span class="line">└── src</span><br><span class="line">    └── main.rs</span><br><span class="line"></span><br><span class="line">1 directory, 2 files</span><br></pre></td></tr></table></figure>
+<p><code>Cargo</code>会在 <em>hello_cargo</em> 目录初始化一个 git 仓库，以及一个<code>.gitignore</code>文件。如果你在现有的 git 仓库中运行 <code>cargo new</code>，则不会生成 git 文件；你可以通过使用<code>cargo new --vcs=git</code> 来覆盖此行为。</p>
+<p>可以通过 <code>--vcs</code> 参数使 <code>cargo new</code> 切换到其它版本控制系统（<code>VCS</code>），或者不使用 <code>VCS</code>。运行 <code>cargo new --help</code> 参看可用的选项。</p>
+<p><code>cargo build</code>构建项目，目标可执行文件在<code>target/debug/</code>下</p>
+<p><code>cargo run</code>则是构建项目并运行。</p>
+<p><code>cargo check</code> 检查项目代码正确，确保可编译。不会产生可执行文件。</p>
+<p><code>cargo build</code>默认构建是debug模式。如果项目一切都OK，可以运行<code>cargo build --release</code>执行发布构建，这会对项目进行一定编译优化，从而使得代码运行得更快，但是相应地，编译时间会更长。</p>
+<p><code>cargo doc --open</code> 会生成当前项目中的依赖库(crate)的文档，并转到浏览器可以查询。</p>
+<h3 id="Hello-World">Hello, World!</h3>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><code>println!</code> 调用了一个 Rust 宏（macro）。如果是调用函数，则应输入 <code>println</code>（没有<code>!</code>）。我们将在第十九章详细讨论宏。现在你只需记住，当看到符号 <code>!</code> 的时候，就意味着调用的是宏而不是普通函数，并且宏并不总是遵循与函数相同的规则。</p>
+</li>
+</ul>
+<p><code>cargo new</code>生成的项目中，包含配置文件<code>Cargo.toml</code></p>
+<p>文件名: <code>Cargo.toml</code></p>
+<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"></span><br><span class="line"><span class="attr">rand</span> = <span class="string">&quot;0.8.3&quot;</span></span><br></pre></td></tr></table></figure>
+<p>其中“0.8.3”指定依赖版本，其语法遵循语义化版本<a href="http://semver.org/">（Semantic Versioning）</a></p>
+<p>这里的<code>0.8.3</code> 实际上是 <code>^0.8.3</code> 的简写，它表示 任何不低于 <code>0.8.3</code>， 但是低于 <code>0.9.0</code> 的版本。Cargo将这些版本视作与 <code>0.8.3</code> 版本公有 API 相兼容的版本，这个声明确保你将获得最新的补丁版本，它仍然可以与本章中的代码正常编译。<code>0.9.0</code> 或以上版本不保证拥有接下来示例中使用到的API。</p>
+<hr>
+<h3 id="一些定义">一些定义</h3>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>Rust变量默认是不可改变的（immutable），如果想声明可变变量，需要使用<code>mut</code>关键字。</p>
+</li>
+<li class="lvl-2">
+<p>Rust不允许对常量使用 <code>mut</code>。常量不光默认不能变，它总是不能变。其声明使用<code>const</code>，且必须标注类型。</p>
+</li>
+<li class="lvl-2">
+<p>整型变量分有符号和无符号，如<code>i8</code>表示有符号8位整数，<code>u8</code>表示无符号8位整数，<code>i128</code>表示有符号128位整数。</p>
+</li>
+<li class="lvl-2">
+<p>还有一种整型依赖计算机架构，<code>isize</code>, <code>usize</code>在不同的架构中表示的长度会不同。</p>
+</li>
+<li class="lvl-2">
+<p>整型字面值有十六进制(<code>0xff</code>)，八进制(<code>0o77</code>)，二进制(<code>0b11</code>)，以及十进制(99_999)，单字节字符(仅限<code>u8</code>)</p>
+</li>
+<li class="lvl-2">
+<p>Rust默认数字类型是<code>i32</code></p>
+</li>
+<li class="lvl-2">
+<p>浮点型变量有两种，<code>f32</code>表示单精度浮点小数，<code>f64</code>表示双精度浮点小数。默认是<code>f64</code>。</p>
+</li>
+<li class="lvl-2">
+<p>字符类型（char）用单引号表示，其大小为4个字节，表示了一个Unicode标量值。</p>
+</li>
+<li class="lvl-2">
+<p>复合类型元组(tuple)一旦声明，其长度不变，其中每一个位置都有一个类型的值，类型可以不同。</p>
+</li>
+<li class="lvl-2">
+<p>复合类型数组(array)长度也是固定的，而且其中类型必须相同。</p>
+</li>
+</ul>
+<p><strong>语句(statement)和表达式(expression)</strong></p>
+<p>Rust是一门基于表达式的语言。</p>
+<p>语句是执行一些操作，但是不返回值的指令。</p>
+<p><code>函数定义</code>就是一个语句。</p>
+<p>表达式计算并产生一个值，可以赋予其它变量。</p>
+<p><code>函数调用</code>是一个表达式，大括号创建的块作用域也是一个表达式。</p>
+<p><code>表达式的结尾没有分号，如果结尾加上分号，则变成了语句。</code></p>
+<p>数字本身就是一个表达式，所以它可以返回本身的值赋值给其它变量。</p>
+<p>栈(stack)中的数据必须占用已知且大小固定的大小。</p>
+<p>当数据大小未知，或大小可能变化的时候，需要用堆(heap)。比如使用内存分配器memory allocator分配指定大小的内存，此时该块内存会被标记为已用，并且以指针来表示这块内存。</p>
+<p>而将数据放入栈中的过程并不叫做分配内存，因为这个过程并没有新的内存被分配。</p>
+<p>堆的指针可以存储在栈上。</p>
+<p>入栈比在堆上分配内存要快。</p>
+<p>访问堆中的数据比访问栈上的数据要慢，因为访问堆首先要通过指针来访问，而指针在栈上。</p>
+<hr>
+<h3 id="一些笔记">一些笔记</h3>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>定义变量用动词let</p>
+</li>
+<li class="lvl-2">
+<p>借鉴Python的元组</p>
+</li>
+<li class="lvl-2">
+<p>借鉴C++的指针</p>
+</li>
+<li class="lvl-2">
+<p>完善的包管理工具cargo</p>
+</li>
+<li class="lvl-2">
+<p>友好的文档管理</p>
+</li>
+<li class="lvl-2">
+<p>使用先进的VCS管理项目</p>
+</li>
+<li class="lvl-2">
+<p>无垃圾回收机制，使用变量所有权管理内存</p>
+</li>
+<li class="lvl-2">
+<p>编译与执行分开，更早的发现错误</p>
+</li>
+<li class="lvl-2">
+<p>浅拷贝与深拷贝，默认不进行数据的深拷贝，深拷贝使用clone方法</p>
+</li>
+<li class="lvl-2">
+<p>移动(move)操作</p>
+</li>
+<li class="lvl-2">
+<p>Copy trait</p>
+</li>
+<li class="lvl-2">
+<p>栈上数据；堆上数据；既在栈上，又在推上(数据指针在栈上，数据内容在堆上)数据</p>
+</li>
+<li class="lvl-2">
+<p>默认行为：默认变量不可变</p>
+</li>
+<li class="lvl-2">
+<p>引用(ref)变量默认也不能修改其引用的值</p>
+</li>
+<li class="lvl-2">
+<p>一个引用的作用域从声明的地方开始一直持续到最后一次使用为止</p>
+</li>
+<li class="lvl-2">
+<p>字符串slice</p>
+</li>
+</ul>
+<hr>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>Rust可以直接将数据附加到枚举的每个成员上，这样就不需要一个额外的结构体了。</p>
+</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">IpAddr</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">V4</span>(<span class="type">String</span>),</span><br><span class="line">    <span class="title function_ invoke__">V6</span>(<span class="type">String</span>),</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">home</span> = IpAddr::<span class="title function_ invoke__">V4</span>(String::<span class="title function_ invoke__">from</span>(<span class="string">&quot;127.0.0.1&quot;</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">loopback</span> = IpAddr::<span class="title function_ invoke__">V6</span>(String::<span class="title function_ invoke__">from</span>(<span class="string">&quot;::1&quot;</span>));</span><br></pre></td></tr></table></figure>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>Rust没有空值(Null)，因为空值会导致很多错误，而是实现了一个枚举变量<code>Option&lt;T&gt;</code>：</p>
+</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">Option</span>&lt;T&gt; &#123;</span><br><span class="line">    <span class="title function_ invoke__">Some</span>(T),</span><br><span class="line">    <span class="literal">None</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">some_number</span> = <span class="title function_ invoke__">Some</span>(<span class="number">5</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">some_string</span> = <span class="title function_ invoke__">Some</span>(<span class="string">&quot;a string&quot;</span>);</span><br><span class="line"># 当为<span class="literal">None</span>时，必须显示指定类型&lt;T&gt;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">absent_number</span>: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; = <span class="literal">None</span>;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>关于字符串方法，以下两种方法等效：</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">s1</span> = String::<span class="title function_ invoke__">from</span>(<span class="string">&quot;initial contents&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">s2</span> = <span class="string">&quot;initial contents&quot;</span>.<span class="title function_ invoke__">to_string</span>();</span><br></pre></td></tr></table></figure>
+<p>参考链接：</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><a href="https://www.rust-lang.org/zh-CN">rust中文官网</a></p>
+</li>
+<li class="lvl-2">
+<p><a href="https://kaisery.github.io/trpl-zh-cn/">rust book</a></p>
+</li>
+<li class="lvl-2">
+<p><a href="https://book.rust.team/into-rust.html">rust course</a></p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Rust</category>
+      </categories>
+      <tags>
+        <tag>Rust</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git 炸弹</title>
+    <url>/posts/c5ceb3cc.html</url>
+    <content><![CDATA[<h4 id="起源">起源</h4>
+<p>Git 炸弹因 XML 炸弹(AKA “billion laughs”)而得名，所以要理解 Git 炸弹，我们不妨先从 XML 炸弹说起。</p>
+<p>下面是一段 XML 文件示例：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot;?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">lolz</span> [</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol</span><span class="string">&quot;laugh out loud&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol2</span><span class="string">&quot;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol3</span><span class="string">&quot;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol4</span><span class="string">&quot;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol5</span><span class="string">&quot;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol6</span><span class="string">&quot;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol7</span><span class="string">&quot;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol8</span><span class="string">&quot;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol9</span><span class="string">&quot;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">lolz</span>&gt;</span>&amp;lol9;<span class="tag">&lt;/<span class="name">lolz</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>从 ENTITY 字段看起，每行 ENTITY 代表一个 XML 实体(entity)元素，一共10个实体元素，除了第一个实体 <code>lol</code> 定义了字符串&quot;laugh out loud&quot;(AKA lol)外, 其余实体都是实体引用，它们每个都引用自上一个实体，且重复10次。</p>
+<p>此 XML 文件的文档内容部分仅包含对实体<code>lol9</code>的一个实例的引用。但是，当它被 DOM 或 SAX 解析器解析时，遇到<code>lol9</code>时，它会扩展为 10 个<code>lol8</code>，而每个<code>lol8</code>会扩展为10 个<code>lol7</code>，依此类推。到将所有内容扩展为文本lol时，字符串&quot;laugh out loud&quot;的数量已达100,000,000。如果再增加一个类似结构的实体，或者第一个实体<code>lol</code>被定义为10个&quot;laugh out loud&quot;字符串的话，那么将有<code>10亿</code>个&quot;laugh out loud&quot;，即十亿大笑。</p>
+<p>这段文本看似内容不多，占用内存不大，但是在解析过程中内容被指数级展开，会消耗大量内存资源，所以有人利用这个原理进行DOS攻击，使被攻击的机器的内存迅速耗尽，从而停止服务。</p>
+<p>以上这种 XML 攻击，被称作 XML 炸弹。</p>
+<p>Git 炸弹的原理大致也跟XML炸弹类似，它利用了 Git 的某种特性，使得重复的文本内容深度嵌套。所以接下来再来看一下 Git 炸弹的原理。</p>
+<h4 id="Git-炸弹原理">Git 炸弹原理</h4>
+<p>我们都知道 Git 的基本数据结构有<code>commit</code>,<code>tag</code>, <code>tree</code>, <code>blob</code>, blob 只存储文件内容，tree 存储文件名称，文件目录结构， commit 与 tag 类似于一种引用(reference),指向 tree。</p>
+<p>每中数据都有自己的<code>hash ID</code>, 所以对于<code>blob</code>来说，只要其中的内容是一样的，那么其 ID 就是一样的，不管其内容的文件名，文件路径是否相同。换句话说，Git消除了<code>blob</code>的重复，允许不同的文件(文件名，文件路径不同)使用相同的<code>blob</code>，目的是减少文件内容的重复。对于<code>tree</code>也是类似。</p>
+<p>所以有人就利用这个特性制作了一个 Git 仓库, 其结构类似：</p>
+<p><img src="https:%5Cfastly.jsdelivr.net%5Cgh%5CCactusinhand%5Cimages_repo%5Cimages%5Cgit_bomb.png" alt="git bomb"></p>
+<p>之后，只要运行包含树的遍历操作的 Git 命令，如<code>git status</code>, <code>git checkout</code> 等命令，Git 会先在内存中构造出该仓库的树结构，在这种特殊的仓库中，这个过程会消耗大量内存，因此只要这个仓库的树嵌套足够深，内存就会马上被消耗完，相关进程会被终止。</p>
+<p>与XML炸弹类似，只要这种嵌套结构达到10层，或者底层的 blob 有10个，则整个过程展开会有 10 亿条 <code>tree</code>(路径)。</p>
+<h4 id="制作">制作</h4>
+<p>Git炸弹第一次公开讨论是在 2017 年，Kate 在自己的博客[2]中讨论了制作 Git 炸弹的原理以及制作方法，制作程序是用 Python 写的，见：</p>
+<blockquote>
+<p><a href="https://kate.io/blog/making-your-own-exploding-git-repos">https://kate.io/blog/making-your-own-exploding-git-repos</a></p>
+</blockquote>
+<h4 id="如何防止">如何防止</h4>
+<p>经过 Github 以及漏洞平台 Hackerone 同意后，Kate 公开了自己在 Github 上自己的 git-bomb仓库[3]，并且在自己的博客中公开讨论了 Git 炸弹的相关信息，之后马上引起了 Git 上游社区的关注，并且马上讨论了可能的修复方案: [4]</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>Git上游社区，最终补丁: [5]</p>
+</li>
+</ul>
+<p>Git 官方的修复是将遍历树的过程变得更快，使得对 Git 炸弹仓库做任何操作不至于等待很久。其<code>commit message</code>写到：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">You can see this in a pathological case where a commit adds</span><br><span class="line">a very large number of entries, and we limit based on a</span><br><span class="line">broad pathspec. E.g.:</span><br><span class="line"></span><br><span class="line">  perl -e &#x27;</span><br><span class="line">    chomp(my $blob = `git hash-object -w --stdin &lt;/dev/null`);</span><br><span class="line">    for my $a (1..1000) &#123;</span><br><span class="line">      for my $b (1..1000) &#123;</span><br><span class="line">        print &quot;100644 $blob\t$a/$b\n&quot;;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#x27; | git update-index --index-info</span><br><span class="line">  git commit -qm add</span><br><span class="line"></span><br><span class="line">  git rev-list HEAD -- .</span><br><span class="line"></span><br><span class="line">This case takes about 100ms now, but after this patch only</span><br><span class="line">needs 6ms. That&#x27;s not a huge improvement, but it&#x27;s easy to</span><br><span class="line">get and it protects us against even more pathological cases</span><br><span class="line">(e.g., going from 1 million to 10 million files would take</span><br><span class="line">ten times as long with the current code, but not increase at</span><br><span class="line">all after this patch).</span><br></pre></td></tr></table></figure>
+<p><strong>这个修复并没有解决处理这种仓库导致内存消耗过大问题，只对处理过程的消耗时间做了一次优化</strong>。</p>
+<h4 id="相关-CVE">相关 CVE</h4>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><a href="https://ubuntu.com/security/CVE-2017-15298">CVE-2017-15298</a></p>
+</li>
+</ul>
+<h4 id="参考链接">参考链接</h4>
+<ol>
+<li class="lvl-3">
+<p><a href="https://docs.microsoft.com/en-us/archive/msdn-magazine/2009/november/xml-denial-of-service-attacks-and-defenses">microsoft: xml-denial-of-service-attacks-and-defenses</a></p>
+</li>
+<li class="lvl-3">
+<p><a href="https://kate.io/blog/git-bomb">kate’s blog</a></p>
+</li>
+<li class="lvl-3">
+<p><a href="https://github.com/Katee/git-bomb">kate: original git-bomb repo on Github</a></p>
+</li>
+<li class="lvl-3">
+<p><a href="https://public-inbox.org/git/20171013123521.hop5hrfsyagu7znl@sigill.intra.peff.net/T/#m58c560c18f93476e23110a0656a8d525170d14a2">git upstream discussion</a></p>
+</li>
+<li class="lvl-3">
+<p><a href="https://github.com/Cactusinhand/git/commit/a937b37e766479c8e780b17cce9c4b252fd97e40">git upstream fix</a></p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>Git-bomb</tag>
+        <tag>Xml</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Git 内部原理</title>
     <url>/posts/4fad1e06.html</url>
     <content><![CDATA[<p>本文将深入分析 Git 底层的核心数据结构，如 <code>blob</code>, <code>tree</code>, <code>commit</code>, <code>tag</code> 。通过理解底层数据结构，我们就会更容易理解和掌握相关 Git 命令操作。</p>
@@ -1136,247 +1377,6 @@ sn(Surname): 名字前缀(姓)</p>
       </categories>
       <tags>
         <tag>Git-inside</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Git 炸弹</title>
-    <url>/posts/c5ceb3cc.html</url>
-    <content><![CDATA[<h4 id="起源">起源</h4>
-<p>Git 炸弹因 XML 炸弹(AKA “billion laughs”)而得名，所以要理解 Git 炸弹，我们不妨先从 XML 炸弹说起。</p>
-<p>下面是一段 XML 文件示例：</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot;?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">lolz</span> [</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol</span><span class="string">&quot;laugh out loud&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol2</span><span class="string">&quot;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol3</span><span class="string">&quot;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol4</span><span class="string">&quot;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol5</span><span class="string">&quot;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol6</span><span class="string">&quot;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol7</span><span class="string">&quot;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol8</span><span class="string">&quot;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol9</span><span class="string">&quot;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">lolz</span>&gt;</span>&amp;lol9;<span class="tag">&lt;/<span class="name">lolz</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>从 ENTITY 字段看起，每行 ENTITY 代表一个 XML 实体(entity)元素，一共10个实体元素，除了第一个实体 <code>lol</code> 定义了字符串&quot;laugh out loud&quot;(AKA lol)外, 其余实体都是实体引用，它们每个都引用自上一个实体，且重复10次。</p>
-<p>此 XML 文件的文档内容部分仅包含对实体<code>lol9</code>的一个实例的引用。但是，当它被 DOM 或 SAX 解析器解析时，遇到<code>lol9</code>时，它会扩展为 10 个<code>lol8</code>，而每个<code>lol8</code>会扩展为10 个<code>lol7</code>，依此类推。到将所有内容扩展为文本lol时，字符串&quot;laugh out loud&quot;的数量已达100,000,000。如果再增加一个类似结构的实体，或者第一个实体<code>lol</code>被定义为10个&quot;laugh out loud&quot;字符串的话，那么将有<code>10亿</code>个&quot;laugh out loud&quot;，即十亿大笑。</p>
-<p>这段文本看似内容不多，占用内存不大，但是在解析过程中内容被指数级展开，会消耗大量内存资源，所以有人利用这个原理进行DOS攻击，使被攻击的机器的内存迅速耗尽，从而停止服务。</p>
-<p>以上这种 XML 攻击，被称作 XML 炸弹。</p>
-<p>Git 炸弹的原理大致也跟XML炸弹类似，它利用了 Git 的某种特性，使得重复的文本内容深度嵌套。所以接下来再来看一下 Git 炸弹的原理。</p>
-<h4 id="Git-炸弹原理">Git 炸弹原理</h4>
-<p>我们都知道 Git 的基本数据结构有<code>commit</code>,<code>tag</code>, <code>tree</code>, <code>blob</code>, blob 只存储文件内容，tree 存储文件名称，文件目录结构， commit 与 tag 类似于一种引用(reference),指向 tree。</p>
-<p>每中数据都有自己的<code>hash ID</code>, 所以对于<code>blob</code>来说，只要其中的内容是一样的，那么其 ID 就是一样的，不管其内容的文件名，文件路径是否相同。换句话说，Git消除了<code>blob</code>的重复，允许不同的文件(文件名，文件路径不同)使用相同的<code>blob</code>，目的是减少文件内容的重复。对于<code>tree</code>也是类似。</p>
-<p>所以有人就利用这个特性制作了一个 Git 仓库, 其结构类似：</p>
-<p><img src="https:%5Cfastly.jsdelivr.net%5Cgh%5CCactusinhand%5Cimages_repo%5Cimages%5Cgit_bomb.png" alt="git bomb"></p>
-<p>之后，只要运行包含树的遍历操作的 Git 命令，如<code>git status</code>, <code>git checkout</code> 等命令，Git 会先在内存中构造出该仓库的树结构，在这种特殊的仓库中，这个过程会消耗大量内存，因此只要这个仓库的树嵌套足够深，内存就会马上被消耗完，相关进程会被终止。</p>
-<p>与XML炸弹类似，只要这种嵌套结构达到10层，或者底层的 blob 有10个，则整个过程展开会有 10 亿条 <code>tree</code>(路径)。</p>
-<h4 id="制作">制作</h4>
-<p>Git炸弹第一次公开讨论是在 2017 年，Kate 在自己的博客[2]中讨论了制作 Git 炸弹的原理以及制作方法，制作程序是用 Python 写的，见：</p>
-<blockquote>
-<p><a href="https://kate.io/blog/making-your-own-exploding-git-repos">https://kate.io/blog/making-your-own-exploding-git-repos</a></p>
-</blockquote>
-<h4 id="如何防止">如何防止</h4>
-<p>经过 Github 以及漏洞平台 Hackerone 同意后，Kate 公开了自己在 Github 上自己的 git-bomb仓库[3]，并且在自己的博客中公开讨论了 Git 炸弹的相关信息，之后马上引起了 Git 上游社区的关注，并且马上讨论了可能的修复方案: [4]</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>Git上游社区，最终补丁: [5]</p>
-</li>
-</ul>
-<p>Git 官方的修复是将遍历树的过程变得更快，使得对 Git 炸弹仓库做任何操作不至于等待很久。其<code>commit message</code>写到：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">You can see this in a pathological case where a commit adds</span><br><span class="line">a very large number of entries, and we limit based on a</span><br><span class="line">broad pathspec. E.g.:</span><br><span class="line"></span><br><span class="line">  perl -e &#x27;</span><br><span class="line">    chomp(my $blob = `git hash-object -w --stdin &lt;/dev/null`);</span><br><span class="line">    for my $a (1..1000) &#123;</span><br><span class="line">      for my $b (1..1000) &#123;</span><br><span class="line">        print &quot;100644 $blob\t$a/$b\n&quot;;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#x27; | git update-index --index-info</span><br><span class="line">  git commit -qm add</span><br><span class="line"></span><br><span class="line">  git rev-list HEAD -- .</span><br><span class="line"></span><br><span class="line">This case takes about 100ms now, but after this patch only</span><br><span class="line">needs 6ms. That&#x27;s not a huge improvement, but it&#x27;s easy to</span><br><span class="line">get and it protects us against even more pathological cases</span><br><span class="line">(e.g., going from 1 million to 10 million files would take</span><br><span class="line">ten times as long with the current code, but not increase at</span><br><span class="line">all after this patch).</span><br></pre></td></tr></table></figure>
-<p><strong>这个修复并没有解决处理这种仓库导致内存消耗过大问题，只对处理过程的消耗时间做了一次优化</strong>。</p>
-<h4 id="相关-CVE">相关 CVE</h4>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p><a href="https://ubuntu.com/security/CVE-2017-15298">CVE-2017-15298</a></p>
-</li>
-</ul>
-<h4 id="参考链接">参考链接</h4>
-<ol>
-<li class="lvl-3">
-<p><a href="https://docs.microsoft.com/en-us/archive/msdn-magazine/2009/november/xml-denial-of-service-attacks-and-defenses">microsoft: xml-denial-of-service-attacks-and-defenses</a></p>
-</li>
-<li class="lvl-3">
-<p><a href="https://kate.io/blog/git-bomb">kate’s blog</a></p>
-</li>
-<li class="lvl-3">
-<p><a href="https://github.com/Katee/git-bomb">kate: original git-bomb repo on Github</a></p>
-</li>
-<li class="lvl-3">
-<p><a href="https://public-inbox.org/git/20171013123521.hop5hrfsyagu7znl@sigill.intra.peff.net/T/#m58c560c18f93476e23110a0656a8d525170d14a2">git upstream discussion</a></p>
-</li>
-<li class="lvl-3">
-<p><a href="https://github.com/Cactusinhand/git/commit/a937b37e766479c8e780b17cce9c4b252fd97e40">git upstream fix</a></p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Git</category>
-      </categories>
-      <tags>
-        <tag>Git-bomb</tag>
-        <tag>Xml</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>学习 Rust 的一些笔记</title>
-    <url>/posts/767b1d3c.html</url>
-    <content><![CDATA[<p>Rust是一门偏底层的，安全的，高效的开源编程语言。</p>
-<span id="more"></span>
-<h3 id="工具链">工具链</h3>
-<p><code>rustup</code> 是管理<code>Rust</code>版本和相关工具的命令行工具(rust toolchain installer)</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p><code>rustup update</code> 更新<code>Rust</code>版本</p>
-</li>
-<li class="lvl-2">
-<p><code>rustup self uninstall</code> 卸载<code>Rust</code>以及<code>rustup</code>本身</p>
-</li>
-</ul>
-<p><code>Rust</code>工具链中包括<code>rustc</code>编译器工具，<code>rustfmt</code>格式化工具，<code>rustdoc</code>文档化工具等。</p>
-<p><code>rustc</code>类似于C/C++中的<code>gcc/clang</code></p>
-<p><code>Cargo</code> 是 <code>Rust</code> 的构建系统和包管理器。可以进行构建代码、下载依赖库并编译这些库等。</p>
-<p><code>cargo new rust-proj</code> 创建一个Rust项目，</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ cargo new rust-proj</span><br><span class="line">     Created binary (application) `rust-proj` package</span><br><span class="line">$ tree rust-proj</span><br><span class="line">rust-proj</span><br><span class="line">├── Cargo.toml</span><br><span class="line">└── src</span><br><span class="line">    └── main.rs</span><br><span class="line"></span><br><span class="line">1 directory, 2 files</span><br></pre></td></tr></table></figure>
-<p><code>Cargo</code>会在 <em>hello_cargo</em> 目录初始化一个 git 仓库，以及一个<code>.gitignore</code>文件。如果你在现有的 git 仓库中运行 <code>cargo new</code>，则不会生成 git 文件；你可以通过使用<code>cargo new --vcs=git</code> 来覆盖此行为。</p>
-<p>可以通过 <code>--vcs</code> 参数使 <code>cargo new</code> 切换到其它版本控制系统（<code>VCS</code>），或者不使用 <code>VCS</code>。运行 <code>cargo new --help</code> 参看可用的选项。</p>
-<p><code>cargo build</code>构建项目，目标可执行文件在<code>target/debug/</code>下</p>
-<p><code>cargo run</code>则是构建项目并运行。</p>
-<p><code>cargo check</code> 检查项目代码正确，确保可编译。不会产生可执行文件。</p>
-<p><code>cargo build</code>默认构建是debug模式。如果项目一切都OK，可以运行<code>cargo build --release</code>执行发布构建，这会对项目进行一定编译优化，从而使得代码运行得更快，但是相应地，编译时间会更长。</p>
-<p><code>cargo doc --open</code> 会生成当前项目中的依赖库(crate)的文档，并转到浏览器可以查询。</p>
-<h3 id="Hello-World">Hello, World!</h3>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p><code>println!</code> 调用了一个 Rust 宏（macro）。如果是调用函数，则应输入 <code>println</code>（没有<code>!</code>）。我们将在第十九章详细讨论宏。现在你只需记住，当看到符号 <code>!</code> 的时候，就意味着调用的是宏而不是普通函数，并且宏并不总是遵循与函数相同的规则。</p>
-</li>
-</ul>
-<p><code>cargo new</code>生成的项目中，包含配置文件<code>Cargo.toml</code></p>
-<p>文件名: <code>Cargo.toml</code></p>
-<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"></span><br><span class="line"><span class="attr">rand</span> = <span class="string">&quot;0.8.3&quot;</span></span><br></pre></td></tr></table></figure>
-<p>其中“0.8.3”指定依赖版本，其语法遵循语义化版本<a href="http://semver.org/">（Semantic Versioning）</a></p>
-<p>这里的<code>0.8.3</code> 实际上是 <code>^0.8.3</code> 的简写，它表示 任何不低于 <code>0.8.3</code>， 但是低于 <code>0.9.0</code> 的版本。Cargo将这些版本视作与 <code>0.8.3</code> 版本公有 API 相兼容的版本，这个声明确保你将获得最新的补丁版本，它仍然可以与本章中的代码正常编译。<code>0.9.0</code> 或以上版本不保证拥有接下来示例中使用到的API。</p>
-<hr>
-<h3 id="一些定义">一些定义</h3>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>Rust变量默认是不可改变的（immutable），如果想声明可变变量，需要使用<code>mut</code>关键字。</p>
-</li>
-<li class="lvl-2">
-<p>Rust不允许对常量使用 <code>mut</code>。常量不光默认不能变，它总是不能变。其声明使用<code>const</code>，且必须标注类型。</p>
-</li>
-<li class="lvl-2">
-<p>整型变量分有符号和无符号，如<code>i8</code>表示有符号8位整数，<code>u8</code>表示无符号8位整数，<code>i128</code>表示有符号128位整数。</p>
-</li>
-<li class="lvl-2">
-<p>还有一种整型依赖计算机架构，<code>isize</code>, <code>usize</code>在不同的架构中表示的长度会不同。</p>
-</li>
-<li class="lvl-2">
-<p>整型字面值有十六进制(<code>0xff</code>)，八进制(<code>0o77</code>)，二进制(<code>0b11</code>)，以及十进制(99_999)，单字节字符(仅限<code>u8</code>)</p>
-</li>
-<li class="lvl-2">
-<p>Rust默认数字类型是<code>i32</code></p>
-</li>
-<li class="lvl-2">
-<p>浮点型变量有两种，<code>f32</code>表示单精度浮点小数，<code>f64</code>表示双精度浮点小数。默认是<code>f64</code>。</p>
-</li>
-<li class="lvl-2">
-<p>字符类型（char）用单引号表示，其大小为4个字节，表示了一个Unicode标量值。</p>
-</li>
-<li class="lvl-2">
-<p>复合类型元组(tuple)一旦声明，其长度不变，其中每一个位置都有一个类型的值，类型可以不同。</p>
-</li>
-<li class="lvl-2">
-<p>复合类型数组(array)长度也是固定的，而且其中类型必须相同。</p>
-</li>
-</ul>
-<p><strong>语句(statement)和表达式(expression)</strong></p>
-<p>Rust是一门基于表达式的语言。</p>
-<p>语句是执行一些操作，但是不返回值的指令。</p>
-<p><code>函数定义</code>就是一个语句。</p>
-<p>表达式计算并产生一个值，可以赋予其它变量。</p>
-<p><code>函数调用</code>是一个表达式，大括号创建的块作用域也是一个表达式。</p>
-<p><code>表达式的结尾没有分号，如果结尾加上分号，则变成了语句。</code></p>
-<p>数字本身就是一个表达式，所以它可以返回本身的值赋值给其它变量。</p>
-<p>栈(stack)中的数据必须占用已知且大小固定的大小。</p>
-<p>当数据大小未知，或大小可能变化的时候，需要用堆(heap)。比如使用内存分配器memory allocator分配指定大小的内存，此时该块内存会被标记为已用，并且以指针来表示这块内存。</p>
-<p>而将数据放入栈中的过程并不叫做分配内存，因为这个过程并没有新的内存被分配。</p>
-<p>堆的指针可以存储在栈上。</p>
-<p>入栈比在堆上分配内存要快。</p>
-<p>访问堆中的数据比访问栈上的数据要慢，因为访问堆首先要通过指针来访问，而指针在栈上。</p>
-<hr>
-<h3 id="一些笔记">一些笔记</h3>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>定义变量用动词let</p>
-</li>
-<li class="lvl-2">
-<p>借鉴Python的元组</p>
-</li>
-<li class="lvl-2">
-<p>借鉴C++的指针</p>
-</li>
-<li class="lvl-2">
-<p>完善的包管理工具cargo</p>
-</li>
-<li class="lvl-2">
-<p>友好的文档管理</p>
-</li>
-<li class="lvl-2">
-<p>使用先进的VCS管理项目</p>
-</li>
-<li class="lvl-2">
-<p>无垃圾回收机制，使用变量所有权管理内存</p>
-</li>
-<li class="lvl-2">
-<p>编译与执行分开，更早的发现错误</p>
-</li>
-<li class="lvl-2">
-<p>浅拷贝与深拷贝，默认不进行数据的深拷贝，深拷贝使用clone方法</p>
-</li>
-<li class="lvl-2">
-<p>移动(move)操作</p>
-</li>
-<li class="lvl-2">
-<p>Copy trait</p>
-</li>
-<li class="lvl-2">
-<p>栈上数据；堆上数据；既在栈上，又在推上(数据指针在栈上，数据内容在堆上)数据</p>
-</li>
-<li class="lvl-2">
-<p>默认行为：默认变量不可变</p>
-</li>
-<li class="lvl-2">
-<p>引用(ref)变量默认也不能修改其引用的值</p>
-</li>
-<li class="lvl-2">
-<p>一个引用的作用域从声明的地方开始一直持续到最后一次使用为止</p>
-</li>
-<li class="lvl-2">
-<p>字符串slice</p>
-</li>
-</ul>
-<hr>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>Rust可以直接将数据附加到枚举的每个成员上，这样就不需要一个额外的结构体了。</p>
-</li>
-</ul>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">IpAddr</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">V4</span>(<span class="type">String</span>),</span><br><span class="line">    <span class="title function_ invoke__">V6</span>(<span class="type">String</span>),</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">home</span> = IpAddr::<span class="title function_ invoke__">V4</span>(String::<span class="title function_ invoke__">from</span>(<span class="string">&quot;127.0.0.1&quot;</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">loopback</span> = IpAddr::<span class="title function_ invoke__">V6</span>(String::<span class="title function_ invoke__">from</span>(<span class="string">&quot;::1&quot;</span>));</span><br></pre></td></tr></table></figure>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>Rust没有空值(Null)，因为空值会导致很多错误，而是实现了一个枚举变量<code>Option&lt;T&gt;</code>：</p>
-</li>
-</ul>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">Option</span>&lt;T&gt; &#123;</span><br><span class="line">    <span class="title function_ invoke__">Some</span>(T),</span><br><span class="line">    <span class="literal">None</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">some_number</span> = <span class="title function_ invoke__">Some</span>(<span class="number">5</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">some_string</span> = <span class="title function_ invoke__">Some</span>(<span class="string">&quot;a string&quot;</span>);</span><br><span class="line"># 当为<span class="literal">None</span>时，必须显示指定类型&lt;T&gt;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">absent_number</span>: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; = <span class="literal">None</span>;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>关于字符串方法，以下两种方法等效：</p>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">s1</span> = String::<span class="title function_ invoke__">from</span>(<span class="string">&quot;initial contents&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">s2</span> = <span class="string">&quot;initial contents&quot;</span>.<span class="title function_ invoke__">to_string</span>();</span><br></pre></td></tr></table></figure>
-<p>参考链接：</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p><a href="https://www.rust-lang.org/zh-CN">rust中文官网</a></p>
-</li>
-<li class="lvl-2">
-<p><a href="https://kaisery.github.io/trpl-zh-cn/">rust book</a></p>
-</li>
-<li class="lvl-2">
-<p><a href="https://book.rust.team/into-rust.html">rust course</a></p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>Rust</category>
-      </categories>
-      <tags>
-        <tag>Rust</tag>
       </tags>
   </entry>
 </search>
