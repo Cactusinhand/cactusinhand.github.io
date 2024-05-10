@@ -39,6 +39,134 @@ repo: gitaly: <a href="https://gitlab.com/gitlab-org/gitaly">https://gitlab.com/
       </tags>
   </entry>
   <entry>
+    <title>GitOps: 一种 DevOps 的最佳实践</title>
+    <url>/posts/f8df64f6.html</url>
+    <content><![CDATA[<blockquote>
+<p><strong>本文转载于：<a href="https://icloudnative.io/posts/what-is-gitops/">https://icloudnative.io/posts/what-is-gitops/</a></strong><br>
+<strong>作者: 米开朗基杨</strong></p>
+</blockquote>
+<p>GitOps 这个概念最早是由 Kubernetes 管理公司 Weaveworks 公司在 2017 年提出的，如今已经过去了 5 个年头，想必大家对这个概念早有耳闻，但你可能并不知道它到底是什么，它和 DevOps 到底是啥关系，本文就来帮大家一一解惑。</p>
+<h2 id="基础设施即代码">基础设施即代码</h2>
+<p>在理解 GitOps 之前，我们需要先理解什么是<strong>基础设施即代码</strong>。</p>
+<p>基础设施即代码（Infrastructure as Code, <strong>IaC</strong>），顾名思义，表示使用代码（而非手动流程）来定义基础设施，研发人员可以像对待应用软件一样对待基础设施，例如：</p>
+<ul class="lvl-0">
+<li class="lvl-4">
+<p>可以创建包含基础架构规范的声明式配置文件，从而便于编辑和分发配置。</p>
+</li>
+<li class="lvl-4">
+<p>可以确保每次配置的环境都完全相同。</p>
+</li>
+<li class="lvl-4">
+<p>可以进行版本控制，所有的变更都会被记录下来，方便溯源。</p>
+</li>
+<li class="lvl-4">
+<p>可以将基础设施划分为若干个模块化组件，并通过自动化以不同的方式进行组合。</p>
+</li>
+</ul>
+<p>当然，广义上的 IaC 不仅仅只关于基础设施，还包含了<strong>网络</strong>、<strong>安全</strong>、<strong>配置</strong>等等，所以广义上的 IaC 又叫 <strong>X as Code</strong>。<br>
+<img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161123.png" alt=""></p>
+<p>比如你想在 AWS 中创建服务器，配置网络，部署 Kubernetes 集群以及各种工作负载，你只需要定义好 Terraform 或 Ansible 的声明式配置，以及 Kubernetes 的配置清单即可，免去一切繁杂的手动操作。</p>
+<h2 id="GitOps-是什么">GitOps 是什么</h2>
+<p>GitOps = IaC + Git + CI/CD，即基于 IaC 的版本化 CI/CD。它的核心是使用 Git 仓库来管理基础设施和应用的配置，并且<strong>以 Git 仓库作为基础设施和应用的单一事实来源</strong>，你从其他地方修改配置（比如手动改线上配置）一概不予通过。</p>
+<p><img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161321.png" alt=""></p>
+<p>Git 仓库中的声明式配置描述了目标环境当前所需基础设施的期望状态，借助于 GitOps，如果集群的实际状态与 Git 仓库中定义的期望状态不匹配，Kubernetes reconcilers 会根据期望状态来调整当前的状态，最终使实际状态符合期望状态。</p>
+<p>另一方面，现代应用的开发更多关注的是迭代速度和规模，拥有成熟 DevOps 文化的组织每天可以将代码部署到生成环境中数百次，DevOps 团队可以通过版本控制、代码审查以及自动测试和部署的 CI/CD 流水线等最佳实践来实现这一目标，这就是 GitOps 干的事情。</p>
+<h2 id="GitOps-vs-DevOps">GitOps vs DevOps</h2>
+<p>从广义上来看，GitOps 与 DevOps 并不冲突，<strong>GitOps 是一种技术手段，而 DevOps 是一种文化</strong>。GitOps 是一种实现持续交付（Continuous Delivery）、持续部署（Continuous Deployment）和基础设施即代码（IaC）的工具和框架，它是支持 DevOps 文化的。</p>
+<p>从狭义上来看，GitOps 与 DevOps 有以下几个区别：</p>
+<p>首先，<strong>GitOps 是以目标为导向的</strong>。它使用 Git 来维护期望状态，并不断调整实际状态，最终与期望状态相匹配。而 <strong>DevOps 更多关注的是最佳实践</strong>，这些实践可以普遍应用于企业的每一个流程。</p>
+<p>其次，<strong>GitOps 采取声明式的操作方法，而 DevOps 同时接受声明式和命令式的方法</strong>，所以 DevOps 除了适用于容器环境之外，还适用于虚拟机和裸机环境。</p>
+<p>最后，<strong>GitOps 重新定义了云原生场景下的 CI/CD</strong>，它以 Git 作为中心的不可变状态声明，以加快持续部署速度。</p>
+<h2 id="GitOps-的设计哲学">GitOps 的设计哲学</h2>
+<p>想要使用 GitOps 来管理你的基础设施和应用，需要践行以下几个原则：</p>
+<h3 id="1-声明式">1. 声明式</h3>
+<p>必须通过声明式来描述系统的期望状态。例如 Kubernetes，众多现代云原生工具都是声明式的，Kubernetes 只是其中的一种。</p>
+<h3 id="2-版本控制-不可变">2. 版本控制/不可变</h3>
+<p>因为所有的状态声明都存储在 Git 仓库中，并且把 Git 仓库作为单一事实来源，那么所有的操作都是从 Git 仓库里驱动的，而且保留了完整的版本历史，方便回滚。有了 Git 优秀的安全保障，也可以使用 SSH 密钥来签署 commits，对代码的作者和出处实施强有力的安全保障。</p>
+<h3 id="3-自动应用变更">3. 自动应用变更</h3>
+<p>Git 仓库中声明的期望状态发生了任何变更，都可以立即应用到系统中，而且不需要安装配置额外工具（比如 kubectl），也不需要配置 Kubernetes 的认证授权。</p>
+<h3 id="4-持续的-Reconciliation">4. 持续的 Reconciliation</h3>
+<p>Reconciliation 其实最早是 Kubernetes 里的一个概念，表示的是<strong>确保系统的实际状态与期望状态一致的过程</strong>。具体的实现方式是在目标环境中安装一个 agent，一旦实际状态与期望状态不匹配，agent 就会进行自动修复。这里的修复比 Kubernetes 的故障自愈更高级，即使是手动修改了集群的编排清单，集群也会被恢复到 Git 仓库中的清单所描述的状态。</p>
+<p>鉴于以上这些设计哲学，我们来看一下 GitOps 的工作流：<br>
+<img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161329.png" alt=""></p>
+<ul class="lvl-0">
+<li class="lvl-4">
+<p>首先，团队中的任何一个成员都可以 Fork 仓库对配置进行更改，然后提交 Pull Request。</p>
+</li>
+<li class="lvl-4">
+<p>接下来会运行 CI 流水线，一般会做这么几件事情：验证配置文件、执行自动化测试、检测代码的复杂性、构建 OCI 镜像、将镜像推送到镜像仓库等等。</p>
+</li>
+<li class="lvl-4">
+<p>CI 流水线运行完成后，团队中拥有合并代码权限的人将会将这个 Pull Request 合并到主分支中 。一般拥有这个权限的都是研发人员、安全专家或者高级运维工程师。</p>
+</li>
+<li class="lvl-4">
+<p>最后会运行 CD 流水线，将变更应用到目标系统中（比如 Kubernetes 集群或者 AWS） 。</p>
+</li>
+</ul>
+<p>整个过程完全自动化且透明，通过多人协作和自动化测试来保证了基础设施声明配置的健壮性。而传统的模式是其中一个工程师在自己的电脑上操作这一切，其他人不知道发生了什么，也无法对其操作进行 Review。</p>
+<h2 id="Push-vs-Pull">Push vs Pull</h2>
+<p>CD 流水线有两种模式：Push 和 Pull。</p>
+<h3 id="Push-模式">Push 模式</h3>
+<p>目前大多数 CI/CD 工具都使用基于 Push 的部署模式，例如 Jenkins、CircleCI 等。这种模式一般都会在 CI 流水线运行完成后执行一个命令（比如 kubectl）将应用部署到目标环境中。<br>
+<img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161346.png" alt=""></p>
+<p>这种 CD 模式的缺陷很明显：</p>
+<ul class="lvl-0">
+<li class="lvl-4">
+<p>需要安装配置额外工具（比如 kubectl）；</p>
+</li>
+<li class="lvl-4">
+<p>需要 Kubernetes 对其进行授权；</p>
+</li>
+<li class="lvl-4">
+<p>需要云平台授权；</p>
+</li>
+<li class="lvl-4">
+<p>无法感知部署状态。也就无法感知期望状态与实际状态的偏差，需要借助额外的方案来保障一致性。</p>
+</li>
+</ul>
+<p>Kubernetes 集群或者云平台对 CI 系统的授权凭证在集群或云平台的信任域之外，不受集群或云平台的安全策略保护，因此 CI 系统很容易被当成非法攻击的载体。</p>
+<h3 id="Pull-模式">Pull 模式</h3>
+<p>Pull 模式会在目标环境中安装一个 Agent，例如在 Kubernetes 集群中就靠 Operator 来充当这个 Agent。Operator 会周期性地监控目标环境的实际状态，并与 Git 仓库中的期望状态进行比较，如果实际状态不符合期望状态，Operator 就会更新基础设施的实际状态以匹配期望状态。<br>
+<img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161356.png" alt=""></p>
+<p>只有 Git 的变更可以作为期望状态的唯一来源，除此之外，任何人都不可以对集群进行任何更改，即使你修改了，也会被 Operator 还原为期望状态，这也就是传说中的<strong>不可变基础设施</strong>。</p>
+<p>目前基于 Pull 模式的 CD 工具有 <a href="https://github.com/argoproj/argo-cd/">Argo CD</a>， <a href="https://github.com/fluxcd/flux">Flux CD</a> 以及 <a href="https://github.com/kubesphere/ks-devops">ks-devops</a>。</p>
+<h2 id="GitOps-的优势">GitOps 的优势</h2>
+<p>一般 GitOps 首选的都是基于 Pull 的部署模式，因为这种模式有很多不可替代的优势。</p>
+<h3 id="更强大的安全保障">更强大的安全保障</h3>
+<p>上面已经提到了，使用 GitOps 不需要任何 Kubernetes 或者云平台的凭证来执行部署，Kubernetes 集群内的 Argo CD 或者 Flux CD 只需要访问 Git 仓库，并通过 Pull 模式来更新即可。</p>
+<p>另一方面，Git 由用于跟踪和管理代码变更的强大密码学支持，拥有对变更进行签名以证明作者身份和来源的能力，这是保障集群安全的关键。</p>
+<h3 id="Git-作为事实的唯一真实来源">Git 作为事实的唯一真实来源</h3>
+<p>因为所有的应用包括基础设施的声明式配置都保存在 Git 中，并把 Git 作为应用系统的唯一事实来源，因此可以利用 Git 的强大功能操作所有东西，例如版本控制、历史记录、审计和回滚等等，无需使用 kubectl 这样的工具来操作。</p>
+<h3 id="提高生产力">提高生产力</h3>
+<p>Git 也是开发人员非常熟悉的工具，通过 Git 不断迭代，可以提高生产率，加快开发和部署速度，更快地推出新产品，同时提高系统的稳定性和可靠性。</p>
+<h3 id="更容易合规的审计">更容易合规的审计</h3>
+<p>使用 GitOps 的基础设施可以像任何软件项目一样使用 Git 来管理，所以同样可以对其进行质量审计。当有人需要对基础设施进行更改时，会创建一个 Pull Request，等相关人员对其进行 Code Review 之后，更改才可以应用到系统中。</p>
+<h2 id="总结">总结</h2>
+<p>GitOps 是对现有 DevOps 文化的补充，它使用 Git 这样的版本控制系统来自动部署基础设施，部署过程清晰可见，可以查看和跟踪对系统进行的任何变更，提高了生产力、安全性和合规性。而且 GitOps 提供了更优雅的可观测性，可以实时观测部署状态，并采取行动使实际状态与期望状态保持一致。</p>
+<p>而且在 GitOps 中，整个系统都是通过声明式来描述的，天然适合云原生环境，因为 Kubernetes 也是这么设计的。</p>
+<h2 id="参考资料">参考资料</h2>
+<ul class="lvl-0">
+<li class="lvl-4">
+<p><a href="https://devs-group.medium.com/what-is-gitops-and-what-should-you-know-about-it-fcaa3e3c1dd5">What is GitOps and what should you know about it?</a></p>
+</li>
+<li class="lvl-4">
+<p><a href="https://www.tynybay.com/our-thinking/devops-vs-gitops-4-benefits-you-must-know-to-master-the-methodologies">DevOps vs GitOps: 4 Benefits you must know to Master the Methodologies</a></p>
+</li>
+<li class="lvl-4">
+<p><a href="https://www.weave.works/technologies/gitops/">Guide To GitOps</a></p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>GitOps</tag>
+        <tag>DevOps</tag>
+        <tag>Workflow</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>一种 Git 插件工具：git repo-clean</title>
     <url>/posts/92e91caf.html</url>
     <content><![CDATA[<p>本篇文章将从如何定义 Git 大仓库，大仓库如何产生，大仓库的负面影响等方面讨论起，然后介绍几款目前针对大仓库的处理工具，并讨论它们的优缺点，然后谈谈我们今天要介绍的新工具<strong>git repo-clean</strong>的一些设计目标，并重点介绍它的设计原理。</p>
@@ -418,193 +546,6 @@ repo: gitaly: <a href="https://gitlab.com/gitlab-org/gitaly">https://gitlab.com/
       </tags>
   </entry>
   <entry>
-    <title>GitOps: 一种 DevOps 的最佳实践</title>
-    <url>/posts/f8df64f6.html</url>
-    <content><![CDATA[<blockquote>
-<p><strong>本文转载于：<a href="https://icloudnative.io/posts/what-is-gitops/">https://icloudnative.io/posts/what-is-gitops/</a></strong><br>
-<strong>作者: 米开朗基杨</strong></p>
-</blockquote>
-<p>GitOps 这个概念最早是由 Kubernetes 管理公司 Weaveworks 公司在 2017 年提出的，如今已经过去了 5 个年头，想必大家对这个概念早有耳闻，但你可能并不知道它到底是什么，它和 DevOps 到底是啥关系，本文就来帮大家一一解惑。</p>
-<h2 id="基础设施即代码">基础设施即代码</h2>
-<p>在理解 GitOps 之前，我们需要先理解什么是<strong>基础设施即代码</strong>。</p>
-<p>基础设施即代码（Infrastructure as Code, <strong>IaC</strong>），顾名思义，表示使用代码（而非手动流程）来定义基础设施，研发人员可以像对待应用软件一样对待基础设施，例如：</p>
-<ul class="lvl-0">
-<li class="lvl-4">
-<p>可以创建包含基础架构规范的声明式配置文件，从而便于编辑和分发配置。</p>
-</li>
-<li class="lvl-4">
-<p>可以确保每次配置的环境都完全相同。</p>
-</li>
-<li class="lvl-4">
-<p>可以进行版本控制，所有的变更都会被记录下来，方便溯源。</p>
-</li>
-<li class="lvl-4">
-<p>可以将基础设施划分为若干个模块化组件，并通过自动化以不同的方式进行组合。</p>
-</li>
-</ul>
-<p>当然，广义上的 IaC 不仅仅只关于基础设施，还包含了<strong>网络</strong>、<strong>安全</strong>、<strong>配置</strong>等等，所以广义上的 IaC 又叫 <strong>X as Code</strong>。<br>
-<img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161123.png" alt=""></p>
-<p>比如你想在 AWS 中创建服务器，配置网络，部署 Kubernetes 集群以及各种工作负载，你只需要定义好 Terraform 或 Ansible 的声明式配置，以及 Kubernetes 的配置清单即可，免去一切繁杂的手动操作。</p>
-<h2 id="GitOps-是什么">GitOps 是什么</h2>
-<p>GitOps = IaC + Git + CI/CD，即基于 IaC 的版本化 CI/CD。它的核心是使用 Git 仓库来管理基础设施和应用的配置，并且<strong>以 Git 仓库作为基础设施和应用的单一事实来源</strong>，你从其他地方修改配置（比如手动改线上配置）一概不予通过。</p>
-<p><img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161321.png" alt=""></p>
-<p>Git 仓库中的声明式配置描述了目标环境当前所需基础设施的期望状态，借助于 GitOps，如果集群的实际状态与 Git 仓库中定义的期望状态不匹配，Kubernetes reconcilers 会根据期望状态来调整当前的状态，最终使实际状态符合期望状态。</p>
-<p>另一方面，现代应用的开发更多关注的是迭代速度和规模，拥有成熟 DevOps 文化的组织每天可以将代码部署到生成环境中数百次，DevOps 团队可以通过版本控制、代码审查以及自动测试和部署的 CI/CD 流水线等最佳实践来实现这一目标，这就是 GitOps 干的事情。</p>
-<h2 id="GitOps-vs-DevOps">GitOps vs DevOps</h2>
-<p>从广义上来看，GitOps 与 DevOps 并不冲突，<strong>GitOps 是一种技术手段，而 DevOps 是一种文化</strong>。GitOps 是一种实现持续交付（Continuous Delivery）、持续部署（Continuous Deployment）和基础设施即代码（IaC）的工具和框架，它是支持 DevOps 文化的。</p>
-<p>从狭义上来看，GitOps 与 DevOps 有以下几个区别：</p>
-<p>首先，<strong>GitOps 是以目标为导向的</strong>。它使用 Git 来维护期望状态，并不断调整实际状态，最终与期望状态相匹配。而 <strong>DevOps 更多关注的是最佳实践</strong>，这些实践可以普遍应用于企业的每一个流程。</p>
-<p>其次，<strong>GitOps 采取声明式的操作方法，而 DevOps 同时接受声明式和命令式的方法</strong>，所以 DevOps 除了适用于容器环境之外，还适用于虚拟机和裸机环境。</p>
-<p>最后，<strong>GitOps 重新定义了云原生场景下的 CI/CD</strong>，它以 Git 作为中心的不可变状态声明，以加快持续部署速度。</p>
-<h2 id="GitOps-的设计哲学">GitOps 的设计哲学</h2>
-<p>想要使用 GitOps 来管理你的基础设施和应用，需要践行以下几个原则：</p>
-<h3 id="1-声明式">1. 声明式</h3>
-<p>必须通过声明式来描述系统的期望状态。例如 Kubernetes，众多现代云原生工具都是声明式的，Kubernetes 只是其中的一种。</p>
-<h3 id="2-版本控制-不可变">2. 版本控制/不可变</h3>
-<p>因为所有的状态声明都存储在 Git 仓库中，并且把 Git 仓库作为单一事实来源，那么所有的操作都是从 Git 仓库里驱动的，而且保留了完整的版本历史，方便回滚。有了 Git 优秀的安全保障，也可以使用 SSH 密钥来签署 commits，对代码的作者和出处实施强有力的安全保障。</p>
-<h3 id="3-自动应用变更">3. 自动应用变更</h3>
-<p>Git 仓库中声明的期望状态发生了任何变更，都可以立即应用到系统中，而且不需要安装配置额外工具（比如 kubectl），也不需要配置 Kubernetes 的认证授权。</p>
-<h3 id="4-持续的-Reconciliation">4. 持续的 Reconciliation</h3>
-<p>Reconciliation 其实最早是 Kubernetes 里的一个概念，表示的是<strong>确保系统的实际状态与期望状态一致的过程</strong>。具体的实现方式是在目标环境中安装一个 agent，一旦实际状态与期望状态不匹配，agent 就会进行自动修复。这里的修复比 Kubernetes 的故障自愈更高级，即使是手动修改了集群的编排清单，集群也会被恢复到 Git 仓库中的清单所描述的状态。</p>
-<p>鉴于以上这些设计哲学，我们来看一下 GitOps 的工作流：<br>
-<img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161329.png" alt=""></p>
-<ul class="lvl-0">
-<li class="lvl-4">
-<p>首先，团队中的任何一个成员都可以 Fork 仓库对配置进行更改，然后提交 Pull Request。</p>
-</li>
-<li class="lvl-4">
-<p>接下来会运行 CI 流水线，一般会做这么几件事情：验证配置文件、执行自动化测试、检测代码的复杂性、构建 OCI 镜像、将镜像推送到镜像仓库等等。</p>
-</li>
-<li class="lvl-4">
-<p>CI 流水线运行完成后，团队中拥有合并代码权限的人将会将这个 Pull Request 合并到主分支中 。一般拥有这个权限的都是研发人员、安全专家或者高级运维工程师。</p>
-</li>
-<li class="lvl-4">
-<p>最后会运行 CD 流水线，将变更应用到目标系统中（比如 Kubernetes 集群或者 AWS） 。</p>
-</li>
-</ul>
-<p>整个过程完全自动化且透明，通过多人协作和自动化测试来保证了基础设施声明配置的健壮性。而传统的模式是其中一个工程师在自己的电脑上操作这一切，其他人不知道发生了什么，也无法对其操作进行 Review。</p>
-<h2 id="Push-vs-Pull">Push vs Pull</h2>
-<p>CD 流水线有两种模式：Push 和 Pull。</p>
-<h3 id="Push-模式">Push 模式</h3>
-<p>目前大多数 CI/CD 工具都使用基于 Push 的部署模式，例如 Jenkins、CircleCI 等。这种模式一般都会在 CI 流水线运行完成后执行一个命令（比如 kubectl）将应用部署到目标环境中。<br>
-<img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161346.png" alt=""></p>
-<p>这种 CD 模式的缺陷很明显：</p>
-<ul class="lvl-0">
-<li class="lvl-4">
-<p>需要安装配置额外工具（比如 kubectl）；</p>
-</li>
-<li class="lvl-4">
-<p>需要 Kubernetes 对其进行授权；</p>
-</li>
-<li class="lvl-4">
-<p>需要云平台授权；</p>
-</li>
-<li class="lvl-4">
-<p>无法感知部署状态。也就无法感知期望状态与实际状态的偏差，需要借助额外的方案来保障一致性。</p>
-</li>
-</ul>
-<p>Kubernetes 集群或者云平台对 CI 系统的授权凭证在集群或云平台的信任域之外，不受集群或云平台的安全策略保护，因此 CI 系统很容易被当成非法攻击的载体。</p>
-<h3 id="Pull-模式">Pull 模式</h3>
-<p>Pull 模式会在目标环境中安装一个 Agent，例如在 Kubernetes 集群中就靠 Operator 来充当这个 Agent。Operator 会周期性地监控目标环境的实际状态，并与 Git 仓库中的期望状态进行比较，如果实际状态不符合期望状态，Operator 就会更新基础设施的实际状态以匹配期望状态。<br>
-<img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161356.png" alt=""></p>
-<p>只有 Git 的变更可以作为期望状态的唯一来源，除此之外，任何人都不可以对集群进行任何更改，即使你修改了，也会被 Operator 还原为期望状态，这也就是传说中的<strong>不可变基础设施</strong>。</p>
-<p>目前基于 Pull 模式的 CD 工具有 <a href="https://github.com/argoproj/argo-cd/">Argo CD</a>， <a href="https://github.com/fluxcd/flux">Flux CD</a> 以及 <a href="https://github.com/kubesphere/ks-devops">ks-devops</a>。</p>
-<h2 id="GitOps-的优势">GitOps 的优势</h2>
-<p>一般 GitOps 首选的都是基于 Pull 的部署模式，因为这种模式有很多不可替代的优势。</p>
-<h3 id="更强大的安全保障">更强大的安全保障</h3>
-<p>上面已经提到了，使用 GitOps 不需要任何 Kubernetes 或者云平台的凭证来执行部署，Kubernetes 集群内的 Argo CD 或者 Flux CD 只需要访问 Git 仓库，并通过 Pull 模式来更新即可。</p>
-<p>另一方面，Git 由用于跟踪和管理代码变更的强大密码学支持，拥有对变更进行签名以证明作者身份和来源的能力，这是保障集群安全的关键。</p>
-<h3 id="Git-作为事实的唯一真实来源">Git 作为事实的唯一真实来源</h3>
-<p>因为所有的应用包括基础设施的声明式配置都保存在 Git 中，并把 Git 作为应用系统的唯一事实来源，因此可以利用 Git 的强大功能操作所有东西，例如版本控制、历史记录、审计和回滚等等，无需使用 kubectl 这样的工具来操作。</p>
-<h3 id="提高生产力">提高生产力</h3>
-<p>Git 也是开发人员非常熟悉的工具，通过 Git 不断迭代，可以提高生产率，加快开发和部署速度，更快地推出新产品，同时提高系统的稳定性和可靠性。</p>
-<h3 id="更容易合规的审计">更容易合规的审计</h3>
-<p>使用 GitOps 的基础设施可以像任何软件项目一样使用 Git 来管理，所以同样可以对其进行质量审计。当有人需要对基础设施进行更改时，会创建一个 Pull Request，等相关人员对其进行 Code Review 之后，更改才可以应用到系统中。</p>
-<h2 id="总结">总结</h2>
-<p>GitOps 是对现有 DevOps 文化的补充，它使用 Git 这样的版本控制系统来自动部署基础设施，部署过程清晰可见，可以查看和跟踪对系统进行的任何变更，提高了生产力、安全性和合规性。而且 GitOps 提供了更优雅的可观测性，可以实时观测部署状态，并采取行动使实际状态与期望状态保持一致。</p>
-<p>而且在 GitOps 中，整个系统都是通过声明式来描述的，天然适合云原生环境，因为 Kubernetes 也是这么设计的。</p>
-<h2 id="参考资料">参考资料</h2>
-<ul class="lvl-0">
-<li class="lvl-4">
-<p><a href="https://devs-group.medium.com/what-is-gitops-and-what-should-you-know-about-it-fcaa3e3c1dd5">What is GitOps and what should you know about it?</a></p>
-</li>
-<li class="lvl-4">
-<p><a href="https://www.tynybay.com/our-thinking/devops-vs-gitops-4-benefits-you-must-know-to-master-the-methodologies">DevOps vs GitOps: 4 Benefits you must know to Master the Methodologies</a></p>
-</li>
-<li class="lvl-4">
-<p><a href="https://www.weave.works/technologies/gitops/">Guide To GitOps</a></p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>Git</category>
-      </categories>
-      <tags>
-        <tag>GitOps</tag>
-        <tag>DevOps</tag>
-        <tag>Workflow</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>如何向 Git 社区提交代码(2)</title>
-    <url>/posts/23bf24d1.html</url>
-    <content><![CDATA[<h3 id="背景">背景</h3>
-<p>第一次向 Git 社区提交代码起源于 Gitee 的一个需求。Gitee 创建新仓库有多种方式，其中一种是根据用户提供的仓库 URL 导入新仓库，Gitee 首先会对用户提供的 URL 进行校验，只有合格的仓库地址才会生成新仓库。但是有种情况比较特别，若用户确实提供了一个合法的 Git 仓库地址，但是这个仓库不是完整的，常见的情况就是浅仓库(shallow repo)，这类仓库缺乏足够的历史提交信息，因此会带来一些问题。为了避免这种情况，在服务端就需要对用户导入的仓库进行特别处理。在服务端，导入仓库的动作本质上就是执行 <code>git clone --mirror</code> 命令，那么有没有可能在执行这个克隆命令的过程中就对仓库进行判断呢？如果能，这将避免克隆完整个仓库再进行判断仓库是否为浅仓库，这样无疑更有效。于是我开始研究 Git 源码，琢磨如何给 <code>git-clone</code> 命令赋予一项新的能力。</p>
-<p>按照前面的方法向 Git 社区提交了第一版代码：<a href="https://public-inbox.org/git/pull.865.git.1612409491842.gitgitgadget@gmail.com/#t">v1</a></p>
-<p>很快收到 <strong><a href="https://public-inbox.org/git/xmqq35yc9yan.fsf@gitster.c.googlers.com/#t">Junio C Hamano</a></strong> 反馈，主要问题有：</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>commit 信息中说明不清，英文语法错误：</p>
-</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&gt; This patch add a new option that reject to clone a shallow repository.</span><br><span class="line"></span><br><span class="line">A canonical form of our log message starts by explaining the need,</span><br><span class="line">and then presents the solution at the end.</span><br><span class="line">一条规范的 commit 信息格式应该是在开始就解释更改需求，然后在结尾提供解决方案。</span><br><span class="line"></span><br><span class="line">&gt; Clients don&#x27;t know it&#x27;s a shallow repository until they download it</span><br><span class="line">&gt; locally, in some scenariors, clients just don&#x27;t want to clone this kind</span><br><span class="line"></span><br><span class="line">&quot;scenarios&quot;.  &quot;in some scenarios&quot; would have to be clarified a bit</span><br><span class="line">more to justify why it is a good idea to have such a feature.</span><br><span class="line">这里的需求场景描述地不够有说服力。</span><br><span class="line"></span><br><span class="line">&gt; of repository, and want to exit the process immediately without creating</span><br><span class="line">&gt; any unnecessary files.</span><br><span class="line"></span><br><span class="line">&quot;clients don&#x27;t know it&#x27;s a shallow repository until they download&quot;</span><br><span class="line">leading to &quot;so let&#x27;s reject immediately upon finding out that they</span><br><span class="line">are shallow&quot; does make sense as a flow of thought, though.</span><br><span class="line">这里表述不够清晰，Junio 顺便提供了他的建议</span><br><span class="line">&gt; +--no-shallow::</span><br><span class="line">&gt; +	Don&#x27;t clone a shallow source repository. In some scenariors, clients</span><br><span class="line"></span><br><span class="line">&quot;scenarios&quot; (no &#x27;r&#x27;).</span><br></pre></td></tr></table></figure>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>新增选项 <code>--no-shallow</code> 不对，应该考虑到布尔类选项存在反选情况，即 <code>--no-no-shallow</code> ，因此不应该这么写，建议改为 <code>--reject-shallow</code>， 它的反选即为 <code>--no-reject-shallow</code>，这样语义上也更符合直觉：</p>
-</li>
-</ul>
-<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">&gt; diff --git a/builtin/clone.c b/builtin/clone.c</span><br><span class="line"></span><br><span class="line">&gt; @@ -90,6 +91,7 @@ static struct option builtin_clone_options[] = &#123;</span><br><span class="line">&gt;  	OPT__VERBOSITY(&amp;option_verbosity),</span><br><span class="line">&gt;  	OPT_BOOL(0, &quot;progress&quot;, &amp;option_progress,</span><br><span class="line">&gt;  		 N_(&quot;force progress reporting&quot;)),</span><br><span class="line">&gt; +	OPT_BOOL(0, &quot;no-shallow&quot;, &amp;option_no_shallow, N_(&quot;don&#x27;t clone shallow repository&quot;)),</span><br><span class="line">&gt;  	OPT_BOOL(&#x27;n&#x27;, &quot;no-checkout&quot;, &amp;option_no_checkout,</span><br><span class="line">&gt;  		 N_(&quot;don&#x27;t create a checkout&quot;)),</span><br><span class="line">&gt;  	OPT_BOOL(0, &quot;bare&quot;, &amp;option_bare, N_(&quot;create a bare repository&quot;)),</span><br><span class="line"></span><br><span class="line">It is a bad idea to give a name that begins with &quot;no-&quot; to an option</span><br><span class="line">whose default can be tweaked by a configuration variable [*].  If</span><br><span class="line">the configuration is named &quot;rejectshallow&quot;, perhaps it is better to</span><br><span class="line">call it &quot;--reject-shallow&quot; instead.</span><br><span class="line"></span><br><span class="line">This is because configured default must be overridable from the</span><br><span class="line">command line.  I.e. even if you have in your ~/.gitconfig this:</span><br><span class="line"></span><br><span class="line">    [clone]</span><br><span class="line">        rejectshallow = true</span><br><span class="line"></span><br><span class="line">you should be able to say &quot;allow it only this time&quot;, with</span><br><span class="line"></span><br><span class="line">    $ git clone --no-reject-shallow http://github.com/git/git/ git</span><br><span class="line"></span><br><span class="line">and you do not want to have to say &quot;--no-no-shallow&quot;, which sounds</span><br><span class="line">just silly.</span><br><span class="line"></span><br><span class="line">	Side note. it is a bad idea in general, even if the option</span><br><span class="line">	does not have corresponding configuration variable.  The</span><br><span class="line">	existing &quot;no-checkout&quot; is a historical accident that</span><br><span class="line">	happened long time ago and cannot be removed due to</span><br><span class="line">	compatibility.  Let&#x27;s not introduce a new option that</span><br><span class="line">	follows such a bad pattern.</span><br><span class="line"></span><br><span class="line">	Junio 进一步解释：现存的选项 `no-checkout` 是一个很久之前的历史错误，</span><br><span class="line">	由于兼容性，已经无法移除这个错误了，现在新的选项不应该按照这种模式命名。</span><br><span class="line">	P.S. 刚好我就是按照`no-checkout`选项的模式创造出`no-shllow`选项的-:)</span><br></pre></td></tr></table></figure>
-<p>更重要的是，<strong>命令行优先于配置</strong>，即命令行选项要能够覆盖配置文件选项。当配置文件从全局上不允许克隆 shllow 仓库时，而用户想要允许单次克隆 shallow 仓库时，自然地，他会使用 <code>--no-shallow</code> 选项的反选项 <code>--no-no-shallow</code> 来覆盖掉配置中的选项 。但这样 <code>--no-no-shallow</code> 听来去就很傻。</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>由于 Git 存在多种传输协议，目前的修改只是解决了本地克隆问题，因此仍需改进：</p>
-</li>
-</ul>
-<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">&gt; @@ -963,6 +968,7 @@ static int path_exists(const char *path)</span><br><span class="line">&gt;  int cmd_clone(int argc, const char **argv, const char *prefix)</span><br><span class="line">&gt;  &#123;</span><br><span class="line">&gt;  	int is_bundle = 0, is_local;</span><br><span class="line">&gt; +	int is_shallow = 0;</span><br><span class="line">&gt;  	const char *repo_name, *repo, *work_tree, *git_dir;</span><br><span class="line">&gt;  	char *path, *dir, *display_repo = NULL;</span><br><span class="line">&gt;  	int dest_exists, real_dest_exists = 0;</span><br><span class="line">&gt; @@ -1215,6 +1221,7 @@ int cmd_clone(int argc, const char **argv, const char *prefix)</span><br><span class="line">&gt;  		if (filter_options.choice)</span><br><span class="line">&gt;  			warning(_(&quot;--filter is ignored in local clones; use file:// instead.&quot;));</span><br><span class="line">&gt;  		if (!access(mkpath(&quot;%s/shallow&quot;, path), F_OK)) &#123;</span><br><span class="line">&gt; +			is_shallow = 1;</span><br><span class="line">&gt;  			if (option_local &gt; 0)</span><br><span class="line">&gt;  				warning(_(&quot;source repository is shallow, ignoring --local&quot;));</span><br><span class="line">&gt;  			is_local = 0;</span><br><span class="line"></span><br><span class="line">This change is to the local clone codepath.  Cloning over the wire</span><br><span class="line">would not go through this part.  And throughout the patch, this is</span><br><span class="line">the only place that sets is_shallow to 1.</span><br><span class="line"></span><br><span class="line">Also let&#x27;s note that this is after we called parse_options(), so the</span><br><span class="line">value of option_no_shallow is known at this point.</span><br><span class="line"></span><br><span class="line">So, this patch does not even *need* to introduce a new &quot;is_shallow&quot;</span><br><span class="line">variable at all.  It only needs to add</span><br><span class="line"></span><br><span class="line">                        if (option_no_shallow)</span><br><span class="line">                                die(...);</span><br><span class="line"></span><br><span class="line">instead of adding &quot;is_shallow = 1&quot; to the above hunk.</span><br><span class="line"></span><br><span class="line">I somehow think that this is only half a feature---wouldn&#x27;t it be</span><br><span class="line">more useful if we also rejected a non-local clone from a shallow</span><br><span class="line">repository?</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>测试代码中的问题：</p>
-</li>
-</ul>
-<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">And for that ...</span><br><span class="line"></span><br><span class="line">&gt; diff --git a/t/t5606-clone-options.sh b/t/t5606-clone-options.sh</span><br><span class="line">&gt; index 7f082fb23b6a..9d310dbb158a 100755</span><br><span class="line">&gt; --- a/t/t5606-clone-options.sh</span><br><span class="line">&gt; +++ b/t/t5606-clone-options.sh</span><br><span class="line">&gt; @@ -42,6 +42,13 @@ test_expect_success &#x27;disallows --bare with --separate-git-dir&#x27; &#x27;</span><br><span class="line">&gt;  </span><br><span class="line">&gt;  &#x27;</span><br><span class="line">&gt;  </span><br><span class="line">&gt; +test_expect_success &#x27;reject clone shallow repository&#x27; &#x27;</span><br><span class="line">&gt; +	git clone --depth=1 --no-local parent shallow-repo &amp;&amp;</span><br><span class="line">&gt; +	test_must_fail git clone --no-shallow shallow-repo out 2&gt;err &amp;&amp;</span><br><span class="line">&gt; +	test_i18ngrep -e &quot;source repository is shallow, reject to clone.&quot; err</span><br><span class="line">&gt; +</span><br><span class="line">&gt; +&#x27;</span><br><span class="line">&gt; +</span><br><span class="line"></span><br><span class="line">... in addition to the test for a local clone above, you&#x27;d also want</span><br><span class="line">to test a non-local clone, perhaps like so:</span><br><span class="line"></span><br><span class="line">test_expect_success &#x27;reject clone shallow repository&#x27; &#x27;</span><br><span class="line">	rm -fr shallow-repo &amp;&amp;</span><br><span class="line">	git clone --depth=1 --no-local parent shallow-repo &amp;&amp;</span><br><span class="line">	test_must_fail git clone --no-shallow --no-local shallow-repo out 2&gt;err &amp;&amp;</span><br><span class="line">	test_i18ngrep -e &quot;source repository is shallow, reject to clone.&quot; err</span><br><span class="line"></span><br><span class="line">&#x27;</span><br><span class="line"></span><br><span class="line">Ditto for the other test script.</span><br><span class="line"></span><br><span class="line">Also, you would want to make sure that the command line overrides</span><br><span class="line">the configured default.  I.e.</span><br><span class="line"></span><br><span class="line">	git -c clone.rejectshallow=false clone --reject-shallow</span><br><span class="line"></span><br><span class="line">should refuse to clone from a shallow one, while there should be a</span><br><span class="line">way to countermand a configured &quot;I always refuse to clone from a</span><br><span class="line">shallow repository&quot; with &quot;but let&#x27;s allow it only this time&quot;, i.e.</span><br><span class="line"></span><br><span class="line">	git -c clone.rejectshallow=true clone --no-reject-shallow</span><br><span class="line"></span><br><span class="line">or something along the line.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt; diff --git a/t/t5611-clone-config.sh b/t/t5611-clone-config.sh</span><br><span class="line">&gt; index 8e0fd398236b..3aab86ad4def 100755</span><br><span class="line">&gt; --- a/t/t5611-clone-config.sh</span><br><span class="line">&gt; +++ b/t/t5611-clone-config.sh</span><br><span class="line">&gt; @@ -92,6 +92,13 @@ test_expect_success &#x27;clone -c remote.&lt;remote&gt;.fetch=&lt;refspec&gt; --origin=&lt;name&gt;&#x27; &#x27;</span><br><span class="line">&gt;  	test_cmp expect actual</span><br><span class="line">&gt;  &#x27;</span><br><span class="line">&gt;  </span><br><span class="line">&gt; +test_expect_success &#x27;clone -c clone.rejectshallow&#x27; &#x27;</span><br><span class="line">&gt; +	rm -rf child &amp;&amp;</span><br><span class="line">&gt; +	git clone --depth=1 --no-local . child &amp;&amp;</span><br><span class="line">&gt; +	test_must_fail git clone -c clone.rejectshallow child out 2&gt;err &amp;&amp;</span><br><span class="line"></span><br><span class="line">This is not quite right, even though it may happen to work.  The</span><br><span class="line">&quot;clone.rejectshallow&quot; variable is a configuration about what should</span><br><span class="line">happen when creating a new repository by cloning, so letting &quot;git</span><br><span class="line">clone -c var[=val]&quot; to set the variable _in_ the resulting repository</span><br><span class="line">would not make much sense.  Even if the clone succeeded, nobody would</span><br><span class="line">look at that particular configuration variable that is set in the</span><br><span class="line">resulting repository.</span><br><span class="line"></span><br><span class="line">I think it would communicate to the readers better what we are</span><br><span class="line">trying to do, if we write</span><br><span class="line"></span><br><span class="line">	test_must_fail git -c clone.rejectshallow=true clone child out</span><br><span class="line"></span><br><span class="line">instead.</span><br><span class="line"></span><br><span class="line">Thanks.</span><br></pre></td></tr></table></figure>
-<p>通过测试代码 Junio 指出： <code>clone.rejectshallow</code> 配置和命令行选项 <code>--reject-shallow</code> 存在逻辑上的交叉重叠问题，因此测试时应该体现出这一点。</p>
-<p>以上就是我第一次提交的代码，没想到能很快收到那么多宝贵的检视建议。但是，这只是开始，后面还有更多的检视回合，收到了更加细致的检视意见。</p>
-<p>比如 <a href="https://public-inbox.org/git/nycvar.QRO.7.76.6.2103311146210.52@tvgsbejvaqbjf.bet/">Johannes Schindelin</a> 给了一些意见：</p>
-<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">我觉得这个补丁大部分都很好，但我还有一点点改进建议</span><br><span class="line">I like most of the patch, and will only point out a couple of things that</span><br><span class="line">I think can be improved even further.</span><br><span class="line"></span><br><span class="line">&gt; diff --git a/Documentation/git-clone.txt b/Documentation/git-clone.txt</span><br><span class="line">&gt; index 02d9c19cec75..0adc98fa7eee 100644</span><br><span class="line">&gt; --- a/Documentation/git-clone.txt</span><br><span class="line">&gt; +++ b/Documentation/git-clone.txt</span><br><span class="line">&gt; @@ -149,6 +149,11 @@ objects from the source repository into a pack in t=</span><br><span class="line">he cloned repository.</span><br><span class="line">&gt;  --no-checkout::</span><br><span class="line">&gt;  	No checkout of HEAD is performed after the clone is complete.</span><br><span class="line">&gt;</span><br><span class="line">&gt; +--[no-]reject-shallow::</span><br><span class="line">&gt; +	Fail if the source repository is a shallow repository.</span><br><span class="line">&gt; +	The &#x27;clone.rejectShallow&#x27; configuration variable can be used to</span><br><span class="line">&gt; +	give the default.</span><br><span class="line"></span><br><span class="line">使用 `to specify the default` 说起来更顺口一些</span><br><span class="line">I am not a native speaker, either, but I believe that it would &quot;roll off</span><br><span class="line">the tongue&quot; a bit better to say &quot;to specify the default&quot;.</span><br></pre></td></tr></table></figure>
-<p>变量命名问题：</p>
-<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">&gt; diff --git a/builtin/clone.c b/builtin/clone.c</span><br><span class="line">&gt; index 51e844a2de0a..eeddd68a51f4 100644</span><br><span class="line">&gt; --- a/builtin/clone.c</span><br><span class="line">&gt; +++ b/builtin/clone.c</span><br><span class="line">&gt; @@ -50,6 +50,8 @@ static int option_no_checkout, option_bare, option_mir=</span><br><span class="line">ror, option_single_branch</span><br><span class="line">&gt;  static int option_local =3D -1, option_no_hardlinks, option_shared;</span><br><span class="line">&gt;  static int option_no_tags;</span><br><span class="line">&gt;  static int option_shallow_submodules;</span><br><span class="line">&gt; +static int option_shallow = -1;    /* unspecified */</span><br><span class="line">&gt; +static int config_shallow = -1;    /* unspecified */</span><br><span class="line"></span><br><span class="line">I would much prefer those variable names to include an indicator that this</span><br><span class="line">is about _rejecting_ shallow clones. I.e. `option_reject_shallow`.</span><br><span class="line"></span><br><span class="line">Also, I think that we can do with just a single `option_reject_shallow`</span><br><span class="line">(we do not even need that `reject_shallow` variable in `cmd_clone()`):</span><br><span class="line"></span><br><span class="line"><span class="deletion">- in `git_clone_config()`, only override it if it is still unspecified:</span></span><br><span class="line"></span><br><span class="line">	if (!strcmp(k, &quot;clone.rejectshallow&quot;) &amp;&amp; option_reject_shallow &lt; 0)</span><br><span class="line">		option_reject_shallow =3D git_config_bool(k,v);</span><br><span class="line"></span><br><span class="line"><span class="deletion">- in `cmd_clone()`, test for a _positive_ value:</span></span><br><span class="line"></span><br><span class="line">	if (option_reject_shallow &gt; 0)</span><br><span class="line">		die(_(&quot;source repository is shallow, reject to clone.&quot;));</span><br><span class="line"></span><br><span class="line">  and</span><br><span class="line"></span><br><span class="line">	if (option_reject_shallow &gt; 0)</span><br><span class="line"> 		transport_set_option(transport, TRANS_OPT_REJECT_SHALLOW, &quot;1&quot;);</span><br><span class="line"></span><br><span class="line">One thing to note (in the commit message, would be my preference) is that</span><br><span class="line">`cmd_clone()` is _particular_ in that it runs `git_config()` _twice_. Once</span><br><span class="line">before the command-line options are parsed, and once after the new Git</span><br><span class="line">repository has been initialized. Note that my suggestion still works with</span><br><span class="line">that: if either the original config, or the new config set</span><br><span class="line">`clone.rejectShallow`, it is picked up correctly, with the latter</span><br><span class="line">overriding the former if both configs want to set it.</span><br></pre></td></tr></table></figure>
-<p>使用 <code>option_reject_shallow</code> 比 <code>config_shallow</code> 更好一些，它能更直接地表明这个选项是要拒绝 <em>shallow clone</em> 的。<s>同时他提醒，在 <code>cmd_clone()</code>函数中 <code>git_config</code> 会被调用两次，使用 <code>option_reject_shallow</code> 能避免在 <code>cmd_clone</code> 中使用 <code>reject_shallow</code></s> 。</p>
-<p>P.S. 划线这段话是错误的，见 Johannes 本人回复：<a href="https://public-inbox.org/git/nycvar.QRO.7.76.6.2104010021510.54@tvgsbejvaqbjf.bet/">Johannes’reply</a>，以及 Junio 的回复：<a href="https://public-inbox.org/git/xmqqim5754rl.fsf@gitster.g/">Junio’s reply</a>。最后用了两个变量: <code>option_reject_shallow</code>，<code>config_reject_shallow</code>，在 <code>cmd_clone()</code> 中它们共同决定另一个变量：<code>reject_shallow</code>。</p>
-<p>后面同样变量命名：</p>
-<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">&gt; diff --git a/fetch-pack.c b/fetch-pack.c</span><br><span class="line">&gt; index fb04a76ca263..34d0c2896e2e 100644</span><br><span class="line">&gt; --- a/fetch-pack.c</span><br><span class="line">&gt; +++ b/fetch-pack.c</span><br><span class="line">&gt; @@ -1129,9 +1129,11 @@ static struct ref *do_fetch_pack(struct fetch_pac=</span><br><span class="line">k_args *args,</span><br><span class="line">&gt;  	if (args-&gt;deepen)</span><br><span class="line">&gt;  		setup_alternate_shallow(&amp;shallow_lock, &amp;alternate_shallow_file,</span><br><span class="line">&gt;  					NULL);</span><br><span class="line">&gt; -	else if (si-&gt;nr_ours || si-&gt;nr_theirs)</span><br><span class="line">&gt; +	else if (si-&gt;nr_ours || si-&gt;nr_theirs) &#123;</span><br><span class="line">&gt; +		if (args-&gt;remote_shallow)</span><br><span class="line"></span><br><span class="line">Even as a non-casual reader, this name `remote_shallow` leads me to assume</span><br><span class="line">incorrect things. This option is not about wanting a remote shallow</span><br><span class="line">repository, it is about rejecting a remote shallow repository.</span><br><span class="line">用 `reject_shallow` 代替 `remote_shllow`</span><br><span class="line">Please name this attribute `reject_shallow` instead of `remote_shallow`.</span><br><span class="line">That will prevent future puzzlement.</span><br></pre></td></tr></table></figure>
-<p>Johannes 还对测试用例提出了一些检视意见，篇幅有限，这里省略。</p>
-<p>在最后几个回合，Junio 又给出了很多有意义的检视意见：</p>
-<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">&gt; In some scenarios, users may want more history than the repository</span><br><span class="line">&gt; offered for cloning, which happens to be a shallow repository, can</span><br><span class="line">&gt; give them. But because users don&#x27;t know it is a shallow repository</span><br><span class="line">&gt; until they download it to local, users should have the option to</span><br><span class="line"></span><br><span class="line">&#x27;should&#x27; 在这里感觉语气太重了</span><br><span class="line">I find the &quot;should&quot; too strong, but let&#x27;s keep reading.</span><br><span class="line"></span><br><span class="line">&gt; refuse to clone this kind of repository, and may want to exit the</span><br><span class="line">&gt; process immediately without creating any unnecessary files.</span><br><span class="line">确认是语气重了。同时存在冗余。</span><br><span class="line">Yes, that is too strong and also redundant.</span><br><span class="line"></span><br><span class="line">&gt; Althought there is an option &#x27;--depth=x&#x27; for users to decide how</span><br><span class="line">&gt; deep history they can fetch, but as the unshallow cloning&#x27;s depth</span><br><span class="line">句子若以 &#x27;although&#x27; 开头，则后面不应该用 `but`做转折。</span><br><span class="line">&quot;Although&quot;; if you begin with &quot;although&quot;, you shouldn&#x27;t write &quot;but&quot;.</span><br><span class="line"></span><br><span class="line">&gt; is INFINITY, we can&#x27;t know exactly the minimun &#x27;x&#x27; value that can</span><br><span class="line">&gt; satisfy the minimum integrity,</span><br><span class="line">&gt; so we can&#x27;t pass &#x27;x&#x27; value to --depth,</span><br><span class="line">&gt; and expect this can obtain a complete history of a repository.</span><br><span class="line"></span><br><span class="line">If the argument were &quot;we might start with depth x, and the source</span><br><span class="line">may be deep enough to give us x right now, but we may want to deepen</span><br><span class="line">more than they can offer, and such a user would want to be able to</span><br><span class="line">say &#x27;I want depth=x now, but make sure they are not shallow&#x27;&quot;, I</span><br><span class="line">would understand it, but I do not see where the &quot;minimum integrity&quot;</span><br><span class="line">comes from---there doesn&#x27;t appear to be anything related to</span><br><span class="line">integrity here.</span><br><span class="line"></span><br><span class="line">&gt; In other scenarios, if we have an API that allow us to import external</span><br><span class="line"></span><br><span class="line">&quot;allows&quot;</span><br><span class="line"></span><br><span class="line">&gt; repository, and then perform various operations on the repo.</span><br><span class="line">&gt; But if the imported is a shallow one(which is actually possible), it</span><br><span class="line">&gt; will affect the subsequent operations. So we can choose to refuse to</span><br><span class="line">&gt; clone, and let&#x27;s just import a normal repository.</span><br><span class="line">建议丢掉这一整段，因为它跟前面讲的场景差不多，并没有提供新信息。</span><br><span class="line">I&#x27;d suggest dropping this entire paragraph.  That is not any new</span><br><span class="line">scenario at all.  API or not, you essentially just said &quot;you can do</span><br><span class="line">various things on your clone once you have it, but some things you</span><br><span class="line">may want to do you would want a full history&quot;.  That is what you</span><br><span class="line">started the whole discussion above and does not add any new</span><br><span class="line">information.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt; @@ -858,6 +861,9 @@ static int git_clone_config(const char *k, const char *v, void *cb)</span><br><span class="line">&gt;  		free(remote_name);</span><br><span class="line">&gt;  		remote_name = xstrdup(v);</span><br><span class="line">&gt;  	&#125;</span><br><span class="line">&gt; +	if (!strcmp(k, &quot;clone.rejectshallow&quot;) &amp;&amp; option_reject_shallow &lt; 0)</span><br><span class="line">&gt; +		option_reject_shallow = git_config_bool(k, v);</span><br><span class="line"></span><br><span class="line">Does this &quot;single variable is enough&quot; really work?</span><br><span class="line"></span><br><span class="line">Imagine that the first time around we&#x27;d read from $HOME/.gitconfig</span><br><span class="line">that says true (flips the variable from &quot;unspecified&quot;).  Further</span><br><span class="line">imagine that we are running &quot;git clone -c config.rejectShallow=no&quot;</span><br><span class="line">to countermand the global config.  We call write_config() to write</span><br><span class="line">the extra configuration value out, and then call git_config() to</span><br><span class="line">read from the repository configuration again.</span><br><span class="line"></span><br><span class="line">Because of the value taken from $HOME/.gitconfig, however, the</span><br><span class="line">attempt to override is silently ignored, isn&#x27;t it?</span><br><span class="line"></span><br><span class="line">Other than that, the changes to the code from the previous round</span><br><span class="line">looked sensible.</span><br><span class="line"></span><br><span class="line">虽然比上一版的更新好了很多，但Junio并没有放弃任何可能的问题，仍对config配置</span><br><span class="line">和option配置有疑问，他的顾虑是正确的，这为下一版的更新提供了正确的思路。</span><br></pre></td></tr></table></figure>
-<p>这就是我第一次向 Git 社区提交代码的情况：问题多多，反馈多多。各种严谨细致又有启发性的检视意见让我感受到了 Git 社区的技术氛围。这个过程中让我不断思考如何让代码写得更好：更有逻辑，更简洁，更严谨，而不仅仅是实现功能。</p>
-<p>这个经验让我想到，在英语中有个两个单词可以很贴切的形容他们对待代码的态度：<code>polish</code>，<code>cooking</code>。<br>
-<code>polish</code> 动词意为润色，修改，抛光，打磨。用在代码上， commit 信息上，甚至写文档上，意味着这些过程是不断改进，不断变得更好。<br>
-<code>cooking</code> 意为烹饪，比喻写代码就像烹饪，所谓心急吃不了热豆腐，即使做简单的菜都需要耐心，细心。</p>
-<p>回到主题，前面的每次修改，直接强推到原来的PR中即可， <a href="https://gitgitgadget.github.io/">GitGitGadget</a> 会自动将每次的更新转换为不同的版本再提交到上游社区。那如何确定提交的版本是最终版本呢？前面提到过 Git 的几个主要分支，当我提交到第十版后，很快就被合入到 <code>seen</code>分支，意味着被初步接受，然后又马上进入 <code>next</code> 分支，意味着各项测试也没问题，然后又马上进入 <code>master</code> 分支。特别地，这个过程会有 <strong>状态更新</strong> 提醒， Git 社区有个 <a href="https://lore.kernel.org/git/xmqqy2dw2pai.fsf@gitster.g/#r">What’s cooking in git.git</a> 栏目，是维护者 Junio 用来管理各种提交的状态更新的，它会表明目前社区正在 cooking 哪些人的哪些代码(patch)，以及各个代码的目前状态。当你的代码在 <strong>What’s cooking in git.git</strong>  中进入 <code>Graduated to 'master'</code> 或者 <code>Will merge to 'master'</code>，那就表明马上会合入主线啦。</p>
-]]></content>
-      <categories>
-        <category>Git</category>
-      </categories>
-      <tags>
-        <tag>Git</tag>
-        <tag>Workflow</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>如何向 Git 社区提交代码</title>
     <url>/posts/d699447b.html</url>
     <content><![CDATA[<h2 id="前言">前言</h2>
@@ -727,8 +668,8 @@ commit body 部分不超过 76 个字符</p>
         <category>Git</category>
       </categories>
       <tags>
-        <tag>Git</tag>
         <tag>Workflow</tag>
+        <tag>Git</tag>
       </tags>
   </entry>
   <entry>
@@ -918,262 +859,62 @@ sn(Surname): 名字前缀(姓)</p>
       </tags>
   </entry>
   <entry>
-    <title>git bundle 格式及应用</title>
-    <url>/posts/32c910d1.html</url>
-    <content><![CDATA[<p><code>git-bundle</code> 文件是一种将 <code>git objects</code> 数据(git packfile)与仓库引用 <code>refs</code> 结合在一起的一种数据包格式，通过 <code>objects + refs</code> 就能恢复出一个完整的 <code>git</code> 仓库，因此可以用 <code>git-bundle</code> 文件来备份 <code>git</code> 仓库。</p>
-<!--  more -->
-<h3 id="格式">格式</h3>
-<p><code>git bundle v2</code> 格式：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bundle    = signature *prerequisite *reference LF pack</span><br><span class="line">signature = <span class="string">&quot;# v2 git bundle&quot;</span> LF</span><br><span class="line"></span><br><span class="line">prerequisite = <span class="string">&quot;-&quot;</span> obj-id SP comment LF</span><br><span class="line">comment      = *CHAR</span><br><span class="line">reference    = obj-id SP refname LF</span><br><span class="line"></span><br><span class="line">pack         = ... ; packfile</span><br></pre></td></tr></table></figure>
-<p><code>git bundle v3</code> 格式：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bundle    = signature *capability *prerequisite *reference LF pack</span><br><span class="line">signature = <span class="string">&quot;# v3 git bundle&quot;</span> LF</span><br><span class="line"></span><br><span class="line">capability   = <span class="string">&quot;@&quot;</span> key [<span class="string">&quot;=&quot;</span> value] LF</span><br><span class="line">prerequisite = <span class="string">&quot;-&quot;</span> obj-id SP comment LF</span><br><span class="line">comment      = *CHAR</span><br><span class="line">reference    = obj-id SP refname LF</span><br><span class="line">key          = 1*(ALPHA / DIGIT / <span class="string">&quot;-&quot;</span>)</span><br><span class="line">value        = *(%01-09 / %0b-FF)</span><br><span class="line"></span><br><span class="line">pack         = ... ; packfile</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>注：以上均采用 <code>ABNF</code> 标记法</p>
-</blockquote>
-<p>可以看出：</p>
-<p><code>git bundle v2</code> 包含四个部分：</p>
-<ol>
-<li class="lvl-3">
-<p>签名。标识 <code>git bundle</code> 版本</p>
+    <title>如何向 Git 社区提交代码(2)</title>
+    <url>/posts/23bf24d1.html</url>
+    <content><![CDATA[<h3 id="背景">背景</h3>
+<p>第一次向 Git 社区提交代码起源于 Gitee 的一个需求。Gitee 创建新仓库有多种方式，其中一种是根据用户提供的仓库 URL 导入新仓库，Gitee 首先会对用户提供的 URL 进行校验，只有合格的仓库地址才会生成新仓库。但是有种情况比较特别，若用户确实提供了一个合法的 Git 仓库地址，但是这个仓库不是完整的，常见的情况就是浅仓库(shallow repo)，这类仓库缺乏足够的历史提交信息，因此会带来一些问题。为了避免这种情况，在服务端就需要对用户导入的仓库进行特别处理。在服务端，导入仓库的动作本质上就是执行 <code>git clone --mirror</code> 命令，那么有没有可能在执行这个克隆命令的过程中就对仓库进行判断呢？如果能，这将避免克隆完整个仓库再进行判断仓库是否为浅仓库，这样无疑更有效。于是我开始研究 Git 源码，琢磨如何给 <code>git-clone</code> 命令赋予一项新的能力。</p>
+<p>按照前面的方法向 Git 社区提交了第一版代码：<a href="https://public-inbox.org/git/pull.865.git.1612409491842.gitgitgadget@gmail.com/#t">v1</a></p>
+<p>很快收到 <strong><a href="https://public-inbox.org/git/xmqq35yc9yan.fsf@gitster.c.googlers.com/#t">Junio C Hamano</a></strong> 反馈，主要问题有：</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>commit 信息中说明不清，英文语法错误：</p>
 </li>
-<li class="lvl-3">
-<p>必要依赖。不包含在当前 <code>bundle包</code> 中，但是被 <code>bundle包</code> 中的数据引用到的数据。</p>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&gt; This patch add a new option that reject to clone a shallow repository.</span><br><span class="line"></span><br><span class="line">A canonical form of our log message starts by explaining the need,</span><br><span class="line">and then presents the solution at the end.</span><br><span class="line">一条规范的 commit 信息格式应该是在开始就解释更改需求，然后在结尾提供解决方案。</span><br><span class="line"></span><br><span class="line">&gt; Clients don&#x27;t know it&#x27;s a shallow repository until they download it</span><br><span class="line">&gt; locally, in some scenariors, clients just don&#x27;t want to clone this kind</span><br><span class="line"></span><br><span class="line">&quot;scenarios&quot;.  &quot;in some scenarios&quot; would have to be clarified a bit</span><br><span class="line">more to justify why it is a good idea to have such a feature.</span><br><span class="line">这里的需求场景描述地不够有说服力。</span><br><span class="line"></span><br><span class="line">&gt; of repository, and want to exit the process immediately without creating</span><br><span class="line">&gt; any unnecessary files.</span><br><span class="line"></span><br><span class="line">&quot;clients don&#x27;t know it&#x27;s a shallow repository until they download&quot;</span><br><span class="line">leading to &quot;so let&#x27;s reject immediately upon finding out that they</span><br><span class="line">are shallow&quot; does make sense as a flow of thought, though.</span><br><span class="line">这里表述不够清晰，Junio 顺便提供了他的建议</span><br><span class="line">&gt; +--no-shallow::</span><br><span class="line">&gt; +	Don&#x27;t clone a shallow source repository. In some scenariors, clients</span><br><span class="line"></span><br><span class="line">&quot;scenarios&quot; (no &#x27;r&#x27;).</span><br></pre></td></tr></table></figure>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>新增选项 <code>--no-shallow</code> 不对，应该考虑到布尔类选项存在反选情况，即 <code>--no-no-shallow</code> ，因此不应该这么写，建议改为 <code>--reject-shallow</code>， 它的反选即为 <code>--no-reject-shallow</code>，这样语义上也更符合直觉：</p>
 </li>
-<li class="lvl-3">
-<p>引用。当前 <code>bundle包</code> 中包含的引用。</p>
+</ul>
+<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">&gt; diff --git a/builtin/clone.c b/builtin/clone.c</span><br><span class="line"></span><br><span class="line">&gt; @@ -90,6 +91,7 @@ static struct option builtin_clone_options[] = &#123;</span><br><span class="line">&gt;  	OPT__VERBOSITY(&amp;option_verbosity),</span><br><span class="line">&gt;  	OPT_BOOL(0, &quot;progress&quot;, &amp;option_progress,</span><br><span class="line">&gt;  		 N_(&quot;force progress reporting&quot;)),</span><br><span class="line">&gt; +	OPT_BOOL(0, &quot;no-shallow&quot;, &amp;option_no_shallow, N_(&quot;don&#x27;t clone shallow repository&quot;)),</span><br><span class="line">&gt;  	OPT_BOOL(&#x27;n&#x27;, &quot;no-checkout&quot;, &amp;option_no_checkout,</span><br><span class="line">&gt;  		 N_(&quot;don&#x27;t create a checkout&quot;)),</span><br><span class="line">&gt;  	OPT_BOOL(0, &quot;bare&quot;, &amp;option_bare, N_(&quot;create a bare repository&quot;)),</span><br><span class="line"></span><br><span class="line">It is a bad idea to give a name that begins with &quot;no-&quot; to an option</span><br><span class="line">whose default can be tweaked by a configuration variable [*].  If</span><br><span class="line">the configuration is named &quot;rejectshallow&quot;, perhaps it is better to</span><br><span class="line">call it &quot;--reject-shallow&quot; instead.</span><br><span class="line"></span><br><span class="line">This is because configured default must be overridable from the</span><br><span class="line">command line.  I.e. even if you have in your ~/.gitconfig this:</span><br><span class="line"></span><br><span class="line">    [clone]</span><br><span class="line">        rejectshallow = true</span><br><span class="line"></span><br><span class="line">you should be able to say &quot;allow it only this time&quot;, with</span><br><span class="line"></span><br><span class="line">    $ git clone --no-reject-shallow http://github.com/git/git/ git</span><br><span class="line"></span><br><span class="line">and you do not want to have to say &quot;--no-no-shallow&quot;, which sounds</span><br><span class="line">just silly.</span><br><span class="line"></span><br><span class="line">	Side note. it is a bad idea in general, even if the option</span><br><span class="line">	does not have corresponding configuration variable.  The</span><br><span class="line">	existing &quot;no-checkout&quot; is a historical accident that</span><br><span class="line">	happened long time ago and cannot be removed due to</span><br><span class="line">	compatibility.  Let&#x27;s not introduce a new option that</span><br><span class="line">	follows such a bad pattern.</span><br><span class="line"></span><br><span class="line">	Junio 进一步解释：现存的选项 `no-checkout` 是一个很久之前的历史错误，</span><br><span class="line">	由于兼容性，已经无法移除这个错误了，现在新的选项不应该按照这种模式命名。</span><br><span class="line">	P.S. 刚好我就是按照`no-checkout`选项的模式创造出`no-shllow`选项的-:)</span><br></pre></td></tr></table></figure>
+<p>更重要的是，<strong>命令行优先于配置</strong>，即命令行选项要能够覆盖配置文件选项。当配置文件从全局上不允许克隆 shllow 仓库时，而用户想要允许单次克隆 shallow 仓库时，自然地，他会使用 <code>--no-shallow</code> 选项的反选项 <code>--no-no-shallow</code> 来覆盖掉配置中的选项 。但这样 <code>--no-no-shallow</code> 听来去就很傻。</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>由于 Git 存在多种传输协议，目前的修改只是解决了本地克隆问题，因此仍需改进：</p>
 </li>
-<li class="lvl-3">
-<p><code>pack文件</code>。<code>git packfile</code></p>
+</ul>
+<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">&gt; @@ -963,6 +968,7 @@ static int path_exists(const char *path)</span><br><span class="line">&gt;  int cmd_clone(int argc, const char **argv, const char *prefix)</span><br><span class="line">&gt;  &#123;</span><br><span class="line">&gt;  	int is_bundle = 0, is_local;</span><br><span class="line">&gt; +	int is_shallow = 0;</span><br><span class="line">&gt;  	const char *repo_name, *repo, *work_tree, *git_dir;</span><br><span class="line">&gt;  	char *path, *dir, *display_repo = NULL;</span><br><span class="line">&gt;  	int dest_exists, real_dest_exists = 0;</span><br><span class="line">&gt; @@ -1215,6 +1221,7 @@ int cmd_clone(int argc, const char **argv, const char *prefix)</span><br><span class="line">&gt;  		if (filter_options.choice)</span><br><span class="line">&gt;  			warning(_(&quot;--filter is ignored in local clones; use file:// instead.&quot;));</span><br><span class="line">&gt;  		if (!access(mkpath(&quot;%s/shallow&quot;, path), F_OK)) &#123;</span><br><span class="line">&gt; +			is_shallow = 1;</span><br><span class="line">&gt;  			if (option_local &gt; 0)</span><br><span class="line">&gt;  				warning(_(&quot;source repository is shallow, ignoring --local&quot;));</span><br><span class="line">&gt;  			is_local = 0;</span><br><span class="line"></span><br><span class="line">This change is to the local clone codepath.  Cloning over the wire</span><br><span class="line">would not go through this part.  And throughout the patch, this is</span><br><span class="line">the only place that sets is_shallow to 1.</span><br><span class="line"></span><br><span class="line">Also let&#x27;s note that this is after we called parse_options(), so the</span><br><span class="line">value of option_no_shallow is known at this point.</span><br><span class="line"></span><br><span class="line">So, this patch does not even *need* to introduce a new &quot;is_shallow&quot;</span><br><span class="line">variable at all.  It only needs to add</span><br><span class="line"></span><br><span class="line">                        if (option_no_shallow)</span><br><span class="line">                                die(...);</span><br><span class="line"></span><br><span class="line">instead of adding &quot;is_shallow = 1&quot; to the above hunk.</span><br><span class="line"></span><br><span class="line">I somehow think that this is only half a feature---wouldn&#x27;t it be</span><br><span class="line">more useful if we also rejected a non-local clone from a shallow</span><br><span class="line">repository?</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>测试代码中的问题：</p>
 </li>
-</ol>
-<p><code>git bundle</code> <code>v3</code> 仅比 <code>v2</code> 多了一个 <code>capability</code> 部分。</p>
-<p>前面提到过 <code>prerequisite</code> 的概念，其格式为 <code>prerequisite = &quot;-&quot; obj-id SP comment LF</code>，所以来看下这个实际是什么意思。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 先打包master分支上最近三次提交</span></span><br><span class="line">$ git bundle create recent.bundle master~3..master</span><br><span class="line">Enumerating objects: 13, <span class="keyword">done</span>.</span><br><span class="line">Counting objects: 100% (13/13), <span class="keyword">done</span>.</span><br><span class="line">Compressing objects: 100% (8/8), <span class="keyword">done</span>.</span><br><span class="line">Total 9 (delta 3), reused 0 (delta 0), pack-reused 0</span><br><span class="line"></span><br><span class="line"><span class="comment"># 再用 git bundle verify 验证一下这个bundle包有没有外部依赖</span></span><br><span class="line">$ git bundle verify recent.bundle</span><br><span class="line">The bundle contains this ref:</span><br><span class="line">0a831168aa94dffaa92f5d73f3e873ef5fd89603 refs/heads/master</span><br><span class="line">The bundle requires this ref:</span><br><span class="line">d5d9b1c95f0012cb7da18deaff6a806f89e48867</span><br><span class="line">recen.bundle is okay</span><br></pre></td></tr></table></figure>
-<p>上面的结果很明显：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">The bundle requires this ref:</span><br><span class="line">d5d9b1c95f0012cb7da18deaff6a806f89e48867</span><br></pre></td></tr></table></figure>
-<p>再打开这个bundle包文件看下：</p>
-<figure class="highlight tex"><table><tr><td class="code"><pre><span class="line"><span class="params">#</span> v2 git bundle</span><br><span class="line">-d5d9b1c95f0012cb7da18deaff6a806f89e48867 demo.tar.gz</span><br><span class="line">0a831168aa94dffaa92f5d73f3e873ef5fd89603 refs/heads/master</span><br></pre></td></tr></table></figure>
-<p>第二行的内容 <code>-d5d9b1c95f0012cb7da18deaff6a806f89e48867 demo.tar.gz</code> 即是<code>prerequisite</code></p>
-<p>并且符合格式 <code>prerequisite = &quot;-&quot; obj-id SP comment LF</code></p>
-<p>我们看一个实际的 <code>git pack</code> 文件：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">PACK^@^@^@^B^@^@^@^C&lt;91&gt;^Kx^A^A±^@Nÿtree 212ccb4755ab7c489bee69200388139d7f081e7c</span><br><span class="line">author Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line">committer Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line"></span><br><span class="line">add aa.txt</span><br><span class="line">©&amp;5A5x^A^A^E^@úÿaaaa</span><br><span class="line">^E]^A&lt;8f&gt;¢^Bx^A^A<span class="string">&quot;^@Ýÿ100644 aa.txt^@]0&lt;8e&gt;^]^F^K^L8&#125;E,ôt^?&lt;89&gt;ì¹&lt;93&gt;XQ£÷^KlK&lt;9a&gt;&lt;93&gt;pÃ^@ò&amp;bL37©&lt;85&gt;(ÐâWa^X</span></span><br><span class="line"><span class="string">~</span></span><br></pre></td></tr></table></figure>
-<p>而此时的 <code>git bundle v2</code> 文件如下：</p>
-<blockquote>
-<p>git bundle create master.bundle master</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># v2 git bundle</span></span><br><span class="line">e0caba68a7281d4ff86693745a1617ffc72c3e7d refs/heads/master</span><br><span class="line"></span><br><span class="line">PACK^@^@^@^B^@^@^@^C&lt;91&gt;^Kx^A^A±^@Nÿtree 212ccb4755ab7c489bee69200388139d7f081e7c</span><br><span class="line">author Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line">committer Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line"></span><br><span class="line">add aa.txt</span><br><span class="line">©&amp;5A¢^Bx^A^A<span class="string">&quot;^@Ýÿ100644 aa.txt^@]0&lt;8e&gt;^]^F^K^L8&#125;E,ôt^?&lt;89&gt;ì¹&lt;93&gt;XQ£÷^Kl5x^A^A^E^@úÿaaaa</span></span><br><span class="line"><span class="string">^E]^A&lt;8f&gt;,^B&lt;9d&gt;ï&lt;89&gt;DIr^\&lt;87&gt;*&lt;9b&gt;Æû^X¹É&#125;PÖ</span></span><br></pre></td></tr></table></figure>
-<p><code>git bundle v3</code> 文件如下:</p>
-<blockquote>
-<p>git bundle create --version=3 master-v3.bundle master</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># v3 git bundle</span></span><br><span class="line">@object-format=sha1</span><br><span class="line">e0caba68a7281d4ff86693745a1617ffc72c3e7d refs/heads/master</span><br><span class="line"></span><br><span class="line">PACK^@^@^@^B^@^@^@^C&lt;91&gt;^Kx^A^A±^@Nÿtree 212ccb4755ab7c489bee69200388139d7f081e7c</span><br><span class="line">author Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line">committer Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line"></span><br><span class="line">add aa.txt</span><br><span class="line">©&amp;5A¢^Bx^A^A<span class="string">&quot;^@Ýÿ100644 aa.txt^@]0&lt;8e&gt;^]^F^K^L8&#125;E,ôt^?&lt;89&gt;ì¹&lt;93&gt;XQ£÷^Kl5x^A^A^E^@úÿaaaa</span></span><br><span class="line"><span class="string">^E]^A&lt;8f&gt;,^B&lt;9d&gt;ï&lt;89&gt;DIr^\&lt;87&gt;*&lt;9b&gt;Æû^X¹É&#125;PÖ</span></span><br></pre></td></tr></table></figure>
-<h3 id="操作实践">操作实践</h3>
-<p>在机器A中的仓库 <code>R1</code> 中：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git bundle create file.bundle master</span><br><span class="line"><span class="comment"># 做个标记</span></span><br><span class="line">$ git tag -f lastR2bundle master</span><br></pre></td></tr></table></figure>
-<p>将 <code>file.bundle</code> 转移到机器B上，克隆仓库 <code>R2</code>：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> -b master /path/to/file.bundle R2</span><br><span class="line">Cloning into <span class="string">&#x27;R2&#x27;</span>...</span><br><span class="line">Receiving objects: 100% (38/38), 7.97 KiB | 7.97 MiB/s, <span class="keyword">done</span>.</span><br><span class="line">Resolving deltas: 100% (6/6), <span class="keyword">done</span>.</span><br></pre></td></tr></table></figure>
-<p>回到仓库 <code>R1</code>，仓库 <code>R1</code> 有了新的提交。然后继续打包：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git bundle create file.bundle lastR2bundle..master</span><br><span class="line"><span class="comment"># 做个标记，下次打包时使用</span></span><br><span class="line">$ git tag -f lastR2bundle master</span><br></pre></td></tr></table></figure>
-<p>将 <code>file.bundle</code> 转移到机器 <code>B</code> 上，再到 <code>R2</code> 仓库中进行更新：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git fetch</span><br><span class="line">Receiving objects: 100% (41/41), 8.28 KiB | 8.28 MiB/s, <span class="keyword">done</span>.</span><br><span class="line">Resolving deltas: 100% (7/7), <span class="keyword">done</span>.</span><br><span class="line">From /home/git/test-git/example/repo.bundle</span><br><span class="line">   d4f54d9..6a33e12  master     -&gt; origin/master</span><br><span class="line">   </span><br><span class="line"> <span class="comment"># 还是在cloned-repo中</span></span><br><span class="line">$ git ls-remote</span><br><span class="line">From /path/to/file.bundle</span><br><span class="line">6a33e12f3d7116863a19bf48471c74c597421f8a        HEAD</span><br><span class="line">45eab37d3cb8b5be02a59d3690cb63d3f692f6b9        refs/remotes/origin/master</span><br><span class="line">45eab37d3cb8b5be02a59d3690cb63d3f692f6b9        refs/remotes/origin/HEAD</span><br><span class="line">6a33e12f3d7116863a19bf48471c74c597421f8a        refs/heads/master</span><br></pre></td></tr></table></figure>
-<p>以上操作，看起来都跟读取 Git 远程仓库的一样。<br>
-<strong>但是不支持写仓库操作，即 <code>git push</code> 操作。</strong></p>
-<p>以上操作就完成了仓库的全量备份和增量备份。</p>
-<p>还可以用其它形式进行打包：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git bundle create mybundle v1.0.0..master</span><br><span class="line">$ git bundle create mybundle --since=10.days master</span><br><span class="line">$ git bundle create mybundle -10 master</span><br></pre></td></tr></table></figure>
-<p>只要是 <code>git rev-list</code> 能接受的参数，就可以放在 <code>git bundle create mybundle</code> 后面。比如可以使用 <code>--max-age</code> 选项，实现根据时间戳来进行备份，大致过程如下：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">```Bash</span><br><span class="line"><span class="comment"># 当前HEAD的时间戳，作为下次备份的起点时间</span></span><br><span class="line">$ git cat-file commit HEAD | sed -n <span class="string">&quot;s/^committer .*&gt; \([0-9]*\) .*/\1/p&quot;</span> </span><br><span class="line">1660809497</span><br><span class="line"></span><br><span class="line"><span class="comment"># --branches 获取refs/heads/下所有相关commits</span></span><br><span class="line"><span class="comment"># --tags 获取refs/tags/下所有相关commits</span></span><br><span class="line"><span class="comment"># --remotes 获取refs/remotes/下所有相关commits</span></span><br><span class="line"><span class="comment"># --all 获取refs/下所有相关commits</span></span><br><span class="line"><span class="comment"># --objects 表示commit所关联的所有对象</span></span><br><span class="line">$ git bundle create latest.bundle  --max-age=1660807920 --all --objects</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取bundle包中的引用信息，可以通过其它选项筛选出部分引用。</span></span><br><span class="line">$ git bundle list-heads latest.bundle &gt; latest.list</span><br><span class="line"></span><br><span class="line"><span class="comment"># 通过git-ls-remote获取bundle包中的所有引用信息。</span></span><br><span class="line">$ git ls-remote latest.bundle &gt; latest.lsremote</span><br></pre></td></tr></table></figure>
-<h3 id="应用">应用</h3>
-<p>目前 Gitlab 的<a href="https://docs.gitlab.com/ee/user/project/settings/import_export.html">仓库导出、导入功能</a>以及阿里云效 CodeUp 的<a href="https://help.aliyun.com/document_detail/217005.html?spm=a2cl9.codeup_devops2020_goldlog_organization.0.0.3bcb1510bKSmJi">仓库备份</a>功能主要就是利用 Git-bundle 特性对 Git 仓库进行打包。</p>
-<h3 id="参考链接">参考链接</h3>
-<ol>
-<li class="lvl-3">
-<p><a href="https://git-scm.com/docs/git-bundle">https://git-scm.com/docs/git-bundle</a></p>
-</li>
-<li class="lvl-3">
-<p><a href="https://git-scm.com/docs/bundle-format">https://git-scm.com/docs/bundle-format</a></p>
-</li>
-</ol>
+</ul>
+<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">And for that ...</span><br><span class="line"></span><br><span class="line">&gt; diff --git a/t/t5606-clone-options.sh b/t/t5606-clone-options.sh</span><br><span class="line">&gt; index 7f082fb23b6a..9d310dbb158a 100755</span><br><span class="line">&gt; --- a/t/t5606-clone-options.sh</span><br><span class="line">&gt; +++ b/t/t5606-clone-options.sh</span><br><span class="line">&gt; @@ -42,6 +42,13 @@ test_expect_success &#x27;disallows --bare with --separate-git-dir&#x27; &#x27;</span><br><span class="line">&gt;  </span><br><span class="line">&gt;  &#x27;</span><br><span class="line">&gt;  </span><br><span class="line">&gt; +test_expect_success &#x27;reject clone shallow repository&#x27; &#x27;</span><br><span class="line">&gt; +	git clone --depth=1 --no-local parent shallow-repo &amp;&amp;</span><br><span class="line">&gt; +	test_must_fail git clone --no-shallow shallow-repo out 2&gt;err &amp;&amp;</span><br><span class="line">&gt; +	test_i18ngrep -e &quot;source repository is shallow, reject to clone.&quot; err</span><br><span class="line">&gt; +</span><br><span class="line">&gt; +&#x27;</span><br><span class="line">&gt; +</span><br><span class="line"></span><br><span class="line">... in addition to the test for a local clone above, you&#x27;d also want</span><br><span class="line">to test a non-local clone, perhaps like so:</span><br><span class="line"></span><br><span class="line">test_expect_success &#x27;reject clone shallow repository&#x27; &#x27;</span><br><span class="line">	rm -fr shallow-repo &amp;&amp;</span><br><span class="line">	git clone --depth=1 --no-local parent shallow-repo &amp;&amp;</span><br><span class="line">	test_must_fail git clone --no-shallow --no-local shallow-repo out 2&gt;err &amp;&amp;</span><br><span class="line">	test_i18ngrep -e &quot;source repository is shallow, reject to clone.&quot; err</span><br><span class="line"></span><br><span class="line">&#x27;</span><br><span class="line"></span><br><span class="line">Ditto for the other test script.</span><br><span class="line"></span><br><span class="line">Also, you would want to make sure that the command line overrides</span><br><span class="line">the configured default.  I.e.</span><br><span class="line"></span><br><span class="line">	git -c clone.rejectshallow=false clone --reject-shallow</span><br><span class="line"></span><br><span class="line">should refuse to clone from a shallow one, while there should be a</span><br><span class="line">way to countermand a configured &quot;I always refuse to clone from a</span><br><span class="line">shallow repository&quot; with &quot;but let&#x27;s allow it only this time&quot;, i.e.</span><br><span class="line"></span><br><span class="line">	git -c clone.rejectshallow=true clone --no-reject-shallow</span><br><span class="line"></span><br><span class="line">or something along the line.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt; diff --git a/t/t5611-clone-config.sh b/t/t5611-clone-config.sh</span><br><span class="line">&gt; index 8e0fd398236b..3aab86ad4def 100755</span><br><span class="line">&gt; --- a/t/t5611-clone-config.sh</span><br><span class="line">&gt; +++ b/t/t5611-clone-config.sh</span><br><span class="line">&gt; @@ -92,6 +92,13 @@ test_expect_success &#x27;clone -c remote.&lt;remote&gt;.fetch=&lt;refspec&gt; --origin=&lt;name&gt;&#x27; &#x27;</span><br><span class="line">&gt;  	test_cmp expect actual</span><br><span class="line">&gt;  &#x27;</span><br><span class="line">&gt;  </span><br><span class="line">&gt; +test_expect_success &#x27;clone -c clone.rejectshallow&#x27; &#x27;</span><br><span class="line">&gt; +	rm -rf child &amp;&amp;</span><br><span class="line">&gt; +	git clone --depth=1 --no-local . child &amp;&amp;</span><br><span class="line">&gt; +	test_must_fail git clone -c clone.rejectshallow child out 2&gt;err &amp;&amp;</span><br><span class="line"></span><br><span class="line">This is not quite right, even though it may happen to work.  The</span><br><span class="line">&quot;clone.rejectshallow&quot; variable is a configuration about what should</span><br><span class="line">happen when creating a new repository by cloning, so letting &quot;git</span><br><span class="line">clone -c var[=val]&quot; to set the variable _in_ the resulting repository</span><br><span class="line">would not make much sense.  Even if the clone succeeded, nobody would</span><br><span class="line">look at that particular configuration variable that is set in the</span><br><span class="line">resulting repository.</span><br><span class="line"></span><br><span class="line">I think it would communicate to the readers better what we are</span><br><span class="line">trying to do, if we write</span><br><span class="line"></span><br><span class="line">	test_must_fail git -c clone.rejectshallow=true clone child out</span><br><span class="line"></span><br><span class="line">instead.</span><br><span class="line"></span><br><span class="line">Thanks.</span><br></pre></td></tr></table></figure>
+<p>通过测试代码 Junio 指出： <code>clone.rejectshallow</code> 配置和命令行选项 <code>--reject-shallow</code> 存在逻辑上的交叉重叠问题，因此测试时应该体现出这一点。</p>
+<p>以上就是我第一次提交的代码，没想到能很快收到那么多宝贵的检视建议。但是，这只是开始，后面还有更多的检视回合，收到了更加细致的检视意见。</p>
+<p>比如 <a href="https://public-inbox.org/git/nycvar.QRO.7.76.6.2103311146210.52@tvgsbejvaqbjf.bet/">Johannes Schindelin</a> 给了一些意见：</p>
+<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">我觉得这个补丁大部分都很好，但我还有一点点改进建议</span><br><span class="line">I like most of the patch, and will only point out a couple of things that</span><br><span class="line">I think can be improved even further.</span><br><span class="line"></span><br><span class="line">&gt; diff --git a/Documentation/git-clone.txt b/Documentation/git-clone.txt</span><br><span class="line">&gt; index 02d9c19cec75..0adc98fa7eee 100644</span><br><span class="line">&gt; --- a/Documentation/git-clone.txt</span><br><span class="line">&gt; +++ b/Documentation/git-clone.txt</span><br><span class="line">&gt; @@ -149,6 +149,11 @@ objects from the source repository into a pack in t=</span><br><span class="line">he cloned repository.</span><br><span class="line">&gt;  --no-checkout::</span><br><span class="line">&gt;  	No checkout of HEAD is performed after the clone is complete.</span><br><span class="line">&gt;</span><br><span class="line">&gt; +--[no-]reject-shallow::</span><br><span class="line">&gt; +	Fail if the source repository is a shallow repository.</span><br><span class="line">&gt; +	The &#x27;clone.rejectShallow&#x27; configuration variable can be used to</span><br><span class="line">&gt; +	give the default.</span><br><span class="line"></span><br><span class="line">使用 `to specify the default` 说起来更顺口一些</span><br><span class="line">I am not a native speaker, either, but I believe that it would &quot;roll off</span><br><span class="line">the tongue&quot; a bit better to say &quot;to specify the default&quot;.</span><br></pre></td></tr></table></figure>
+<p>变量命名问题：</p>
+<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">&gt; diff --git a/builtin/clone.c b/builtin/clone.c</span><br><span class="line">&gt; index 51e844a2de0a..eeddd68a51f4 100644</span><br><span class="line">&gt; --- a/builtin/clone.c</span><br><span class="line">&gt; +++ b/builtin/clone.c</span><br><span class="line">&gt; @@ -50,6 +50,8 @@ static int option_no_checkout, option_bare, option_mir=</span><br><span class="line">ror, option_single_branch</span><br><span class="line">&gt;  static int option_local =3D -1, option_no_hardlinks, option_shared;</span><br><span class="line">&gt;  static int option_no_tags;</span><br><span class="line">&gt;  static int option_shallow_submodules;</span><br><span class="line">&gt; +static int option_shallow = -1;    /* unspecified */</span><br><span class="line">&gt; +static int config_shallow = -1;    /* unspecified */</span><br><span class="line"></span><br><span class="line">I would much prefer those variable names to include an indicator that this</span><br><span class="line">is about _rejecting_ shallow clones. I.e. `option_reject_shallow`.</span><br><span class="line"></span><br><span class="line">Also, I think that we can do with just a single `option_reject_shallow`</span><br><span class="line">(we do not even need that `reject_shallow` variable in `cmd_clone()`):</span><br><span class="line"></span><br><span class="line"><span class="deletion">- in `git_clone_config()`, only override it if it is still unspecified:</span></span><br><span class="line"></span><br><span class="line">	if (!strcmp(k, &quot;clone.rejectshallow&quot;) &amp;&amp; option_reject_shallow &lt; 0)</span><br><span class="line">		option_reject_shallow =3D git_config_bool(k,v);</span><br><span class="line"></span><br><span class="line"><span class="deletion">- in `cmd_clone()`, test for a _positive_ value:</span></span><br><span class="line"></span><br><span class="line">	if (option_reject_shallow &gt; 0)</span><br><span class="line">		die(_(&quot;source repository is shallow, reject to clone.&quot;));</span><br><span class="line"></span><br><span class="line">  and</span><br><span class="line"></span><br><span class="line">	if (option_reject_shallow &gt; 0)</span><br><span class="line"> 		transport_set_option(transport, TRANS_OPT_REJECT_SHALLOW, &quot;1&quot;);</span><br><span class="line"></span><br><span class="line">One thing to note (in the commit message, would be my preference) is that</span><br><span class="line">`cmd_clone()` is _particular_ in that it runs `git_config()` _twice_. Once</span><br><span class="line">before the command-line options are parsed, and once after the new Git</span><br><span class="line">repository has been initialized. Note that my suggestion still works with</span><br><span class="line">that: if either the original config, or the new config set</span><br><span class="line">`clone.rejectShallow`, it is picked up correctly, with the latter</span><br><span class="line">overriding the former if both configs want to set it.</span><br></pre></td></tr></table></figure>
+<p>使用 <code>option_reject_shallow</code> 比 <code>config_shallow</code> 更好一些，它能更直接地表明这个选项是要拒绝 <em>shallow clone</em> 的。<s>同时他提醒，在 <code>cmd_clone()</code>函数中 <code>git_config</code> 会被调用两次，使用 <code>option_reject_shallow</code> 能避免在 <code>cmd_clone</code> 中使用 <code>reject_shallow</code></s> 。</p>
+<p>P.S. 划线这段话是错误的，见 Johannes 本人回复：<a href="https://public-inbox.org/git/nycvar.QRO.7.76.6.2104010021510.54@tvgsbejvaqbjf.bet/">Johannes’reply</a>，以及 Junio 的回复：<a href="https://public-inbox.org/git/xmqqim5754rl.fsf@gitster.g/">Junio’s reply</a>。最后用了两个变量: <code>option_reject_shallow</code>，<code>config_reject_shallow</code>，在 <code>cmd_clone()</code> 中它们共同决定另一个变量：<code>reject_shallow</code>。</p>
+<p>后面同样变量命名：</p>
+<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">&gt; diff --git a/fetch-pack.c b/fetch-pack.c</span><br><span class="line">&gt; index fb04a76ca263..34d0c2896e2e 100644</span><br><span class="line">&gt; --- a/fetch-pack.c</span><br><span class="line">&gt; +++ b/fetch-pack.c</span><br><span class="line">&gt; @@ -1129,9 +1129,11 @@ static struct ref *do_fetch_pack(struct fetch_pac=</span><br><span class="line">k_args *args,</span><br><span class="line">&gt;  	if (args-&gt;deepen)</span><br><span class="line">&gt;  		setup_alternate_shallow(&amp;shallow_lock, &amp;alternate_shallow_file,</span><br><span class="line">&gt;  					NULL);</span><br><span class="line">&gt; -	else if (si-&gt;nr_ours || si-&gt;nr_theirs)</span><br><span class="line">&gt; +	else if (si-&gt;nr_ours || si-&gt;nr_theirs) &#123;</span><br><span class="line">&gt; +		if (args-&gt;remote_shallow)</span><br><span class="line"></span><br><span class="line">Even as a non-casual reader, this name `remote_shallow` leads me to assume</span><br><span class="line">incorrect things. This option is not about wanting a remote shallow</span><br><span class="line">repository, it is about rejecting a remote shallow repository.</span><br><span class="line">用 `reject_shallow` 代替 `remote_shllow`</span><br><span class="line">Please name this attribute `reject_shallow` instead of `remote_shallow`.</span><br><span class="line">That will prevent future puzzlement.</span><br></pre></td></tr></table></figure>
+<p>Johannes 还对测试用例提出了一些检视意见，篇幅有限，这里省略。</p>
+<p>在最后几个回合，Junio 又给出了很多有意义的检视意见：</p>
+<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">&gt; In some scenarios, users may want more history than the repository</span><br><span class="line">&gt; offered for cloning, which happens to be a shallow repository, can</span><br><span class="line">&gt; give them. But because users don&#x27;t know it is a shallow repository</span><br><span class="line">&gt; until they download it to local, users should have the option to</span><br><span class="line"></span><br><span class="line">&#x27;should&#x27; 在这里感觉语气太重了</span><br><span class="line">I find the &quot;should&quot; too strong, but let&#x27;s keep reading.</span><br><span class="line"></span><br><span class="line">&gt; refuse to clone this kind of repository, and may want to exit the</span><br><span class="line">&gt; process immediately without creating any unnecessary files.</span><br><span class="line">确认是语气重了。同时存在冗余。</span><br><span class="line">Yes, that is too strong and also redundant.</span><br><span class="line"></span><br><span class="line">&gt; Althought there is an option &#x27;--depth=x&#x27; for users to decide how</span><br><span class="line">&gt; deep history they can fetch, but as the unshallow cloning&#x27;s depth</span><br><span class="line">句子若以 &#x27;although&#x27; 开头，则后面不应该用 `but`做转折。</span><br><span class="line">&quot;Although&quot;; if you begin with &quot;although&quot;, you shouldn&#x27;t write &quot;but&quot;.</span><br><span class="line"></span><br><span class="line">&gt; is INFINITY, we can&#x27;t know exactly the minimun &#x27;x&#x27; value that can</span><br><span class="line">&gt; satisfy the minimum integrity,</span><br><span class="line">&gt; so we can&#x27;t pass &#x27;x&#x27; value to --depth,</span><br><span class="line">&gt; and expect this can obtain a complete history of a repository.</span><br><span class="line"></span><br><span class="line">If the argument were &quot;we might start with depth x, and the source</span><br><span class="line">may be deep enough to give us x right now, but we may want to deepen</span><br><span class="line">more than they can offer, and such a user would want to be able to</span><br><span class="line">say &#x27;I want depth=x now, but make sure they are not shallow&#x27;&quot;, I</span><br><span class="line">would understand it, but I do not see where the &quot;minimum integrity&quot;</span><br><span class="line">comes from---there doesn&#x27;t appear to be anything related to</span><br><span class="line">integrity here.</span><br><span class="line"></span><br><span class="line">&gt; In other scenarios, if we have an API that allow us to import external</span><br><span class="line"></span><br><span class="line">&quot;allows&quot;</span><br><span class="line"></span><br><span class="line">&gt; repository, and then perform various operations on the repo.</span><br><span class="line">&gt; But if the imported is a shallow one(which is actually possible), it</span><br><span class="line">&gt; will affect the subsequent operations. So we can choose to refuse to</span><br><span class="line">&gt; clone, and let&#x27;s just import a normal repository.</span><br><span class="line">建议丢掉这一整段，因为它跟前面讲的场景差不多，并没有提供新信息。</span><br><span class="line">I&#x27;d suggest dropping this entire paragraph.  That is not any new</span><br><span class="line">scenario at all.  API or not, you essentially just said &quot;you can do</span><br><span class="line">various things on your clone once you have it, but some things you</span><br><span class="line">may want to do you would want a full history&quot;.  That is what you</span><br><span class="line">started the whole discussion above and does not add any new</span><br><span class="line">information.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt; @@ -858,6 +861,9 @@ static int git_clone_config(const char *k, const char *v, void *cb)</span><br><span class="line">&gt;  		free(remote_name);</span><br><span class="line">&gt;  		remote_name = xstrdup(v);</span><br><span class="line">&gt;  	&#125;</span><br><span class="line">&gt; +	if (!strcmp(k, &quot;clone.rejectshallow&quot;) &amp;&amp; option_reject_shallow &lt; 0)</span><br><span class="line">&gt; +		option_reject_shallow = git_config_bool(k, v);</span><br><span class="line"></span><br><span class="line">Does this &quot;single variable is enough&quot; really work?</span><br><span class="line"></span><br><span class="line">Imagine that the first time around we&#x27;d read from $HOME/.gitconfig</span><br><span class="line">that says true (flips the variable from &quot;unspecified&quot;).  Further</span><br><span class="line">imagine that we are running &quot;git clone -c config.rejectShallow=no&quot;</span><br><span class="line">to countermand the global config.  We call write_config() to write</span><br><span class="line">the extra configuration value out, and then call git_config() to</span><br><span class="line">read from the repository configuration again.</span><br><span class="line"></span><br><span class="line">Because of the value taken from $HOME/.gitconfig, however, the</span><br><span class="line">attempt to override is silently ignored, isn&#x27;t it?</span><br><span class="line"></span><br><span class="line">Other than that, the changes to the code from the previous round</span><br><span class="line">looked sensible.</span><br><span class="line"></span><br><span class="line">虽然比上一版的更新好了很多，但Junio并没有放弃任何可能的问题，仍对config配置</span><br><span class="line">和option配置有疑问，他的顾虑是正确的，这为下一版的更新提供了正确的思路。</span><br></pre></td></tr></table></figure>
+<p>这就是我第一次向 Git 社区提交代码的情况：问题多多，反馈多多。各种严谨细致又有启发性的检视意见让我感受到了 Git 社区的技术氛围。这个过程中让我不断思考如何让代码写得更好：更有逻辑，更简洁，更严谨，而不仅仅是实现功能。</p>
+<p>这个经验让我想到，在英语中有个两个单词可以很贴切的形容他们对待代码的态度：<code>polish</code>，<code>cooking</code>。<br>
+<code>polish</code> 动词意为润色，修改，抛光，打磨。用在代码上， commit 信息上，甚至写文档上，意味着这些过程是不断改进，不断变得更好。<br>
+<code>cooking</code> 意为烹饪，比喻写代码就像烹饪，所谓心急吃不了热豆腐，即使做简单的菜都需要耐心，细心。</p>
+<p>回到主题，前面的每次修改，直接强推到原来的PR中即可， <a href="https://gitgitgadget.github.io/">GitGitGadget</a> 会自动将每次的更新转换为不同的版本再提交到上游社区。那如何确定提交的版本是最终版本呢？前面提到过 Git 的几个主要分支，当我提交到第十版后，很快就被合入到 <code>seen</code>分支，意味着被初步接受，然后又马上进入 <code>next</code> 分支，意味着各项测试也没问题，然后又马上进入 <code>master</code> 分支。特别地，这个过程会有 <strong>状态更新</strong> 提醒， Git 社区有个 <a href="https://lore.kernel.org/git/xmqqy2dw2pai.fsf@gitster.g/#r">What’s cooking in git.git</a> 栏目，是维护者 Junio 用来管理各种提交的状态更新的，它会表明目前社区正在 cooking 哪些人的哪些代码(patch)，以及各个代码的目前状态。当你的代码在 <strong>What’s cooking in git.git</strong>  中进入 <code>Graduated to 'master'</code> 或者 <code>Will merge to 'master'</code>，那就表明马上会合入主线啦。</p>
 ]]></content>
       <categories>
         <category>Git</category>
       </categories>
       <tags>
-        <tag>Git-bundle</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>学习 Rust 的一些笔记</title>
-    <url>/posts/767b1d3c.html</url>
-    <content><![CDATA[<p>Rust是一门偏底层的，安全的，高效的开源编程语言。</p>
-<span id="more"></span>
-<h3 id="工具链">工具链</h3>
-<p><code>rustup</code> 是管理<code>Rust</code>版本和相关工具的命令行工具(rust toolchain installer)</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p><code>rustup update</code> 更新<code>Rust</code>版本</p>
-</li>
-<li class="lvl-2">
-<p><code>rustup self uninstall</code> 卸载<code>Rust</code>以及<code>rustup</code>本身</p>
-</li>
-</ul>
-<p><code>Rust</code>工具链中包括<code>rustc</code>编译器工具，<code>rustfmt</code>格式化工具，<code>rustdoc</code>文档化工具等。</p>
-<p><code>rustc</code>类似于C/C++中的<code>gcc/clang</code></p>
-<p><code>Cargo</code> 是 <code>Rust</code> 的构建系统和包管理器。可以进行构建代码、下载依赖库并编译这些库等。</p>
-<p><code>cargo new rust-proj</code> 创建一个Rust项目，</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ cargo new rust-proj</span><br><span class="line">     Created binary (application) `rust-proj` package</span><br><span class="line">$ tree rust-proj</span><br><span class="line">rust-proj</span><br><span class="line">├── Cargo.toml</span><br><span class="line">└── src</span><br><span class="line">    └── main.rs</span><br><span class="line"></span><br><span class="line">1 directory, 2 files</span><br></pre></td></tr></table></figure>
-<p><code>Cargo</code>会在 <em>hello_cargo</em> 目录初始化一个 git 仓库，以及一个<code>.gitignore</code>文件。如果你在现有的 git 仓库中运行 <code>cargo new</code>，则不会生成 git 文件；你可以通过使用<code>cargo new --vcs=git</code> 来覆盖此行为。</p>
-<p>可以通过 <code>--vcs</code> 参数使 <code>cargo new</code> 切换到其它版本控制系统（<code>VCS</code>），或者不使用 <code>VCS</code>。运行 <code>cargo new --help</code> 参看可用的选项。</p>
-<p><code>cargo build</code>构建项目，目标可执行文件在<code>target/debug/</code>下</p>
-<p><code>cargo run</code>则是构建项目并运行。</p>
-<p><code>cargo check</code> 检查项目代码正确，确保可编译。不会产生可执行文件。</p>
-<p><code>cargo build</code>默认构建是debug模式。如果项目一切都OK，可以运行<code>cargo build --release</code>执行发布构建，这会对项目进行一定编译优化，从而使得代码运行得更快，但是相应地，编译时间会更长。</p>
-<p><code>cargo doc --open</code> 会生成当前项目中的依赖库(crate)的文档，并转到浏览器可以查询。</p>
-<h3 id="Hello-World">Hello, World!</h3>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p><code>println!</code> 调用了一个 Rust 宏（macro）。如果是调用函数，则应输入 <code>println</code>（没有<code>!</code>）。我们将在第十九章详细讨论宏。现在你只需记住，当看到符号 <code>!</code> 的时候，就意味着调用的是宏而不是普通函数，并且宏并不总是遵循与函数相同的规则。</p>
-</li>
-</ul>
-<p><code>cargo new</code>生成的项目中，包含配置文件<code>Cargo.toml</code></p>
-<p>文件名: <code>Cargo.toml</code></p>
-<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"></span><br><span class="line"><span class="attr">rand</span> = <span class="string">&quot;0.8.3&quot;</span></span><br></pre></td></tr></table></figure>
-<p>其中“0.8.3”指定依赖版本，其语法遵循语义化版本<a href="http://semver.org/">（Semantic Versioning）</a></p>
-<p>这里的<code>0.8.3</code> 实际上是 <code>^0.8.3</code> 的简写，它表示 任何不低于 <code>0.8.3</code>， 但是低于 <code>0.9.0</code> 的版本。Cargo将这些版本视作与 <code>0.8.3</code> 版本公有 API 相兼容的版本，这个声明确保你将获得最新的补丁版本，它仍然可以与本章中的代码正常编译。<code>0.9.0</code> 或以上版本不保证拥有接下来示例中使用到的API。</p>
-<hr>
-<h3 id="一些定义">一些定义</h3>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>Rust变量默认是不可改变的（immutable），如果想声明可变变量，需要使用<code>mut</code>关键字。</p>
-</li>
-<li class="lvl-2">
-<p>Rust不允许对常量使用 <code>mut</code>。常量不光默认不能变，它总是不能变。其声明使用<code>const</code>，且必须标注类型。</p>
-</li>
-<li class="lvl-2">
-<p>整型变量分有符号和无符号，如<code>i8</code>表示有符号8位整数，<code>u8</code>表示无符号8位整数，<code>i128</code>表示有符号128位整数。</p>
-</li>
-<li class="lvl-2">
-<p>还有一种整型依赖计算机架构，<code>isize</code>, <code>usize</code>在不同的架构中表示的长度会不同。</p>
-</li>
-<li class="lvl-2">
-<p>整型字面值有十六进制(<code>0xff</code>)，八进制(<code>0o77</code>)，二进制(<code>0b11</code>)，以及十进制(99_999)，单字节字符(仅限<code>u8</code>)</p>
-</li>
-<li class="lvl-2">
-<p>Rust默认数字类型是<code>i32</code></p>
-</li>
-<li class="lvl-2">
-<p>浮点型变量有两种，<code>f32</code>表示单精度浮点小数，<code>f64</code>表示双精度浮点小数。默认是<code>f64</code>。</p>
-</li>
-<li class="lvl-2">
-<p>字符类型（char）用单引号表示，其大小为4个字节，表示了一个Unicode标量值。</p>
-</li>
-<li class="lvl-2">
-<p>复合类型元组(tuple)一旦声明，其长度不变，其中每一个位置都有一个类型的值，类型可以不同。</p>
-</li>
-<li class="lvl-2">
-<p>复合类型数组(array)长度也是固定的，而且其中类型必须相同。</p>
-</li>
-</ul>
-<p><strong>语句(statement)和表达式(expression)</strong></p>
-<p>Rust是一门基于表达式的语言。</p>
-<p>语句是执行一些操作，但是不返回值的指令。</p>
-<p><code>函数定义</code>就是一个语句。</p>
-<p>表达式计算并产生一个值，可以赋予其它变量。</p>
-<p><code>函数调用</code>是一个表达式，大括号创建的块作用域也是一个表达式。</p>
-<p><code>表达式的结尾没有分号，如果结尾加上分号，则变成了语句。</code></p>
-<p>数字本身就是一个表达式，所以它可以返回本身的值赋值给其它变量。</p>
-<p>栈(stack)中的数据必须占用已知且大小固定的大小。</p>
-<p>当数据大小未知，或大小可能变化的时候，需要用堆(heap)。比如使用内存分配器memory allocator分配指定大小的内存，此时该块内存会被标记为已用，并且以指针来表示这块内存。</p>
-<p>而将数据放入栈中的过程并不叫做分配内存，因为这个过程并没有新的内存被分配。</p>
-<p>堆的指针可以存储在栈上。</p>
-<p>入栈比在堆上分配内存要快。</p>
-<p>访问堆中的数据比访问栈上的数据要慢，因为访问堆首先要通过指针来访问，而指针在栈上。</p>
-<hr>
-<h3 id="一些笔记">一些笔记</h3>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>定义变量用动词let</p>
-</li>
-<li class="lvl-2">
-<p>借鉴Python的元组</p>
-</li>
-<li class="lvl-2">
-<p>借鉴C++的指针</p>
-</li>
-<li class="lvl-2">
-<p>完善的包管理工具cargo</p>
-</li>
-<li class="lvl-2">
-<p>友好的文档管理</p>
-</li>
-<li class="lvl-2">
-<p>使用先进的VCS管理项目</p>
-</li>
-<li class="lvl-2">
-<p>无垃圾回收机制，使用变量所有权管理内存</p>
-</li>
-<li class="lvl-2">
-<p>编译与执行分开，更早的发现错误</p>
-</li>
-<li class="lvl-2">
-<p>浅拷贝与深拷贝，默认不进行数据的深拷贝，深拷贝使用clone方法</p>
-</li>
-<li class="lvl-2">
-<p>移动(move)操作</p>
-</li>
-<li class="lvl-2">
-<p>Copy trait</p>
-</li>
-<li class="lvl-2">
-<p>栈上数据；堆上数据；既在栈上，又在推上(数据指针在栈上，数据内容在堆上)数据</p>
-</li>
-<li class="lvl-2">
-<p>默认行为：默认变量不可变</p>
-</li>
-<li class="lvl-2">
-<p>引用(ref)变量默认也不能修改其引用的值</p>
-</li>
-<li class="lvl-2">
-<p>一个引用的作用域从声明的地方开始一直持续到最后一次使用为止</p>
-</li>
-<li class="lvl-2">
-<p>字符串slice</p>
-</li>
-</ul>
-<hr>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>Rust可以直接将数据附加到枚举的每个成员上，这样就不需要一个额外的结构体了。</p>
-</li>
-</ul>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">IpAddr</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">V4</span>(<span class="type">String</span>),</span><br><span class="line">    <span class="title function_ invoke__">V6</span>(<span class="type">String</span>),</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">home</span> = IpAddr::<span class="title function_ invoke__">V4</span>(String::<span class="title function_ invoke__">from</span>(<span class="string">&quot;127.0.0.1&quot;</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">loopback</span> = IpAddr::<span class="title function_ invoke__">V6</span>(String::<span class="title function_ invoke__">from</span>(<span class="string">&quot;::1&quot;</span>));</span><br></pre></td></tr></table></figure>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>Rust没有空值(Null)，因为空值会导致很多错误，而是实现了一个枚举变量<code>Option&lt;T&gt;</code>：</p>
-</li>
-</ul>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">Option</span>&lt;T&gt; &#123;</span><br><span class="line">    <span class="title function_ invoke__">Some</span>(T),</span><br><span class="line">    <span class="literal">None</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">some_number</span> = <span class="title function_ invoke__">Some</span>(<span class="number">5</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">some_string</span> = <span class="title function_ invoke__">Some</span>(<span class="string">&quot;a string&quot;</span>);</span><br><span class="line"># 当为<span class="literal">None</span>时，必须显示指定类型&lt;T&gt;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">absent_number</span>: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; = <span class="literal">None</span>;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>关于字符串方法，以下两种方法等效：</p>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">s1</span> = String::<span class="title function_ invoke__">from</span>(<span class="string">&quot;initial contents&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">s2</span> = <span class="string">&quot;initial contents&quot;</span>.<span class="title function_ invoke__">to_string</span>();</span><br></pre></td></tr></table></figure>
-<p>参考链接：</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p><a href="https://www.rust-lang.org/zh-CN">rust中文官网</a></p>
-</li>
-<li class="lvl-2">
-<p><a href="https://kaisery.github.io/trpl-zh-cn/">rust book</a></p>
-</li>
-<li class="lvl-2">
-<p><a href="https://book.rust.team/into-rust.html">rust course</a></p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>Rust</category>
-      </categories>
-      <tags>
-        <tag>Rust</tag>
+        <tag>Workflow</tag>
+        <tag>Git</tag>
       </tags>
   </entry>
   <entry>
@@ -1377,6 +1118,265 @@ sn(Surname): 名字前缀(姓)</p>
       </categories>
       <tags>
         <tag>Git-inside</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>学习 Rust 的一些笔记</title>
+    <url>/posts/767b1d3c.html</url>
+    <content><![CDATA[<p>Rust是一门偏底层的，安全的，高效的开源编程语言。</p>
+<span id="more"></span>
+<h3 id="工具链">工具链</h3>
+<p><code>rustup</code> 是管理<code>Rust</code>版本和相关工具的命令行工具(rust toolchain installer)</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><code>rustup update</code> 更新<code>Rust</code>版本</p>
+</li>
+<li class="lvl-2">
+<p><code>rustup self uninstall</code> 卸载<code>Rust</code>以及<code>rustup</code>本身</p>
+</li>
+</ul>
+<p><code>Rust</code>工具链中包括<code>rustc</code>编译器工具，<code>rustfmt</code>格式化工具，<code>rustdoc</code>文档化工具等。</p>
+<p><code>rustc</code>类似于C/C++中的<code>gcc/clang</code></p>
+<p><code>Cargo</code> 是 <code>Rust</code> 的构建系统和包管理器。可以进行构建代码、下载依赖库并编译这些库等。</p>
+<p><code>cargo new rust-proj</code> 创建一个Rust项目，</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ cargo new rust-proj</span><br><span class="line">     Created binary (application) `rust-proj` package</span><br><span class="line">$ tree rust-proj</span><br><span class="line">rust-proj</span><br><span class="line">├── Cargo.toml</span><br><span class="line">└── src</span><br><span class="line">    └── main.rs</span><br><span class="line"></span><br><span class="line">1 directory, 2 files</span><br></pre></td></tr></table></figure>
+<p><code>Cargo</code>会在 <em>hello_cargo</em> 目录初始化一个 git 仓库，以及一个<code>.gitignore</code>文件。如果你在现有的 git 仓库中运行 <code>cargo new</code>，则不会生成 git 文件；你可以通过使用<code>cargo new --vcs=git</code> 来覆盖此行为。</p>
+<p>可以通过 <code>--vcs</code> 参数使 <code>cargo new</code> 切换到其它版本控制系统（<code>VCS</code>），或者不使用 <code>VCS</code>。运行 <code>cargo new --help</code> 参看可用的选项。</p>
+<p><code>cargo build</code>构建项目，目标可执行文件在<code>target/debug/</code>下</p>
+<p><code>cargo run</code>则是构建项目并运行。</p>
+<p><code>cargo check</code> 检查项目代码正确，确保可编译。不会产生可执行文件。</p>
+<p><code>cargo build</code>默认构建是debug模式。如果项目一切都OK，可以运行<code>cargo build --release</code>执行发布构建，这会对项目进行一定编译优化，从而使得代码运行得更快，但是相应地，编译时间会更长。</p>
+<p><code>cargo doc --open</code> 会生成当前项目中的依赖库(crate)的文档，并转到浏览器可以查询。</p>
+<h3 id="Hello-World">Hello, World!</h3>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><code>println!</code> 调用了一个 Rust 宏（macro）。如果是调用函数，则应输入 <code>println</code>（没有<code>!</code>）。我们将在第十九章详细讨论宏。现在你只需记住，当看到符号 <code>!</code> 的时候，就意味着调用的是宏而不是普通函数，并且宏并不总是遵循与函数相同的规则。</p>
+</li>
+</ul>
+<p><code>cargo new</code>生成的项目中，包含配置文件<code>Cargo.toml</code></p>
+<p>文件名: <code>Cargo.toml</code></p>
+<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"></span><br><span class="line"><span class="attr">rand</span> = <span class="string">&quot;0.8.3&quot;</span></span><br></pre></td></tr></table></figure>
+<p>其中“0.8.3”指定依赖版本，其语法遵循语义化版本<a href="http://semver.org/">（Semantic Versioning）</a></p>
+<p>这里的<code>0.8.3</code> 实际上是 <code>^0.8.3</code> 的简写，它表示 任何不低于 <code>0.8.3</code>， 但是低于 <code>0.9.0</code> 的版本。Cargo将这些版本视作与 <code>0.8.3</code> 版本公有 API 相兼容的版本，这个声明确保你将获得最新的补丁版本，它仍然可以与本章中的代码正常编译。<code>0.9.0</code> 或以上版本不保证拥有接下来示例中使用到的API。</p>
+<hr>
+<h3 id="一些定义">一些定义</h3>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>Rust变量默认是不可改变的（immutable），如果想声明可变变量，需要使用<code>mut</code>关键字。</p>
+</li>
+<li class="lvl-2">
+<p>Rust不允许对常量使用 <code>mut</code>。常量不光默认不能变，它总是不能变。其声明使用<code>const</code>，且必须标注类型。</p>
+</li>
+<li class="lvl-2">
+<p>整型变量分有符号和无符号，如<code>i8</code>表示有符号8位整数，<code>u8</code>表示无符号8位整数，<code>i128</code>表示有符号128位整数。</p>
+</li>
+<li class="lvl-2">
+<p>还有一种整型依赖计算机架构，<code>isize</code>, <code>usize</code>在不同的架构中表示的长度会不同。</p>
+</li>
+<li class="lvl-2">
+<p>整型字面值有十六进制(<code>0xff</code>)，八进制(<code>0o77</code>)，二进制(<code>0b11</code>)，以及十进制(99_999)，单字节字符(仅限<code>u8</code>)</p>
+</li>
+<li class="lvl-2">
+<p>Rust默认数字类型是<code>i32</code></p>
+</li>
+<li class="lvl-2">
+<p>浮点型变量有两种，<code>f32</code>表示单精度浮点小数，<code>f64</code>表示双精度浮点小数。默认是<code>f64</code>。</p>
+</li>
+<li class="lvl-2">
+<p>字符类型（char）用单引号表示，其大小为4个字节，表示了一个Unicode标量值。</p>
+</li>
+<li class="lvl-2">
+<p>复合类型元组(tuple)一旦声明，其长度不变，其中每一个位置都有一个类型的值，类型可以不同。</p>
+</li>
+<li class="lvl-2">
+<p>复合类型数组(array)长度也是固定的，而且其中类型必须相同。</p>
+</li>
+</ul>
+<p><strong>语句(statement)和表达式(expression)</strong></p>
+<p>Rust是一门基于表达式的语言。</p>
+<p>语句是执行一些操作，但是不返回值的指令。</p>
+<p><code>函数定义</code>就是一个语句。</p>
+<p>表达式计算并产生一个值，可以赋予其它变量。</p>
+<p><code>函数调用</code>是一个表达式，大括号创建的块作用域也是一个表达式。</p>
+<p><code>表达式的结尾没有分号，如果结尾加上分号，则变成了语句。</code></p>
+<p>数字本身就是一个表达式，所以它可以返回本身的值赋值给其它变量。</p>
+<p>栈(stack)中的数据必须占用已知且大小固定的大小。</p>
+<p>当数据大小未知，或大小可能变化的时候，需要用堆(heap)。比如使用内存分配器memory allocator分配指定大小的内存，此时该块内存会被标记为已用，并且以指针来表示这块内存。</p>
+<p>而将数据放入栈中的过程并不叫做分配内存，因为这个过程并没有新的内存被分配。</p>
+<p>堆的指针可以存储在栈上。</p>
+<p>入栈比在堆上分配内存要快。</p>
+<p>访问堆中的数据比访问栈上的数据要慢，因为访问堆首先要通过指针来访问，而指针在栈上。</p>
+<hr>
+<h3 id="一些笔记">一些笔记</h3>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>定义变量用动词let</p>
+</li>
+<li class="lvl-2">
+<p>借鉴Python的元组</p>
+</li>
+<li class="lvl-2">
+<p>借鉴C++的指针</p>
+</li>
+<li class="lvl-2">
+<p>完善的包管理工具cargo</p>
+</li>
+<li class="lvl-2">
+<p>友好的文档管理</p>
+</li>
+<li class="lvl-2">
+<p>使用先进的VCS管理项目</p>
+</li>
+<li class="lvl-2">
+<p>无垃圾回收机制，使用变量所有权管理内存</p>
+</li>
+<li class="lvl-2">
+<p>编译与执行分开，更早的发现错误</p>
+</li>
+<li class="lvl-2">
+<p>浅拷贝与深拷贝，默认不进行数据的深拷贝，深拷贝使用clone方法</p>
+</li>
+<li class="lvl-2">
+<p>移动(move)操作</p>
+</li>
+<li class="lvl-2">
+<p>Copy trait</p>
+</li>
+<li class="lvl-2">
+<p>栈上数据；堆上数据；既在栈上，又在推上(数据指针在栈上，数据内容在堆上)数据</p>
+</li>
+<li class="lvl-2">
+<p>默认行为：默认变量不可变</p>
+</li>
+<li class="lvl-2">
+<p>引用(ref)变量默认也不能修改其引用的值</p>
+</li>
+<li class="lvl-2">
+<p>一个引用的作用域从声明的地方开始一直持续到最后一次使用为止</p>
+</li>
+<li class="lvl-2">
+<p>字符串slice</p>
+</li>
+</ul>
+<hr>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>Rust可以直接将数据附加到枚举的每个成员上，这样就不需要一个额外的结构体了。</p>
+</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">IpAddr</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">V4</span>(<span class="type">String</span>),</span><br><span class="line">    <span class="title function_ invoke__">V6</span>(<span class="type">String</span>),</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">home</span> = IpAddr::<span class="title function_ invoke__">V4</span>(String::<span class="title function_ invoke__">from</span>(<span class="string">&quot;127.0.0.1&quot;</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">loopback</span> = IpAddr::<span class="title function_ invoke__">V6</span>(String::<span class="title function_ invoke__">from</span>(<span class="string">&quot;::1&quot;</span>));</span><br></pre></td></tr></table></figure>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>Rust没有空值(Null)，因为空值会导致很多错误，而是实现了一个枚举变量<code>Option&lt;T&gt;</code>：</p>
+</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">Option</span>&lt;T&gt; &#123;</span><br><span class="line">    <span class="title function_ invoke__">Some</span>(T),</span><br><span class="line">    <span class="literal">None</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">some_number</span> = <span class="title function_ invoke__">Some</span>(<span class="number">5</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">some_string</span> = <span class="title function_ invoke__">Some</span>(<span class="string">&quot;a string&quot;</span>);</span><br><span class="line"># 当为<span class="literal">None</span>时，必须显示指定类型&lt;T&gt;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">absent_number</span>: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; = <span class="literal">None</span>;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>关于字符串方法，以下两种方法等效：</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">s1</span> = String::<span class="title function_ invoke__">from</span>(<span class="string">&quot;initial contents&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">s2</span> = <span class="string">&quot;initial contents&quot;</span>.<span class="title function_ invoke__">to_string</span>();</span><br></pre></td></tr></table></figure>
+<p>参考链接：</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><a href="https://www.rust-lang.org/zh-CN">rust中文官网</a></p>
+</li>
+<li class="lvl-2">
+<p><a href="https://kaisery.github.io/trpl-zh-cn/">rust book</a></p>
+</li>
+<li class="lvl-2">
+<p><a href="https://book.rust.team/into-rust.html">rust course</a></p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Rust</category>
+      </categories>
+      <tags>
+        <tag>Rust</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>git bundle 格式及应用</title>
+    <url>/posts/32c910d1.html</url>
+    <content><![CDATA[<p><code>git-bundle</code> 文件是一种将 <code>git objects</code> 数据(git packfile)与仓库引用 <code>refs</code> 结合在一起的一种数据包格式，通过 <code>objects + refs</code> 就能恢复出一个完整的 <code>git</code> 仓库，因此可以用 <code>git-bundle</code> 文件来备份 <code>git</code> 仓库。</p>
+<!--  more -->
+<h3 id="格式">格式</h3>
+<p><code>git bundle v2</code> 格式：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bundle    = signature *prerequisite *reference LF pack</span><br><span class="line">signature = <span class="string">&quot;# v2 git bundle&quot;</span> LF</span><br><span class="line"></span><br><span class="line">prerequisite = <span class="string">&quot;-&quot;</span> obj-id SP comment LF</span><br><span class="line">comment      = *CHAR</span><br><span class="line">reference    = obj-id SP refname LF</span><br><span class="line"></span><br><span class="line">pack         = ... ; packfile</span><br></pre></td></tr></table></figure>
+<p><code>git bundle v3</code> 格式：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bundle    = signature *capability *prerequisite *reference LF pack</span><br><span class="line">signature = <span class="string">&quot;# v3 git bundle&quot;</span> LF</span><br><span class="line"></span><br><span class="line">capability   = <span class="string">&quot;@&quot;</span> key [<span class="string">&quot;=&quot;</span> value] LF</span><br><span class="line">prerequisite = <span class="string">&quot;-&quot;</span> obj-id SP comment LF</span><br><span class="line">comment      = *CHAR</span><br><span class="line">reference    = obj-id SP refname LF</span><br><span class="line">key          = 1*(ALPHA / DIGIT / <span class="string">&quot;-&quot;</span>)</span><br><span class="line">value        = *(%01-09 / %0b-FF)</span><br><span class="line"></span><br><span class="line">pack         = ... ; packfile</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注：以上均采用 <code>ABNF</code> 标记法</p>
+</blockquote>
+<p>可以看出：</p>
+<p><code>git bundle v2</code> 包含四个部分：</p>
+<ol>
+<li class="lvl-3">
+<p>签名。标识 <code>git bundle</code> 版本</p>
+</li>
+<li class="lvl-3">
+<p>必要依赖。不包含在当前 <code>bundle包</code> 中，但是被 <code>bundle包</code> 中的数据引用到的数据。</p>
+</li>
+<li class="lvl-3">
+<p>引用。当前 <code>bundle包</code> 中包含的引用。</p>
+</li>
+<li class="lvl-3">
+<p><code>pack文件</code>。<code>git packfile</code></p>
+</li>
+</ol>
+<p><code>git bundle</code> <code>v3</code> 仅比 <code>v2</code> 多了一个 <code>capability</code> 部分。</p>
+<p>前面提到过 <code>prerequisite</code> 的概念，其格式为 <code>prerequisite = &quot;-&quot; obj-id SP comment LF</code>，所以来看下这个实际是什么意思。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 先打包master分支上最近三次提交</span></span><br><span class="line">$ git bundle create recent.bundle master~3..master</span><br><span class="line">Enumerating objects: 13, <span class="keyword">done</span>.</span><br><span class="line">Counting objects: 100% (13/13), <span class="keyword">done</span>.</span><br><span class="line">Compressing objects: 100% (8/8), <span class="keyword">done</span>.</span><br><span class="line">Total 9 (delta 3), reused 0 (delta 0), pack-reused 0</span><br><span class="line"></span><br><span class="line"><span class="comment"># 再用 git bundle verify 验证一下这个bundle包有没有外部依赖</span></span><br><span class="line">$ git bundle verify recent.bundle</span><br><span class="line">The bundle contains this ref:</span><br><span class="line">0a831168aa94dffaa92f5d73f3e873ef5fd89603 refs/heads/master</span><br><span class="line">The bundle requires this ref:</span><br><span class="line">d5d9b1c95f0012cb7da18deaff6a806f89e48867</span><br><span class="line">recen.bundle is okay</span><br></pre></td></tr></table></figure>
+<p>上面的结果很明显：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">The bundle requires this ref:</span><br><span class="line">d5d9b1c95f0012cb7da18deaff6a806f89e48867</span><br></pre></td></tr></table></figure>
+<p>再打开这个bundle包文件看下：</p>
+<figure class="highlight tex"><table><tr><td class="code"><pre><span class="line"><span class="params">#</span> v2 git bundle</span><br><span class="line">-d5d9b1c95f0012cb7da18deaff6a806f89e48867 demo.tar.gz</span><br><span class="line">0a831168aa94dffaa92f5d73f3e873ef5fd89603 refs/heads/master</span><br></pre></td></tr></table></figure>
+<p>第二行的内容 <code>-d5d9b1c95f0012cb7da18deaff6a806f89e48867 demo.tar.gz</code> 即是<code>prerequisite</code></p>
+<p>并且符合格式 <code>prerequisite = &quot;-&quot; obj-id SP comment LF</code></p>
+<p>我们看一个实际的 <code>git pack</code> 文件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">PACK^@^@^@^B^@^@^@^C&lt;91&gt;^Kx^A^A±^@Nÿtree 212ccb4755ab7c489bee69200388139d7f081e7c</span><br><span class="line">author Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line">committer Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line"></span><br><span class="line">add aa.txt</span><br><span class="line">©&amp;5A5x^A^A^E^@úÿaaaa</span><br><span class="line">^E]^A&lt;8f&gt;¢^Bx^A^A<span class="string">&quot;^@Ýÿ100644 aa.txt^@]0&lt;8e&gt;^]^F^K^L8&#125;E,ôt^?&lt;89&gt;ì¹&lt;93&gt;XQ£÷^KlK&lt;9a&gt;&lt;93&gt;pÃ^@ò&amp;bL37©&lt;85&gt;(ÐâWa^X</span></span><br><span class="line"><span class="string">~</span></span><br></pre></td></tr></table></figure>
+<p>而此时的 <code>git bundle v2</code> 文件如下：</p>
+<blockquote>
+<p>git bundle create master.bundle master</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># v2 git bundle</span></span><br><span class="line">e0caba68a7281d4ff86693745a1617ffc72c3e7d refs/heads/master</span><br><span class="line"></span><br><span class="line">PACK^@^@^@^B^@^@^@^C&lt;91&gt;^Kx^A^A±^@Nÿtree 212ccb4755ab7c489bee69200388139d7f081e7c</span><br><span class="line">author Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line">committer Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line"></span><br><span class="line">add aa.txt</span><br><span class="line">©&amp;5A¢^Bx^A^A<span class="string">&quot;^@Ýÿ100644 aa.txt^@]0&lt;8e&gt;^]^F^K^L8&#125;E,ôt^?&lt;89&gt;ì¹&lt;93&gt;XQ£÷^Kl5x^A^A^E^@úÿaaaa</span></span><br><span class="line"><span class="string">^E]^A&lt;8f&gt;,^B&lt;9d&gt;ï&lt;89&gt;DIr^\&lt;87&gt;*&lt;9b&gt;Æû^X¹É&#125;PÖ</span></span><br></pre></td></tr></table></figure>
+<p><code>git bundle v3</code> 文件如下:</p>
+<blockquote>
+<p>git bundle create --version=3 master-v3.bundle master</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># v3 git bundle</span></span><br><span class="line">@object-format=sha1</span><br><span class="line">e0caba68a7281d4ff86693745a1617ffc72c3e7d refs/heads/master</span><br><span class="line"></span><br><span class="line">PACK^@^@^@^B^@^@^@^C&lt;91&gt;^Kx^A^A±^@Nÿtree 212ccb4755ab7c489bee69200388139d7f081e7c</span><br><span class="line">author Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line">committer Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line"></span><br><span class="line">add aa.txt</span><br><span class="line">©&amp;5A¢^Bx^A^A<span class="string">&quot;^@Ýÿ100644 aa.txt^@]0&lt;8e&gt;^]^F^K^L8&#125;E,ôt^?&lt;89&gt;ì¹&lt;93&gt;XQ£÷^Kl5x^A^A^E^@úÿaaaa</span></span><br><span class="line"><span class="string">^E]^A&lt;8f&gt;,^B&lt;9d&gt;ï&lt;89&gt;DIr^\&lt;87&gt;*&lt;9b&gt;Æû^X¹É&#125;PÖ</span></span><br></pre></td></tr></table></figure>
+<h3 id="操作实践">操作实践</h3>
+<p>在机器A中的仓库 <code>R1</code> 中：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git bundle create file.bundle master</span><br><span class="line"><span class="comment"># 做个标记</span></span><br><span class="line">$ git tag -f lastR2bundle master</span><br></pre></td></tr></table></figure>
+<p>将 <code>file.bundle</code> 转移到机器B上，克隆仓库 <code>R2</code>：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> -b master /path/to/file.bundle R2</span><br><span class="line">Cloning into <span class="string">&#x27;R2&#x27;</span>...</span><br><span class="line">Receiving objects: 100% (38/38), 7.97 KiB | 7.97 MiB/s, <span class="keyword">done</span>.</span><br><span class="line">Resolving deltas: 100% (6/6), <span class="keyword">done</span>.</span><br></pre></td></tr></table></figure>
+<p>回到仓库 <code>R1</code>，仓库 <code>R1</code> 有了新的提交。然后继续打包：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git bundle create file.bundle lastR2bundle..master</span><br><span class="line"><span class="comment"># 做个标记，下次打包时使用</span></span><br><span class="line">$ git tag -f lastR2bundle master</span><br></pre></td></tr></table></figure>
+<p>将 <code>file.bundle</code> 转移到机器 <code>B</code> 上，再到 <code>R2</code> 仓库中进行更新：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git fetch</span><br><span class="line">Receiving objects: 100% (41/41), 8.28 KiB | 8.28 MiB/s, <span class="keyword">done</span>.</span><br><span class="line">Resolving deltas: 100% (7/7), <span class="keyword">done</span>.</span><br><span class="line">From /home/git/test-git/example/repo.bundle</span><br><span class="line">   d4f54d9..6a33e12  master     -&gt; origin/master</span><br><span class="line">   </span><br><span class="line"> <span class="comment"># 还是在cloned-repo中</span></span><br><span class="line">$ git ls-remote</span><br><span class="line">From /path/to/file.bundle</span><br><span class="line">6a33e12f3d7116863a19bf48471c74c597421f8a        HEAD</span><br><span class="line">45eab37d3cb8b5be02a59d3690cb63d3f692f6b9        refs/remotes/origin/master</span><br><span class="line">45eab37d3cb8b5be02a59d3690cb63d3f692f6b9        refs/remotes/origin/HEAD</span><br><span class="line">6a33e12f3d7116863a19bf48471c74c597421f8a        refs/heads/master</span><br></pre></td></tr></table></figure>
+<p>以上操作，看起来都跟读取 Git 远程仓库的一样。<br>
+<strong>但是不支持写仓库操作，即 <code>git push</code> 操作。</strong></p>
+<p>以上操作就完成了仓库的全量备份和增量备份。</p>
+<p>还可以用其它形式进行打包：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git bundle create mybundle v1.0.0..master</span><br><span class="line">$ git bundle create mybundle --since=10.days master</span><br><span class="line">$ git bundle create mybundle -10 master</span><br></pre></td></tr></table></figure>
+<p>只要是 <code>git rev-list</code> 能接受的参数，就可以放在 <code>git bundle create mybundle</code> 后面。比如可以使用 <code>--max-age</code> 选项，实现根据时间戳来进行备份，大致过程如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">```Bash</span><br><span class="line"><span class="comment"># 当前HEAD的时间戳，作为下次备份的起点时间</span></span><br><span class="line">$ git cat-file commit HEAD | sed -n <span class="string">&quot;s/^committer .*&gt; \([0-9]*\) .*/\1/p&quot;</span> </span><br><span class="line">1660809497</span><br><span class="line"></span><br><span class="line"><span class="comment"># --branches 获取refs/heads/下所有相关commits</span></span><br><span class="line"><span class="comment"># --tags 获取refs/tags/下所有相关commits</span></span><br><span class="line"><span class="comment"># --remotes 获取refs/remotes/下所有相关commits</span></span><br><span class="line"><span class="comment"># --all 获取refs/下所有相关commits</span></span><br><span class="line"><span class="comment"># --objects 表示commit所关联的所有对象</span></span><br><span class="line">$ git bundle create latest.bundle  --max-age=1660807920 --all --objects</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取bundle包中的引用信息，可以通过其它选项筛选出部分引用。</span></span><br><span class="line">$ git bundle list-heads latest.bundle &gt; latest.list</span><br><span class="line"></span><br><span class="line"><span class="comment"># 通过git-ls-remote获取bundle包中的所有引用信息。</span></span><br><span class="line">$ git ls-remote latest.bundle &gt; latest.lsremote</span><br></pre></td></tr></table></figure>
+<h3 id="应用">应用</h3>
+<p>目前 Gitlab 的<a href="https://docs.gitlab.com/ee/user/project/settings/import_export.html">仓库导出、导入功能</a>以及阿里云效 CodeUp 的<a href="https://help.aliyun.com/document_detail/217005.html?spm=a2cl9.codeup_devops2020_goldlog_organization.0.0.3bcb1510bKSmJi">仓库备份</a>功能主要就是利用 Git-bundle 特性对 Git 仓库进行打包。</p>
+<h3 id="参考链接">参考链接</h3>
+<ol>
+<li class="lvl-3">
+<p><a href="https://git-scm.com/docs/git-bundle">https://git-scm.com/docs/git-bundle</a></p>
+</li>
+<li class="lvl-3">
+<p><a href="https://git-scm.com/docs/bundle-format">https://git-scm.com/docs/bundle-format</a></p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>Git-bundle</tag>
       </tags>
   </entry>
 </search>
