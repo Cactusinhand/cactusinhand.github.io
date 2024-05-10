@@ -418,6 +418,134 @@ repo: gitaly: <a href="https://gitlab.com/gitlab-org/gitaly">https://gitlab.com/
       </tags>
   </entry>
   <entry>
+    <title>GitOps: 一种 DevOps 的最佳实践</title>
+    <url>/posts/f8df64f6.html</url>
+    <content><![CDATA[<blockquote>
+<p><strong>本文转载于：<a href="https://icloudnative.io/posts/what-is-gitops/">https://icloudnative.io/posts/what-is-gitops/</a></strong><br>
+<strong>作者: 米开朗基杨</strong></p>
+</blockquote>
+<p>GitOps 这个概念最早是由 Kubernetes 管理公司 Weaveworks 公司在 2017 年提出的，如今已经过去了 5 个年头，想必大家对这个概念早有耳闻，但你可能并不知道它到底是什么，它和 DevOps 到底是啥关系，本文就来帮大家一一解惑。</p>
+<h2 id="基础设施即代码">基础设施即代码</h2>
+<p>在理解 GitOps 之前，我们需要先理解什么是<strong>基础设施即代码</strong>。</p>
+<p>基础设施即代码（Infrastructure as Code, <strong>IaC</strong>），顾名思义，表示使用代码（而非手动流程）来定义基础设施，研发人员可以像对待应用软件一样对待基础设施，例如：</p>
+<ul class="lvl-0">
+<li class="lvl-4">
+<p>可以创建包含基础架构规范的声明式配置文件，从而便于编辑和分发配置。</p>
+</li>
+<li class="lvl-4">
+<p>可以确保每次配置的环境都完全相同。</p>
+</li>
+<li class="lvl-4">
+<p>可以进行版本控制，所有的变更都会被记录下来，方便溯源。</p>
+</li>
+<li class="lvl-4">
+<p>可以将基础设施划分为若干个模块化组件，并通过自动化以不同的方式进行组合。</p>
+</li>
+</ul>
+<p>当然，广义上的 IaC 不仅仅只关于基础设施，还包含了<strong>网络</strong>、<strong>安全</strong>、<strong>配置</strong>等等，所以广义上的 IaC 又叫 <strong>X as Code</strong>。<br>
+<img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161123.png" alt=""></p>
+<p>比如你想在 AWS 中创建服务器，配置网络，部署 Kubernetes 集群以及各种工作负载，你只需要定义好 Terraform 或 Ansible 的声明式配置，以及 Kubernetes 的配置清单即可，免去一切繁杂的手动操作。</p>
+<h2 id="GitOps-是什么">GitOps 是什么</h2>
+<p>GitOps = IaC + Git + CI/CD，即基于 IaC 的版本化 CI/CD。它的核心是使用 Git 仓库来管理基础设施和应用的配置，并且<strong>以 Git 仓库作为基础设施和应用的单一事实来源</strong>，你从其他地方修改配置（比如手动改线上配置）一概不予通过。</p>
+<p><img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161321.png" alt=""></p>
+<p>Git 仓库中的声明式配置描述了目标环境当前所需基础设施的期望状态，借助于 GitOps，如果集群的实际状态与 Git 仓库中定义的期望状态不匹配，Kubernetes reconcilers 会根据期望状态来调整当前的状态，最终使实际状态符合期望状态。</p>
+<p>另一方面，现代应用的开发更多关注的是迭代速度和规模，拥有成熟 DevOps 文化的组织每天可以将代码部署到生成环境中数百次，DevOps 团队可以通过版本控制、代码审查以及自动测试和部署的 CI/CD 流水线等最佳实践来实现这一目标，这就是 GitOps 干的事情。</p>
+<h2 id="GitOps-vs-DevOps">GitOps vs DevOps</h2>
+<p>从广义上来看，GitOps 与 DevOps 并不冲突，<strong>GitOps 是一种技术手段，而 DevOps 是一种文化</strong>。GitOps 是一种实现持续交付（Continuous Delivery）、持续部署（Continuous Deployment）和基础设施即代码（IaC）的工具和框架，它是支持 DevOps 文化的。</p>
+<p>从狭义上来看，GitOps 与 DevOps 有以下几个区别：</p>
+<p>首先，<strong>GitOps 是以目标为导向的</strong>。它使用 Git 来维护期望状态，并不断调整实际状态，最终与期望状态相匹配。而 <strong>DevOps 更多关注的是最佳实践</strong>，这些实践可以普遍应用于企业的每一个流程。</p>
+<p>其次，<strong>GitOps 采取声明式的操作方法，而 DevOps 同时接受声明式和命令式的方法</strong>，所以 DevOps 除了适用于容器环境之外，还适用于虚拟机和裸机环境。</p>
+<p>最后，<strong>GitOps 重新定义了云原生场景下的 CI/CD</strong>，它以 Git 作为中心的不可变状态声明，以加快持续部署速度。</p>
+<h2 id="GitOps-的设计哲学">GitOps 的设计哲学</h2>
+<p>想要使用 GitOps 来管理你的基础设施和应用，需要践行以下几个原则：</p>
+<h3 id="1-声明式">1. 声明式</h3>
+<p>必须通过声明式来描述系统的期望状态。例如 Kubernetes，众多现代云原生工具都是声明式的，Kubernetes 只是其中的一种。</p>
+<h3 id="2-版本控制-不可变">2. 版本控制/不可变</h3>
+<p>因为所有的状态声明都存储在 Git 仓库中，并且把 Git 仓库作为单一事实来源，那么所有的操作都是从 Git 仓库里驱动的，而且保留了完整的版本历史，方便回滚。有了 Git 优秀的安全保障，也可以使用 SSH 密钥来签署 commits，对代码的作者和出处实施强有力的安全保障。</p>
+<h3 id="3-自动应用变更">3. 自动应用变更</h3>
+<p>Git 仓库中声明的期望状态发生了任何变更，都可以立即应用到系统中，而且不需要安装配置额外工具（比如 kubectl），也不需要配置 Kubernetes 的认证授权。</p>
+<h3 id="4-持续的-Reconciliation">4. 持续的 Reconciliation</h3>
+<p>Reconciliation 其实最早是 Kubernetes 里的一个概念，表示的是<strong>确保系统的实际状态与期望状态一致的过程</strong>。具体的实现方式是在目标环境中安装一个 agent，一旦实际状态与期望状态不匹配，agent 就会进行自动修复。这里的修复比 Kubernetes 的故障自愈更高级，即使是手动修改了集群的编排清单，集群也会被恢复到 Git 仓库中的清单所描述的状态。</p>
+<p>鉴于以上这些设计哲学，我们来看一下 GitOps 的工作流：<br>
+<img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161329.png" alt=""></p>
+<ul class="lvl-0">
+<li class="lvl-4">
+<p>首先，团队中的任何一个成员都可以 Fork 仓库对配置进行更改，然后提交 Pull Request。</p>
+</li>
+<li class="lvl-4">
+<p>接下来会运行 CI 流水线，一般会做这么几件事情：验证配置文件、执行自动化测试、检测代码的复杂性、构建 OCI 镜像、将镜像推送到镜像仓库等等。</p>
+</li>
+<li class="lvl-4">
+<p>CI 流水线运行完成后，团队中拥有合并代码权限的人将会将这个 Pull Request 合并到主分支中 。一般拥有这个权限的都是研发人员、安全专家或者高级运维工程师。</p>
+</li>
+<li class="lvl-4">
+<p>最后会运行 CD 流水线，将变更应用到目标系统中（比如 Kubernetes 集群或者 AWS） 。</p>
+</li>
+</ul>
+<p>整个过程完全自动化且透明，通过多人协作和自动化测试来保证了基础设施声明配置的健壮性。而传统的模式是其中一个工程师在自己的电脑上操作这一切，其他人不知道发生了什么，也无法对其操作进行 Review。</p>
+<h2 id="Push-vs-Pull">Push vs Pull</h2>
+<p>CD 流水线有两种模式：Push 和 Pull。</p>
+<h3 id="Push-模式">Push 模式</h3>
+<p>目前大多数 CI/CD 工具都使用基于 Push 的部署模式，例如 Jenkins、CircleCI 等。这种模式一般都会在 CI 流水线运行完成后执行一个命令（比如 kubectl）将应用部署到目标环境中。<br>
+<img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161346.png" alt=""></p>
+<p>这种 CD 模式的缺陷很明显：</p>
+<ul class="lvl-0">
+<li class="lvl-4">
+<p>需要安装配置额外工具（比如 kubectl）；</p>
+</li>
+<li class="lvl-4">
+<p>需要 Kubernetes 对其进行授权；</p>
+</li>
+<li class="lvl-4">
+<p>需要云平台授权；</p>
+</li>
+<li class="lvl-4">
+<p>无法感知部署状态。也就无法感知期望状态与实际状态的偏差，需要借助额外的方案来保障一致性。</p>
+</li>
+</ul>
+<p>Kubernetes 集群或者云平台对 CI 系统的授权凭证在集群或云平台的信任域之外，不受集群或云平台的安全策略保护，因此 CI 系统很容易被当成非法攻击的载体。</p>
+<h3 id="Pull-模式">Pull 模式</h3>
+<p>Pull 模式会在目标环境中安装一个 Agent，例如在 Kubernetes 集群中就靠 Operator 来充当这个 Agent。Operator 会周期性地监控目标环境的实际状态，并与 Git 仓库中的期望状态进行比较，如果实际状态不符合期望状态，Operator 就会更新基础设施的实际状态以匹配期望状态。<br>
+<img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161356.png" alt=""></p>
+<p>只有 Git 的变更可以作为期望状态的唯一来源，除此之外，任何人都不可以对集群进行任何更改，即使你修改了，也会被 Operator 还原为期望状态，这也就是传说中的<strong>不可变基础设施</strong>。</p>
+<p>目前基于 Pull 模式的 CD 工具有 <a href="https://github.com/argoproj/argo-cd/">Argo CD</a>， <a href="https://github.com/fluxcd/flux">Flux CD</a> 以及 <a href="https://github.com/kubesphere/ks-devops">ks-devops</a>。</p>
+<h2 id="GitOps-的优势">GitOps 的优势</h2>
+<p>一般 GitOps 首选的都是基于 Pull 的部署模式，因为这种模式有很多不可替代的优势。</p>
+<h3 id="更强大的安全保障">更强大的安全保障</h3>
+<p>上面已经提到了，使用 GitOps 不需要任何 Kubernetes 或者云平台的凭证来执行部署，Kubernetes 集群内的 Argo CD 或者 Flux CD 只需要访问 Git 仓库，并通过 Pull 模式来更新即可。</p>
+<p>另一方面，Git 由用于跟踪和管理代码变更的强大密码学支持，拥有对变更进行签名以证明作者身份和来源的能力，这是保障集群安全的关键。</p>
+<h3 id="Git-作为事实的唯一真实来源">Git 作为事实的唯一真实来源</h3>
+<p>因为所有的应用包括基础设施的声明式配置都保存在 Git 中，并把 Git 作为应用系统的唯一事实来源，因此可以利用 Git 的强大功能操作所有东西，例如版本控制、历史记录、审计和回滚等等，无需使用 kubectl 这样的工具来操作。</p>
+<h3 id="提高生产力">提高生产力</h3>
+<p>Git 也是开发人员非常熟悉的工具，通过 Git 不断迭代，可以提高生产率，加快开发和部署速度，更快地推出新产品，同时提高系统的稳定性和可靠性。</p>
+<h3 id="更容易合规的审计">更容易合规的审计</h3>
+<p>使用 GitOps 的基础设施可以像任何软件项目一样使用 Git 来管理，所以同样可以对其进行质量审计。当有人需要对基础设施进行更改时，会创建一个 Pull Request，等相关人员对其进行 Code Review 之后，更改才可以应用到系统中。</p>
+<h2 id="总结">总结</h2>
+<p>GitOps 是对现有 DevOps 文化的补充，它使用 Git 这样的版本控制系统来自动部署基础设施，部署过程清晰可见，可以查看和跟踪对系统进行的任何变更，提高了生产力、安全性和合规性。而且 GitOps 提供了更优雅的可观测性，可以实时观测部署状态，并采取行动使实际状态与期望状态保持一致。</p>
+<p>而且在 GitOps 中，整个系统都是通过声明式来描述的，天然适合云原生环境，因为 Kubernetes 也是这么设计的。</p>
+<h2 id="参考资料">参考资料</h2>
+<ul class="lvl-0">
+<li class="lvl-4">
+<p><a href="https://devs-group.medium.com/what-is-gitops-and-what-should-you-know-about-it-fcaa3e3c1dd5">What is GitOps and what should you know about it?</a></p>
+</li>
+<li class="lvl-4">
+<p><a href="https://www.tynybay.com/our-thinking/devops-vs-gitops-4-benefits-you-must-know-to-master-the-methodologies">DevOps vs GitOps: 4 Benefits you must know to Master the Methodologies</a></p>
+</li>
+<li class="lvl-4">
+<p><a href="https://www.weave.works/technologies/gitops/">Guide To GitOps</a></p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>GitOps</tag>
+        <tag>DevOps</tag>
+        <tag>Workflow</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>如何向 Git 社区提交代码(2)</title>
     <url>/posts/23bf24d1.html</url>
     <content><![CDATA[<h3 id="背景">背景</h3>
@@ -474,6 +602,125 @@ repo: gitaly: <a href="https://gitlab.com/gitlab-org/gitaly">https://gitlab.com/
       <tags>
         <tag>Git</tag>
         <tag>Workflow</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>认证(Authentication)和授权(Authorization)</title>
+    <url>/posts/3be69b54.html</url>
+    <content><![CDATA[<h3 id="什么是认证和授权">什么是认证和授权</h3>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>认证(Authentication)，识别身份</p>
+</li>
+<li class="lvl-2">
+<p>授权(Authorization)，授予被识别的身份是否有权限获取指定资源，或授予其操作权限</p>
+</li>
+</ul>
+<p>认证的双方是访问者(User)、身份信息持有者(<strong>IdP</strong>/Identity Provider)。</p>
+<p>用户持有的唯一标识符(用户名，UUID 等)，密码信息（密码，指纹等）需要与IdP持有的信息匹配才能认证成功。</p>
+<p>资源持有者(Source Owner)，控制资源的获取，修改，删除等。</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>身份和资源的分离</p>
+</li>
+</ul>
+<p>资源可能是用户自己产生的，也可能是第三方服务器产生的，或者叫做 Service Provider(SP)，也称 Client。</p>
+<p>身份和资源的分离即为 <strong>IdP, SP 分离</strong>。</p>
+<p>IdP 与 IdP 之前也可以进行资源传递，并授权。这种方式一般称为<strong>联邦授权</strong>。</p>
+<br>
+<h3 id="LDAP">LDAP</h3>
+<p>LDAP(Light Directory Access Protocol)即轻量级目录访问协议，它是一种为<strong>查询</strong>、<strong>浏览</strong>和<strong>搜索</strong>而优化的专业分布式数据库，它呈树状结构组织数据，和<a href="https://so.csdn.net/so/search?q=%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E5%BA%93&amp;spm=1001.2101.3001.7020">关系数据库</a>不同，它有优异的读性能，但写性能差，并且没有事务处理、回滚等复杂功能，不适于存储修改频繁的数据，所以大多数是用来查询的。LDAP 只是一种协议，可以有多种实现。</p>
+<p>一般结构：</p>
+<p><img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/image-20220213014635093.png" alt=""></p>
+<p>DIT(Directory Information Tree）目录信息树<br>
+dn(Distinguished Name)：一条记录的详细位置，相当于绝对路径(唯一)<br>
+rdn(Relative dn) : 相对dn, 相对于相对路径<br>
+dc(Domain Component) ：一条记录所属区域 (哪一颗树)<br>
+ou(Organization Unit) ：一条记录所属组织 （哪一个分支）<br>
+cn/uid(Common Name/user id)：一条记录的名字/ID (哪一个苹果名字)<br>
+sn(Surname): 名字前缀(姓)</p>
+<p>基本模型：</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>信息模型，将信息以树状方式组织，基本数据单元是条目(Entry), 条目又由不同属性组成</p>
+</li>
+<li class="lvl-2">
+<p>命名模型，实现一种条目定位方式</p>
+</li>
+<li class="lvl-2">
+<p>功能模型，实现增删改查等功能</p>
+</li>
+<li class="lvl-2">
+<p>安全模型，实现身份认证，安全通道，访问控制</p>
+</li>
+</ul>
+<br>
+<h3 id="OAuth2-0">OAuth2.0</h3>
+<p><strong>OAuth 2.0</strong> 是一个授权标准协议，主要用于<strong>资源授权</strong>。</p>
+<p>前面提到的身份和资源的分离，OAuth 引入了一个授权层，用来分离两种不同的角色：客户端和资源所有者。资源所有者同意以后，资源服务器可以向客户端颁发令牌。客户端通过令牌，去请求数据。</p>
+<p>所以，<strong>OAuth 的核心就是向第三方应用颁发令牌</strong>。</p>
+<p>根据 OAuth 2.0 协议规范，主要有四个主体：</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><strong>授权服务器</strong>(Authorization Server)，负责颁发 Access Token，Authing 是授权服务器。</p>
+</li>
+<li class="lvl-2">
+<p><strong>资源所有者</strong>(Resource Owner)，即<strong>用户</strong>，授权其他人访问他的资源。</p>
+</li>
+<li class="lvl-2">
+<p><strong>调用方</strong>(Client)，即第三方应用。调用方请求获取 Access Token，经过用户授权后，授权服务器为其颁发 Access Token。调用方可以携带 Access Token 到资源服务器访问用户的资源。</p>
+</li>
+<li class="lvl-2">
+<p><strong>资源服务器</strong>(Resouce Server)，存储用户资源。收到 Access Token 后，验证它的被赋予的权限项目，最后返回资源。</p>
+</li>
+</ul>
+<p>这个过程可能还存在其它主体，如浏览器，也称用户代理(User Agent), 服务提供商(Server Provider)等。</p>
+<p>客户端必须得到用户的授权（authorization grant），才能获得令牌（access token）。OAuth 2.0 定义了四种授权方式。</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>授权码模式（authorization code）</p>
+</li>
+<li class="lvl-2">
+<p>简化模式（implicit）</p>
+</li>
+<li class="lvl-2">
+<p>密码模式（resource owner password credentials）</p>
+</li>
+<li class="lvl-2">
+<p>客户端模式（client credentials）</p>
+</li>
+</ul>
+<p>授权码模式（authorization code）是功能最完整、流程最严密的授权模式。它的特点就是通过客户端的后台服务器，与&quot;服务提供商&quot;的认证服务器进行互动。</p>
+<p><img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/auth2.0_code.png" alt=""></p>
+<p>它的步骤如下：</p>
+<blockquote>
+<p>（A）用户访问客户端，后者将前者导向认证服务器。</p>
+<p>（B）用户选择是否给予客户端授权。</p>
+<p>（C）假设用户给予授权，认证服务器将用户导向客户端事先指定的&quot;重定向URI&quot;（redirection URI），同时附上一个授权码。</p>
+<p>（D）客户端收到授权码，附上早先的&quot;重定向URI&quot;，向认证服务器申请令牌。这一步是在客户端的后台的服务器上完成的，对用户不可见。</p>
+<p>（E）认证服务器核对了授权码和重定向URI，确认无误后，向客户端发送访问令牌（access token）和更新令牌（refresh token）。</p>
+</blockquote>
+<br>
+<h3 id="OIDC">OIDC</h3>
+<p>OIDC(<strong>OpenID Connect</strong> ) 是 <code>OAuth 2.0</code> 协议的超集，能够认证用户并完成资源授权。OIDC的认证和授权分为<strong>四种模式</strong>：授权码模式（Code）、隐式模式（Implicit）、密码模式（Password）、客户端证书模式（Client Credential）</p>
+<p>除了 OIDC 协议之外，还存在着许多标准身份协议，例如 SAML 和 CAS。它们的存在意义都是类似的：为了能让素不相识的 SP 和 IdP 进行快速对接，在用户的许可下让 SP 在 IdP 处完成授权，从而访问 IdP 下资源提供者的资源。</p>
+<h3 id="参考链接">参考链接</h3>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><a href="https://www.bbsmax.com/A/RnJWNaBwzq/">理解OAuth 2.0 - 阮一峰的网络日志</a></p>
+</li>
+<li class="lvl-2">
+<p><a href="https://docs.authing.cn/v2/concepts/oidc/oidc-overview.html">OIDC 与 OAuth2.0 综述</a></p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Auth</category>
+      </categories>
+      <tags>
+        <tag>OAuth2.0</tag>
+        <tag>LDAP</tag>
+        <tag>OIDC</tag>
       </tags>
   </entry>
   <entry>
@@ -604,250 +851,155 @@ commit body 部分不超过 76 个字符</p>
       </tags>
   </entry>
   <entry>
-    <title>GitOps: 一种 DevOps 的最佳实践</title>
-    <url>/posts/f8df64f6.html</url>
-    <content><![CDATA[<blockquote>
-<p><strong>本文转载于：<a href="https://icloudnative.io/posts/what-is-gitops/">https://icloudnative.io/posts/what-is-gitops/</a></strong><br>
-<strong>作者: 米开朗基杨</strong></p>
+    <title>Git 炸弹</title>
+    <url>/posts/c5ceb3cc.html</url>
+    <content><![CDATA[<h4 id="起源">起源</h4>
+<p>Git 炸弹因 XML 炸弹(AKA “billion laughs”)而得名，所以要理解 Git 炸弹，我们不妨先从 XML 炸弹说起。</p>
+<p>下面是一段 XML 文件示例：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot;?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">lolz</span> [</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol</span><span class="string">&quot;laugh out loud&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol2</span><span class="string">&quot;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol3</span><span class="string">&quot;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol4</span><span class="string">&quot;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol5</span><span class="string">&quot;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol6</span><span class="string">&quot;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol7</span><span class="string">&quot;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol8</span><span class="string">&quot;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol9</span><span class="string">&quot;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">lolz</span>&gt;</span>&amp;lol9;<span class="tag">&lt;/<span class="name">lolz</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>从 ENTITY 字段看起，每行 ENTITY 代表一个 XML 实体(entity)元素，一共10个实体元素，除了第一个实体 <code>lol</code> 定义了字符串&quot;laugh out loud&quot;(AKA lol)外, 其余实体都是实体引用，它们每个都引用自上一个实体，且重复10次。</p>
+<p>此 XML 文件的文档内容部分仅包含对实体<code>lol9</code>的一个实例的引用。但是，当它被 DOM 或 SAX 解析器解析时，遇到<code>lol9</code>时，它会扩展为 10 个<code>lol8</code>，而每个<code>lol8</code>会扩展为10 个<code>lol7</code>，依此类推。到将所有内容扩展为文本lol时，字符串&quot;laugh out loud&quot;的数量已达100,000,000。如果再增加一个类似结构的实体，或者第一个实体<code>lol</code>被定义为10个&quot;laugh out loud&quot;字符串的话，那么将有<code>10亿</code>个&quot;laugh out loud&quot;，即十亿大笑。</p>
+<p>这段文本看似内容不多，占用内存不大，但是在解析过程中内容被指数级展开，会消耗大量内存资源，所以有人利用这个原理进行DOS攻击，使被攻击的机器的内存迅速耗尽，从而停止服务。</p>
+<p>以上这种 XML 攻击，被称作 XML 炸弹。</p>
+<p>Git 炸弹的原理大致也跟XML炸弹类似，它利用了 Git 的某种特性，使得重复的文本内容深度嵌套。所以接下来再来看一下 Git 炸弹的原理。</p>
+<h4 id="Git-炸弹原理">Git 炸弹原理</h4>
+<p>我们都知道 Git 的基本数据结构有<code>commit</code>,<code>tag</code>, <code>tree</code>, <code>blob</code>, blob 只存储文件内容，tree 存储文件名称，文件目录结构， commit 与 tag 类似于一种引用(reference),指向 tree。</p>
+<p>每中数据都有自己的<code>hash ID</code>, 所以对于<code>blob</code>来说，只要其中的内容是一样的，那么其 ID 就是一样的，不管其内容的文件名，文件路径是否相同。换句话说，Git消除了<code>blob</code>的重复，允许不同的文件(文件名，文件路径不同)使用相同的<code>blob</code>，目的是减少文件内容的重复。对于<code>tree</code>也是类似。</p>
+<p>所以有人就利用这个特性制作了一个 Git 仓库, 其结构类似：</p>
+<p><img src="https:%5Cfastly.jsdelivr.net%5Cgh%5CCactusinhand%5Cimages_repo%5Cimages%5Cgit_bomb.png" alt="git bomb"></p>
+<p>之后，只要运行包含树的遍历操作的 Git 命令，如<code>git status</code>, <code>git checkout</code> 等命令，Git 会先在内存中构造出该仓库的树结构，在这种特殊的仓库中，这个过程会消耗大量内存，因此只要这个仓库的树嵌套足够深，内存就会马上被消耗完，相关进程会被终止。</p>
+<p>与XML炸弹类似，只要这种嵌套结构达到10层，或者底层的 blob 有10个，则整个过程展开会有 10 亿条 <code>tree</code>(路径)。</p>
+<h4 id="制作">制作</h4>
+<p>Git炸弹第一次公开讨论是在 2017 年，Kate 在自己的博客[2]中讨论了制作 Git 炸弹的原理以及制作方法，制作程序是用 Python 写的，见：</p>
+<blockquote>
+<p><a href="https://kate.io/blog/making-your-own-exploding-git-repos">https://kate.io/blog/making-your-own-exploding-git-repos</a></p>
 </blockquote>
-<p>GitOps 这个概念最早是由 Kubernetes 管理公司 Weaveworks 公司在 2017 年提出的，如今已经过去了 5 个年头，想必大家对这个概念早有耳闻，但你可能并不知道它到底是什么，它和 DevOps 到底是啥关系，本文就来帮大家一一解惑。</p>
-<h2 id="基础设施即代码">基础设施即代码</h2>
-<p>在理解 GitOps 之前，我们需要先理解什么是<strong>基础设施即代码</strong>。</p>
-<p>基础设施即代码（Infrastructure as Code, <strong>IaC</strong>），顾名思义，表示使用代码（而非手动流程）来定义基础设施，研发人员可以像对待应用软件一样对待基础设施，例如：</p>
+<h4 id="如何防止">如何防止</h4>
+<p>经过 Github 以及漏洞平台 Hackerone 同意后，Kate 公开了自己在 Github 上自己的 git-bomb仓库[3]，并且在自己的博客中公开讨论了 Git 炸弹的相关信息，之后马上引起了 Git 上游社区的关注，并且马上讨论了可能的修复方案: [4]</p>
 <ul class="lvl-0">
-<li class="lvl-4">
-<p>可以创建包含基础架构规范的声明式配置文件，从而便于编辑和分发配置。</p>
-</li>
-<li class="lvl-4">
-<p>可以确保每次配置的环境都完全相同。</p>
-</li>
-<li class="lvl-4">
-<p>可以进行版本控制，所有的变更都会被记录下来，方便溯源。</p>
-</li>
-<li class="lvl-4">
-<p>可以将基础设施划分为若干个模块化组件，并通过自动化以不同的方式进行组合。</p>
+<li class="lvl-2">
+<p>Git上游社区，最终补丁: [5]</p>
 </li>
 </ul>
-<p>当然，广义上的 IaC 不仅仅只关于基础设施，还包含了<strong>网络</strong>、<strong>安全</strong>、<strong>配置</strong>等等，所以广义上的 IaC 又叫 <strong>X as Code</strong>。<br>
-<img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161123.png" alt=""></p>
-<p>比如你想在 AWS 中创建服务器，配置网络，部署 Kubernetes 集群以及各种工作负载，你只需要定义好 Terraform 或 Ansible 的声明式配置，以及 Kubernetes 的配置清单即可，免去一切繁杂的手动操作。</p>
-<h2 id="GitOps-是什么">GitOps 是什么</h2>
-<p>GitOps = IaC + Git + CI/CD，即基于 IaC 的版本化 CI/CD。它的核心是使用 Git 仓库来管理基础设施和应用的配置，并且<strong>以 Git 仓库作为基础设施和应用的单一事实来源</strong>，你从其他地方修改配置（比如手动改线上配置）一概不予通过。</p>
-<p><img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161321.png" alt=""></p>
-<p>Git 仓库中的声明式配置描述了目标环境当前所需基础设施的期望状态，借助于 GitOps，如果集群的实际状态与 Git 仓库中定义的期望状态不匹配，Kubernetes reconcilers 会根据期望状态来调整当前的状态，最终使实际状态符合期望状态。</p>
-<p>另一方面，现代应用的开发更多关注的是迭代速度和规模，拥有成熟 DevOps 文化的组织每天可以将代码部署到生成环境中数百次，DevOps 团队可以通过版本控制、代码审查以及自动测试和部署的 CI/CD 流水线等最佳实践来实现这一目标，这就是 GitOps 干的事情。</p>
-<h2 id="GitOps-vs-DevOps">GitOps vs DevOps</h2>
-<p>从广义上来看，GitOps 与 DevOps 并不冲突，<strong>GitOps 是一种技术手段，而 DevOps 是一种文化</strong>。GitOps 是一种实现持续交付（Continuous Delivery）、持续部署（Continuous Deployment）和基础设施即代码（IaC）的工具和框架，它是支持 DevOps 文化的。</p>
-<p>从狭义上来看，GitOps 与 DevOps 有以下几个区别：</p>
-<p>首先，<strong>GitOps 是以目标为导向的</strong>。它使用 Git 来维护期望状态，并不断调整实际状态，最终与期望状态相匹配。而 <strong>DevOps 更多关注的是最佳实践</strong>，这些实践可以普遍应用于企业的每一个流程。</p>
-<p>其次，<strong>GitOps 采取声明式的操作方法，而 DevOps 同时接受声明式和命令式的方法</strong>，所以 DevOps 除了适用于容器环境之外，还适用于虚拟机和裸机环境。</p>
-<p>最后，<strong>GitOps 重新定义了云原生场景下的 CI/CD</strong>，它以 Git 作为中心的不可变状态声明，以加快持续部署速度。</p>
-<h2 id="GitOps-的设计哲学">GitOps 的设计哲学</h2>
-<p>想要使用 GitOps 来管理你的基础设施和应用，需要践行以下几个原则：</p>
-<h3 id="1-声明式">1. 声明式</h3>
-<p>必须通过声明式来描述系统的期望状态。例如 Kubernetes，众多现代云原生工具都是声明式的，Kubernetes 只是其中的一种。</p>
-<h3 id="2-版本控制-不可变">2. 版本控制/不可变</h3>
-<p>因为所有的状态声明都存储在 Git 仓库中，并且把 Git 仓库作为单一事实来源，那么所有的操作都是从 Git 仓库里驱动的，而且保留了完整的版本历史，方便回滚。有了 Git 优秀的安全保障，也可以使用 SSH 密钥来签署 commits，对代码的作者和出处实施强有力的安全保障。</p>
-<h3 id="3-自动应用变更">3. 自动应用变更</h3>
-<p>Git 仓库中声明的期望状态发生了任何变更，都可以立即应用到系统中，而且不需要安装配置额外工具（比如 kubectl），也不需要配置 Kubernetes 的认证授权。</p>
-<h3 id="4-持续的-Reconciliation">4. 持续的 Reconciliation</h3>
-<p>Reconciliation 其实最早是 Kubernetes 里的一个概念，表示的是<strong>确保系统的实际状态与期望状态一致的过程</strong>。具体的实现方式是在目标环境中安装一个 agent，一旦实际状态与期望状态不匹配，agent 就会进行自动修复。这里的修复比 Kubernetes 的故障自愈更高级，即使是手动修改了集群的编排清单，集群也会被恢复到 Git 仓库中的清单所描述的状态。</p>
-<p>鉴于以上这些设计哲学，我们来看一下 GitOps 的工作流：<br>
-<img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161329.png" alt=""></p>
+<p>Git 官方的修复是将遍历树的过程变得更快，使得对 Git 炸弹仓库做任何操作不至于等待很久。其<code>commit message</code>写到：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">You can see this in a pathological case where a commit adds</span><br><span class="line">a very large number of entries, and we limit based on a</span><br><span class="line">broad pathspec. E.g.:</span><br><span class="line"></span><br><span class="line">  perl -e &#x27;</span><br><span class="line">    chomp(my $blob = `git hash-object -w --stdin &lt;/dev/null`);</span><br><span class="line">    for my $a (1..1000) &#123;</span><br><span class="line">      for my $b (1..1000) &#123;</span><br><span class="line">        print &quot;100644 $blob\t$a/$b\n&quot;;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#x27; | git update-index --index-info</span><br><span class="line">  git commit -qm add</span><br><span class="line"></span><br><span class="line">  git rev-list HEAD -- .</span><br><span class="line"></span><br><span class="line">This case takes about 100ms now, but after this patch only</span><br><span class="line">needs 6ms. That&#x27;s not a huge improvement, but it&#x27;s easy to</span><br><span class="line">get and it protects us against even more pathological cases</span><br><span class="line">(e.g., going from 1 million to 10 million files would take</span><br><span class="line">ten times as long with the current code, but not increase at</span><br><span class="line">all after this patch).</span><br></pre></td></tr></table></figure>
+<p><strong>这个修复并没有解决处理这种仓库导致内存消耗过大问题，只对处理过程的消耗时间做了一次优化</strong>。</p>
+<h4 id="相关-CVE">相关 CVE</h4>
 <ul class="lvl-0">
-<li class="lvl-4">
-<p>首先，团队中的任何一个成员都可以 Fork 仓库对配置进行更改，然后提交 Pull Request。</p>
-</li>
-<li class="lvl-4">
-<p>接下来会运行 CI 流水线，一般会做这么几件事情：验证配置文件、执行自动化测试、检测代码的复杂性、构建 OCI 镜像、将镜像推送到镜像仓库等等。</p>
-</li>
-<li class="lvl-4">
-<p>CI 流水线运行完成后，团队中拥有合并代码权限的人将会将这个 Pull Request 合并到主分支中 。一般拥有这个权限的都是研发人员、安全专家或者高级运维工程师。</p>
-</li>
-<li class="lvl-4">
-<p>最后会运行 CD 流水线，将变更应用到目标系统中（比如 Kubernetes 集群或者 AWS） 。</p>
+<li class="lvl-2">
+<p><a href="https://ubuntu.com/security/CVE-2017-15298">CVE-2017-15298</a></p>
 </li>
 </ul>
-<p>整个过程完全自动化且透明，通过多人协作和自动化测试来保证了基础设施声明配置的健壮性。而传统的模式是其中一个工程师在自己的电脑上操作这一切，其他人不知道发生了什么，也无法对其操作进行 Review。</p>
-<h2 id="Push-vs-Pull">Push vs Pull</h2>
-<p>CD 流水线有两种模式：Push 和 Pull。</p>
-<h3 id="Push-模式">Push 模式</h3>
-<p>目前大多数 CI/CD 工具都使用基于 Push 的部署模式，例如 Jenkins、CircleCI 等。这种模式一般都会在 CI 流水线运行完成后执行一个命令（比如 kubectl）将应用部署到目标环境中。<br>
-<img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161346.png" alt=""></p>
-<p>这种 CD 模式的缺陷很明显：</p>
-<ul class="lvl-0">
-<li class="lvl-4">
-<p>需要安装配置额外工具（比如 kubectl）；</p>
+<h4 id="参考链接">参考链接</h4>
+<ol>
+<li class="lvl-3">
+<p><a href="https://docs.microsoft.com/en-us/archive/msdn-magazine/2009/november/xml-denial-of-service-attacks-and-defenses">microsoft: xml-denial-of-service-attacks-and-defenses</a></p>
 </li>
-<li class="lvl-4">
-<p>需要 Kubernetes 对其进行授权；</p>
+<li class="lvl-3">
+<p><a href="https://kate.io/blog/git-bomb">kate’s blog</a></p>
 </li>
-<li class="lvl-4">
-<p>需要云平台授权；</p>
+<li class="lvl-3">
+<p><a href="https://github.com/Katee/git-bomb">kate: original git-bomb repo on Github</a></p>
 </li>
-<li class="lvl-4">
-<p>无法感知部署状态。也就无法感知期望状态与实际状态的偏差，需要借助额外的方案来保障一致性。</p>
+<li class="lvl-3">
+<p><a href="https://public-inbox.org/git/20171013123521.hop5hrfsyagu7znl@sigill.intra.peff.net/T/#m58c560c18f93476e23110a0656a8d525170d14a2">git upstream discussion</a></p>
 </li>
-</ul>
-<p>Kubernetes 集群或者云平台对 CI 系统的授权凭证在集群或云平台的信任域之外，不受集群或云平台的安全策略保护，因此 CI 系统很容易被当成非法攻击的载体。</p>
-<h3 id="Pull-模式">Pull 模式</h3>
-<p>Pull 模式会在目标环境中安装一个 Agent，例如在 Kubernetes 集群中就靠 Operator 来充当这个 Agent。Operator 会周期性地监控目标环境的实际状态，并与 Git 仓库中的期望状态进行比较，如果实际状态不符合期望状态，Operator 就会更新基础设施的实际状态以匹配期望状态。<br>
-<img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/20220906161356.png" alt=""></p>
-<p>只有 Git 的变更可以作为期望状态的唯一来源，除此之外，任何人都不可以对集群进行任何更改，即使你修改了，也会被 Operator 还原为期望状态，这也就是传说中的<strong>不可变基础设施</strong>。</p>
-<p>目前基于 Pull 模式的 CD 工具有 <a href="https://github.com/argoproj/argo-cd/">Argo CD</a>， <a href="https://github.com/fluxcd/flux">Flux CD</a> 以及 <a href="https://github.com/kubesphere/ks-devops">ks-devops</a>。</p>
-<h2 id="GitOps-的优势">GitOps 的优势</h2>
-<p>一般 GitOps 首选的都是基于 Pull 的部署模式，因为这种模式有很多不可替代的优势。</p>
-<h3 id="更强大的安全保障">更强大的安全保障</h3>
-<p>上面已经提到了，使用 GitOps 不需要任何 Kubernetes 或者云平台的凭证来执行部署，Kubernetes 集群内的 Argo CD 或者 Flux CD 只需要访问 Git 仓库，并通过 Pull 模式来更新即可。</p>
-<p>另一方面，Git 由用于跟踪和管理代码变更的强大密码学支持，拥有对变更进行签名以证明作者身份和来源的能力，这是保障集群安全的关键。</p>
-<h3 id="Git-作为事实的唯一真实来源">Git 作为事实的唯一真实来源</h3>
-<p>因为所有的应用包括基础设施的声明式配置都保存在 Git 中，并把 Git 作为应用系统的唯一事实来源，因此可以利用 Git 的强大功能操作所有东西，例如版本控制、历史记录、审计和回滚等等，无需使用 kubectl 这样的工具来操作。</p>
-<h3 id="提高生产力">提高生产力</h3>
-<p>Git 也是开发人员非常熟悉的工具，通过 Git 不断迭代，可以提高生产率，加快开发和部署速度，更快地推出新产品，同时提高系统的稳定性和可靠性。</p>
-<h3 id="更容易合规的审计">更容易合规的审计</h3>
-<p>使用 GitOps 的基础设施可以像任何软件项目一样使用 Git 来管理，所以同样可以对其进行质量审计。当有人需要对基础设施进行更改时，会创建一个 Pull Request，等相关人员对其进行 Code Review 之后，更改才可以应用到系统中。</p>
-<h2 id="总结">总结</h2>
-<p>GitOps 是对现有 DevOps 文化的补充，它使用 Git 这样的版本控制系统来自动部署基础设施，部署过程清晰可见，可以查看和跟踪对系统进行的任何变更，提高了生产力、安全性和合规性。而且 GitOps 提供了更优雅的可观测性，可以实时观测部署状态，并采取行动使实际状态与期望状态保持一致。</p>
-<p>而且在 GitOps 中，整个系统都是通过声明式来描述的，天然适合云原生环境，因为 Kubernetes 也是这么设计的。</p>
-<h2 id="参考资料">参考资料</h2>
-<ul class="lvl-0">
-<li class="lvl-4">
-<p><a href="https://devs-group.medium.com/what-is-gitops-and-what-should-you-know-about-it-fcaa3e3c1dd5">What is GitOps and what should you know about it?</a></p>
+<li class="lvl-3">
+<p><a href="https://github.com/Cactusinhand/git/commit/a937b37e766479c8e780b17cce9c4b252fd97e40">git upstream fix</a></p>
 </li>
-<li class="lvl-4">
-<p><a href="https://www.tynybay.com/our-thinking/devops-vs-gitops-4-benefits-you-must-know-to-master-the-methodologies">DevOps vs GitOps: 4 Benefits you must know to Master the Methodologies</a></p>
-</li>
-<li class="lvl-4">
-<p><a href="https://www.weave.works/technologies/gitops/">Guide To GitOps</a></p>
-</li>
-</ul>
+</ol>
 ]]></content>
       <categories>
         <category>Git</category>
       </categories>
       <tags>
-        <tag>Workflow</tag>
-        <tag>GitOps</tag>
-        <tag>DevOps</tag>
+        <tag>Git-bomb</tag>
+        <tag>Xml</tag>
       </tags>
   </entry>
   <entry>
-    <title>认证(Authentication)和授权(Authorization)</title>
-    <url>/posts/3be69b54.html</url>
-    <content><![CDATA[<h3 id="什么是认证和授权">什么是认证和授权</h3>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>认证(Authentication)，识别身份</p>
-</li>
-<li class="lvl-2">
-<p>授权(Authorization)，授予被识别的身份是否有权限获取指定资源，或授予其操作权限</p>
-</li>
-</ul>
-<p>认证的双方是访问者(User)、身份信息持有者(<strong>IdP</strong>/Identity Provider)。</p>
-<p>用户持有的唯一标识符(用户名，UUID 等)，密码信息（密码，指纹等）需要与IdP持有的信息匹配才能认证成功。</p>
-<p>资源持有者(Source Owner)，控制资源的获取，修改，删除等。</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>身份和资源的分离</p>
-</li>
-</ul>
-<p>资源可能是用户自己产生的，也可能是第三方服务器产生的，或者叫做 Service Provider(SP)，也称 Client。</p>
-<p>身份和资源的分离即为 <strong>IdP, SP 分离</strong>。</p>
-<p>IdP 与 IdP 之前也可以进行资源传递，并授权。这种方式一般称为<strong>联邦授权</strong>。</p>
-<br>
-<h3 id="LDAP">LDAP</h3>
-<p>LDAP(Light Directory Access Protocol)即轻量级目录访问协议，它是一种为<strong>查询</strong>、<strong>浏览</strong>和<strong>搜索</strong>而优化的专业分布式数据库，它呈树状结构组织数据，和<a href="https://so.csdn.net/so/search?q=%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E5%BA%93&amp;spm=1001.2101.3001.7020">关系数据库</a>不同，它有优异的读性能，但写性能差，并且没有事务处理、回滚等复杂功能，不适于存储修改频繁的数据，所以大多数是用来查询的。LDAP 只是一种协议，可以有多种实现。</p>
-<p>一般结构：</p>
-<p><img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/image-20220213014635093.png" alt=""></p>
-<p>DIT(Directory Information Tree）目录信息树<br>
-dn(Distinguished Name)：一条记录的详细位置，相当于绝对路径(唯一)<br>
-rdn(Relative dn) : 相对dn, 相对于相对路径<br>
-dc(Domain Component) ：一条记录所属区域 (哪一颗树)<br>
-ou(Organization Unit) ：一条记录所属组织 （哪一个分支）<br>
-cn/uid(Common Name/user id)：一条记录的名字/ID (哪一个苹果名字)<br>
-sn(Surname): 名字前缀(姓)</p>
-<p>基本模型：</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>信息模型，将信息以树状方式组织，基本数据单元是条目(Entry), 条目又由不同属性组成</p>
-</li>
-<li class="lvl-2">
-<p>命名模型，实现一种条目定位方式</p>
-</li>
-<li class="lvl-2">
-<p>功能模型，实现增删改查等功能</p>
-</li>
-<li class="lvl-2">
-<p>安全模型，实现身份认证，安全通道，访问控制</p>
-</li>
-</ul>
-<br>
-<h3 id="OAuth2-0">OAuth2.0</h3>
-<p><strong>OAuth 2.0</strong> 是一个授权标准协议，主要用于<strong>资源授权</strong>。</p>
-<p>前面提到的身份和资源的分离，OAuth 引入了一个授权层，用来分离两种不同的角色：客户端和资源所有者。资源所有者同意以后，资源服务器可以向客户端颁发令牌。客户端通过令牌，去请求数据。</p>
-<p>所以，<strong>OAuth 的核心就是向第三方应用颁发令牌</strong>。</p>
-<p>根据 OAuth 2.0 协议规范，主要有四个主体：</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p><strong>授权服务器</strong>(Authorization Server)，负责颁发 Access Token，Authing 是授权服务器。</p>
-</li>
-<li class="lvl-2">
-<p><strong>资源所有者</strong>(Resource Owner)，即<strong>用户</strong>，授权其他人访问他的资源。</p>
-</li>
-<li class="lvl-2">
-<p><strong>调用方</strong>(Client)，即第三方应用。调用方请求获取 Access Token，经过用户授权后，授权服务器为其颁发 Access Token。调用方可以携带 Access Token 到资源服务器访问用户的资源。</p>
-</li>
-<li class="lvl-2">
-<p><strong>资源服务器</strong>(Resouce Server)，存储用户资源。收到 Access Token 后，验证它的被赋予的权限项目，最后返回资源。</p>
-</li>
-</ul>
-<p>这个过程可能还存在其它主体，如浏览器，也称用户代理(User Agent), 服务提供商(Server Provider)等。</p>
-<p>客户端必须得到用户的授权（authorization grant），才能获得令牌（access token）。OAuth 2.0 定义了四种授权方式。</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>授权码模式（authorization code）</p>
-</li>
-<li class="lvl-2">
-<p>简化模式（implicit）</p>
-</li>
-<li class="lvl-2">
-<p>密码模式（resource owner password credentials）</p>
-</li>
-<li class="lvl-2">
-<p>客户端模式（client credentials）</p>
-</li>
-</ul>
-<p>授权码模式（authorization code）是功能最完整、流程最严密的授权模式。它的特点就是通过客户端的后台服务器，与&quot;服务提供商&quot;的认证服务器进行互动。</p>
-<p><img src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/auth2.0_code.png" alt=""></p>
-<p>它的步骤如下：</p>
+    <title>git bundle 格式及应用</title>
+    <url>/posts/32c910d1.html</url>
+    <content><![CDATA[<p><code>git-bundle</code> 文件是一种将 <code>git objects</code> 数据(git packfile)与仓库引用 <code>refs</code> 结合在一起的一种数据包格式，通过 <code>objects + refs</code> 就能恢复出一个完整的 <code>git</code> 仓库，因此可以用 <code>git-bundle</code> 文件来备份 <code>git</code> 仓库。</p>
+<!--  more -->
+<h3 id="格式">格式</h3>
+<p><code>git bundle v2</code> 格式：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bundle    = signature *prerequisite *reference LF pack</span><br><span class="line">signature = <span class="string">&quot;# v2 git bundle&quot;</span> LF</span><br><span class="line"></span><br><span class="line">prerequisite = <span class="string">&quot;-&quot;</span> obj-id SP comment LF</span><br><span class="line">comment      = *CHAR</span><br><span class="line">reference    = obj-id SP refname LF</span><br><span class="line"></span><br><span class="line">pack         = ... ; packfile</span><br></pre></td></tr></table></figure>
+<p><code>git bundle v3</code> 格式：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bundle    = signature *capability *prerequisite *reference LF pack</span><br><span class="line">signature = <span class="string">&quot;# v3 git bundle&quot;</span> LF</span><br><span class="line"></span><br><span class="line">capability   = <span class="string">&quot;@&quot;</span> key [<span class="string">&quot;=&quot;</span> value] LF</span><br><span class="line">prerequisite = <span class="string">&quot;-&quot;</span> obj-id SP comment LF</span><br><span class="line">comment      = *CHAR</span><br><span class="line">reference    = obj-id SP refname LF</span><br><span class="line">key          = 1*(ALPHA / DIGIT / <span class="string">&quot;-&quot;</span>)</span><br><span class="line">value        = *(%01-09 / %0b-FF)</span><br><span class="line"></span><br><span class="line">pack         = ... ; packfile</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>（A）用户访问客户端，后者将前者导向认证服务器。</p>
-<p>（B）用户选择是否给予客户端授权。</p>
-<p>（C）假设用户给予授权，认证服务器将用户导向客户端事先指定的&quot;重定向URI&quot;（redirection URI），同时附上一个授权码。</p>
-<p>（D）客户端收到授权码，附上早先的&quot;重定向URI&quot;，向认证服务器申请令牌。这一步是在客户端的后台的服务器上完成的，对用户不可见。</p>
-<p>（E）认证服务器核对了授权码和重定向URI，确认无误后，向客户端发送访问令牌（access token）和更新令牌（refresh token）。</p>
+<p>注：以上均采用 <code>ABNF</code> 标记法</p>
 </blockquote>
-<br>
-<h3 id="OIDC">OIDC</h3>
-<p>OIDC(<strong>OpenID Connect</strong> ) 是 <code>OAuth 2.0</code> 协议的超集，能够认证用户并完成资源授权。OIDC的认证和授权分为<strong>四种模式</strong>：授权码模式（Code）、隐式模式（Implicit）、密码模式（Password）、客户端证书模式（Client Credential）</p>
-<p>除了 OIDC 协议之外，还存在着许多标准身份协议，例如 SAML 和 CAS。它们的存在意义都是类似的：为了能让素不相识的 SP 和 IdP 进行快速对接，在用户的许可下让 SP 在 IdP 处完成授权，从而访问 IdP 下资源提供者的资源。</p>
+<p>可以看出：</p>
+<p><code>git bundle v2</code> 包含四个部分：</p>
+<ol>
+<li class="lvl-3">
+<p>签名。标识 <code>git bundle</code> 版本</p>
+</li>
+<li class="lvl-3">
+<p>必要依赖。不包含在当前 <code>bundle包</code> 中，但是被 <code>bundle包</code> 中的数据引用到的数据。</p>
+</li>
+<li class="lvl-3">
+<p>引用。当前 <code>bundle包</code> 中包含的引用。</p>
+</li>
+<li class="lvl-3">
+<p><code>pack文件</code>。<code>git packfile</code></p>
+</li>
+</ol>
+<p><code>git bundle</code> <code>v3</code> 仅比 <code>v2</code> 多了一个 <code>capability</code> 部分。</p>
+<p>前面提到过 <code>prerequisite</code> 的概念，其格式为 <code>prerequisite = &quot;-&quot; obj-id SP comment LF</code>，所以来看下这个实际是什么意思。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 先打包master分支上最近三次提交</span></span><br><span class="line">$ git bundle create recent.bundle master~3..master</span><br><span class="line">Enumerating objects: 13, <span class="keyword">done</span>.</span><br><span class="line">Counting objects: 100% (13/13), <span class="keyword">done</span>.</span><br><span class="line">Compressing objects: 100% (8/8), <span class="keyword">done</span>.</span><br><span class="line">Total 9 (delta 3), reused 0 (delta 0), pack-reused 0</span><br><span class="line"></span><br><span class="line"><span class="comment"># 再用 git bundle verify 验证一下这个bundle包有没有外部依赖</span></span><br><span class="line">$ git bundle verify recent.bundle</span><br><span class="line">The bundle contains this ref:</span><br><span class="line">0a831168aa94dffaa92f5d73f3e873ef5fd89603 refs/heads/master</span><br><span class="line">The bundle requires this ref:</span><br><span class="line">d5d9b1c95f0012cb7da18deaff6a806f89e48867</span><br><span class="line">recen.bundle is okay</span><br></pre></td></tr></table></figure>
+<p>上面的结果很明显：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">The bundle requires this ref:</span><br><span class="line">d5d9b1c95f0012cb7da18deaff6a806f89e48867</span><br></pre></td></tr></table></figure>
+<p>再打开这个bundle包文件看下：</p>
+<figure class="highlight tex"><table><tr><td class="code"><pre><span class="line"><span class="params">#</span> v2 git bundle</span><br><span class="line">-d5d9b1c95f0012cb7da18deaff6a806f89e48867 demo.tar.gz</span><br><span class="line">0a831168aa94dffaa92f5d73f3e873ef5fd89603 refs/heads/master</span><br></pre></td></tr></table></figure>
+<p>第二行的内容 <code>-d5d9b1c95f0012cb7da18deaff6a806f89e48867 demo.tar.gz</code> 即是<code>prerequisite</code></p>
+<p>并且符合格式 <code>prerequisite = &quot;-&quot; obj-id SP comment LF</code></p>
+<p>我们看一个实际的 <code>git pack</code> 文件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">PACK^@^@^@^B^@^@^@^C&lt;91&gt;^Kx^A^A±^@Nÿtree 212ccb4755ab7c489bee69200388139d7f081e7c</span><br><span class="line">author Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line">committer Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line"></span><br><span class="line">add aa.txt</span><br><span class="line">©&amp;5A5x^A^A^E^@úÿaaaa</span><br><span class="line">^E]^A&lt;8f&gt;¢^Bx^A^A<span class="string">&quot;^@Ýÿ100644 aa.txt^@]0&lt;8e&gt;^]^F^K^L8&#125;E,ôt^?&lt;89&gt;ì¹&lt;93&gt;XQ£÷^KlK&lt;9a&gt;&lt;93&gt;pÃ^@ò&amp;bL37©&lt;85&gt;(ÐâWa^X</span></span><br><span class="line"><span class="string">~</span></span><br></pre></td></tr></table></figure>
+<p>而此时的 <code>git bundle v2</code> 文件如下：</p>
+<blockquote>
+<p>git bundle create master.bundle master</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># v2 git bundle</span></span><br><span class="line">e0caba68a7281d4ff86693745a1617ffc72c3e7d refs/heads/master</span><br><span class="line"></span><br><span class="line">PACK^@^@^@^B^@^@^@^C&lt;91&gt;^Kx^A^A±^@Nÿtree 212ccb4755ab7c489bee69200388139d7f081e7c</span><br><span class="line">author Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line">committer Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line"></span><br><span class="line">add aa.txt</span><br><span class="line">©&amp;5A¢^Bx^A^A<span class="string">&quot;^@Ýÿ100644 aa.txt^@]0&lt;8e&gt;^]^F^K^L8&#125;E,ôt^?&lt;89&gt;ì¹&lt;93&gt;XQ£÷^Kl5x^A^A^E^@úÿaaaa</span></span><br><span class="line"><span class="string">^E]^A&lt;8f&gt;,^B&lt;9d&gt;ï&lt;89&gt;DIr^\&lt;87&gt;*&lt;9b&gt;Æû^X¹É&#125;PÖ</span></span><br></pre></td></tr></table></figure>
+<p><code>git bundle v3</code> 文件如下:</p>
+<blockquote>
+<p>git bundle create --version=3 master-v3.bundle master</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># v3 git bundle</span></span><br><span class="line">@object-format=sha1</span><br><span class="line">e0caba68a7281d4ff86693745a1617ffc72c3e7d refs/heads/master</span><br><span class="line"></span><br><span class="line">PACK^@^@^@^B^@^@^@^C&lt;91&gt;^Kx^A^A±^@Nÿtree 212ccb4755ab7c489bee69200388139d7f081e7c</span><br><span class="line">author Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line">committer Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line"></span><br><span class="line">add aa.txt</span><br><span class="line">©&amp;5A¢^Bx^A^A<span class="string">&quot;^@Ýÿ100644 aa.txt^@]0&lt;8e&gt;^]^F^K^L8&#125;E,ôt^?&lt;89&gt;ì¹&lt;93&gt;XQ£÷^Kl5x^A^A^E^@úÿaaaa</span></span><br><span class="line"><span class="string">^E]^A&lt;8f&gt;,^B&lt;9d&gt;ï&lt;89&gt;DIr^\&lt;87&gt;*&lt;9b&gt;Æû^X¹É&#125;PÖ</span></span><br></pre></td></tr></table></figure>
+<h3 id="操作实践">操作实践</h3>
+<p>在机器A中的仓库 <code>R1</code> 中：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git bundle create file.bundle master</span><br><span class="line"><span class="comment"># 做个标记</span></span><br><span class="line">$ git tag -f lastR2bundle master</span><br></pre></td></tr></table></figure>
+<p>将 <code>file.bundle</code> 转移到机器B上，克隆仓库 <code>R2</code>：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> -b master /path/to/file.bundle R2</span><br><span class="line">Cloning into <span class="string">&#x27;R2&#x27;</span>...</span><br><span class="line">Receiving objects: 100% (38/38), 7.97 KiB | 7.97 MiB/s, <span class="keyword">done</span>.</span><br><span class="line">Resolving deltas: 100% (6/6), <span class="keyword">done</span>.</span><br></pre></td></tr></table></figure>
+<p>回到仓库 <code>R1</code>，仓库 <code>R1</code> 有了新的提交。然后继续打包：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git bundle create file.bundle lastR2bundle..master</span><br><span class="line"><span class="comment"># 做个标记，下次打包时使用</span></span><br><span class="line">$ git tag -f lastR2bundle master</span><br></pre></td></tr></table></figure>
+<p>将 <code>file.bundle</code> 转移到机器 <code>B</code> 上，再到 <code>R2</code> 仓库中进行更新：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git fetch</span><br><span class="line">Receiving objects: 100% (41/41), 8.28 KiB | 8.28 MiB/s, <span class="keyword">done</span>.</span><br><span class="line">Resolving deltas: 100% (7/7), <span class="keyword">done</span>.</span><br><span class="line">From /home/git/test-git/example/repo.bundle</span><br><span class="line">   d4f54d9..6a33e12  master     -&gt; origin/master</span><br><span class="line">   </span><br><span class="line"> <span class="comment"># 还是在cloned-repo中</span></span><br><span class="line">$ git ls-remote</span><br><span class="line">From /path/to/file.bundle</span><br><span class="line">6a33e12f3d7116863a19bf48471c74c597421f8a        HEAD</span><br><span class="line">45eab37d3cb8b5be02a59d3690cb63d3f692f6b9        refs/remotes/origin/master</span><br><span class="line">45eab37d3cb8b5be02a59d3690cb63d3f692f6b9        refs/remotes/origin/HEAD</span><br><span class="line">6a33e12f3d7116863a19bf48471c74c597421f8a        refs/heads/master</span><br></pre></td></tr></table></figure>
+<p>以上操作，看起来都跟读取 Git 远程仓库的一样。<br>
+<strong>但是不支持写仓库操作，即 <code>git push</code> 操作。</strong></p>
+<p>以上操作就完成了仓库的全量备份和增量备份。</p>
+<p>还可以用其它形式进行打包：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git bundle create mybundle v1.0.0..master</span><br><span class="line">$ git bundle create mybundle --since=10.days master</span><br><span class="line">$ git bundle create mybundle -10 master</span><br></pre></td></tr></table></figure>
+<p>只要是 <code>git rev-list</code> 能接受的参数，就可以放在 <code>git bundle create mybundle</code> 后面。比如可以使用 <code>--max-age</code> 选项，实现根据时间戳来进行备份，大致过程如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">```Bash</span><br><span class="line"><span class="comment"># 当前HEAD的时间戳，作为下次备份的起点时间</span></span><br><span class="line">$ git cat-file commit HEAD | sed -n <span class="string">&quot;s/^committer .*&gt; \([0-9]*\) .*/\1/p&quot;</span> </span><br><span class="line">1660809497</span><br><span class="line"></span><br><span class="line"><span class="comment"># --branches 获取refs/heads/下所有相关commits</span></span><br><span class="line"><span class="comment"># --tags 获取refs/tags/下所有相关commits</span></span><br><span class="line"><span class="comment"># --remotes 获取refs/remotes/下所有相关commits</span></span><br><span class="line"><span class="comment"># --all 获取refs/下所有相关commits</span></span><br><span class="line"><span class="comment"># --objects 表示commit所关联的所有对象</span></span><br><span class="line">$ git bundle create latest.bundle  --max-age=1660807920 --all --objects</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取bundle包中的引用信息，可以通过其它选项筛选出部分引用。</span></span><br><span class="line">$ git bundle list-heads latest.bundle &gt; latest.list</span><br><span class="line"></span><br><span class="line"><span class="comment"># 通过git-ls-remote获取bundle包中的所有引用信息。</span></span><br><span class="line">$ git ls-remote latest.bundle &gt; latest.lsremote</span><br></pre></td></tr></table></figure>
+<h3 id="应用">应用</h3>
+<p>目前 Gitlab 的<a href="https://docs.gitlab.com/ee/user/project/settings/import_export.html">仓库导出、导入功能</a>以及阿里云效 CodeUp 的<a href="https://help.aliyun.com/document_detail/217005.html?spm=a2cl9.codeup_devops2020_goldlog_organization.0.0.3bcb1510bKSmJi">仓库备份</a>功能主要就是利用 Git-bundle 特性对 Git 仓库进行打包。</p>
 <h3 id="参考链接">参考链接</h3>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p><a href="https://www.bbsmax.com/A/RnJWNaBwzq/">理解OAuth 2.0 - 阮一峰的网络日志</a></p>
+<ol>
+<li class="lvl-3">
+<p><a href="https://git-scm.com/docs/git-bundle">https://git-scm.com/docs/git-bundle</a></p>
 </li>
-<li class="lvl-2">
-<p><a href="https://docs.authing.cn/v2/concepts/oidc/oidc-overview.html">OIDC 与 OAuth2.0 综述</a></p>
+<li class="lvl-3">
+<p><a href="https://git-scm.com/docs/bundle-format">https://git-scm.com/docs/bundle-format</a></p>
 </li>
-</ul>
+</ol>
 ]]></content>
       <categories>
-        <category>Auth</category>
+        <category>Git</category>
       </categories>
       <tags>
-        <tag>OAuth2.0</tag>
-        <tag>LDAP</tag>
-        <tag>OIDC</tag>
+        <tag>Git-bundle</tag>
       </tags>
   </entry>
   <entry>
@@ -1051,158 +1203,6 @@ sn(Surname): 名字前缀(姓)</p>
       </categories>
       <tags>
         <tag>Git-inside</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Git 炸弹</title>
-    <url>/posts/c5ceb3cc.html</url>
-    <content><![CDATA[<h4 id="起源">起源</h4>
-<p>Git 炸弹因 XML 炸弹(AKA “billion laughs”)而得名，所以要理解 Git 炸弹，我们不妨先从 XML 炸弹说起。</p>
-<p>下面是一段 XML 文件示例：</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot;?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">lolz</span> [</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol</span><span class="string">&quot;laugh out loud&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol2</span><span class="string">&quot;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol3</span><span class="string">&quot;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol4</span><span class="string">&quot;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&amp;lol3;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol5</span><span class="string">&quot;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&amp;lol4;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol6</span><span class="string">&quot;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&amp;lol5;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol7</span><span class="string">&quot;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&amp;lol6;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol8</span><span class="string">&quot;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&amp;lol7;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">lol9</span><span class="string">&quot;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&amp;lol8;&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">lolz</span>&gt;</span>&amp;lol9;<span class="tag">&lt;/<span class="name">lolz</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>从 ENTITY 字段看起，每行 ENTITY 代表一个 XML 实体(entity)元素，一共10个实体元素，除了第一个实体 <code>lol</code> 定义了字符串&quot;laugh out loud&quot;(AKA lol)外, 其余实体都是实体引用，它们每个都引用自上一个实体，且重复10次。</p>
-<p>此 XML 文件的文档内容部分仅包含对实体<code>lol9</code>的一个实例的引用。但是，当它被 DOM 或 SAX 解析器解析时，遇到<code>lol9</code>时，它会扩展为 10 个<code>lol8</code>，而每个<code>lol8</code>会扩展为10 个<code>lol7</code>，依此类推。到将所有内容扩展为文本lol时，字符串&quot;laugh out loud&quot;的数量已达100,000,000。如果再增加一个类似结构的实体，或者第一个实体<code>lol</code>被定义为10个&quot;laugh out loud&quot;字符串的话，那么将有<code>10亿</code>个&quot;laugh out loud&quot;，即十亿大笑。</p>
-<p>这段文本看似内容不多，占用内存不大，但是在解析过程中内容被指数级展开，会消耗大量内存资源，所以有人利用这个原理进行DOS攻击，使被攻击的机器的内存迅速耗尽，从而停止服务。</p>
-<p>以上这种 XML 攻击，被称作 XML 炸弹。</p>
-<p>Git 炸弹的原理大致也跟XML炸弹类似，它利用了 Git 的某种特性，使得重复的文本内容深度嵌套。所以接下来再来看一下 Git 炸弹的原理。</p>
-<h4 id="Git-炸弹原理">Git 炸弹原理</h4>
-<p>我们都知道 Git 的基本数据结构有<code>commit</code>,<code>tag</code>, <code>tree</code>, <code>blob</code>, blob 只存储文件内容，tree 存储文件名称，文件目录结构， commit 与 tag 类似于一种引用(reference),指向 tree。</p>
-<p>每中数据都有自己的<code>hash ID</code>, 所以对于<code>blob</code>来说，只要其中的内容是一样的，那么其 ID 就是一样的，不管其内容的文件名，文件路径是否相同。换句话说，Git消除了<code>blob</code>的重复，允许不同的文件(文件名，文件路径不同)使用相同的<code>blob</code>，目的是减少文件内容的重复。对于<code>tree</code>也是类似。</p>
-<p>所以有人就利用这个特性制作了一个 Git 仓库, 其结构类似：</p>
-<p><img src="https:%5Cfastly.jsdelivr.net%5Cgh%5CCactusinhand%5Cimages_repo%5Cimages%5Cgit_bomb.png" alt="git bomb"></p>
-<p>之后，只要运行包含树的遍历操作的 Git 命令，如<code>git status</code>, <code>git checkout</code> 等命令，Git 会先在内存中构造出该仓库的树结构，在这种特殊的仓库中，这个过程会消耗大量内存，因此只要这个仓库的树嵌套足够深，内存就会马上被消耗完，相关进程会被终止。</p>
-<p>与XML炸弹类似，只要这种嵌套结构达到10层，或者底层的 blob 有10个，则整个过程展开会有 10 亿条 <code>tree</code>(路径)。</p>
-<h4 id="制作">制作</h4>
-<p>Git炸弹第一次公开讨论是在 2017 年，Kate 在自己的博客[2]中讨论了制作 Git 炸弹的原理以及制作方法，制作程序是用 Python 写的，见：</p>
-<blockquote>
-<p><a href="https://kate.io/blog/making-your-own-exploding-git-repos">https://kate.io/blog/making-your-own-exploding-git-repos</a></p>
-</blockquote>
-<h4 id="如何防止">如何防止</h4>
-<p>经过 Github 以及漏洞平台 Hackerone 同意后，Kate 公开了自己在 Github 上自己的 git-bomb仓库[3]，并且在自己的博客中公开讨论了 Git 炸弹的相关信息，之后马上引起了 Git 上游社区的关注，并且马上讨论了可能的修复方案: [4]</p>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p>Git上游社区，最终补丁: [5]</p>
-</li>
-</ul>
-<p>Git 官方的修复是将遍历树的过程变得更快，使得对 Git 炸弹仓库做任何操作不至于等待很久。其<code>commit message</code>写到：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">You can see this in a pathological case where a commit adds</span><br><span class="line">a very large number of entries, and we limit based on a</span><br><span class="line">broad pathspec. E.g.:</span><br><span class="line"></span><br><span class="line">  perl -e &#x27;</span><br><span class="line">    chomp(my $blob = `git hash-object -w --stdin &lt;/dev/null`);</span><br><span class="line">    for my $a (1..1000) &#123;</span><br><span class="line">      for my $b (1..1000) &#123;</span><br><span class="line">        print &quot;100644 $blob\t$a/$b\n&quot;;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#x27; | git update-index --index-info</span><br><span class="line">  git commit -qm add</span><br><span class="line"></span><br><span class="line">  git rev-list HEAD -- .</span><br><span class="line"></span><br><span class="line">This case takes about 100ms now, but after this patch only</span><br><span class="line">needs 6ms. That&#x27;s not a huge improvement, but it&#x27;s easy to</span><br><span class="line">get and it protects us against even more pathological cases</span><br><span class="line">(e.g., going from 1 million to 10 million files would take</span><br><span class="line">ten times as long with the current code, but not increase at</span><br><span class="line">all after this patch).</span><br></pre></td></tr></table></figure>
-<p><strong>这个修复并没有解决处理这种仓库导致内存消耗过大问题，只对处理过程的消耗时间做了一次优化</strong>。</p>
-<h4 id="相关-CVE">相关 CVE</h4>
-<ul class="lvl-0">
-<li class="lvl-2">
-<p><a href="https://ubuntu.com/security/CVE-2017-15298">CVE-2017-15298</a></p>
-</li>
-</ul>
-<h4 id="参考链接">参考链接</h4>
-<ol>
-<li class="lvl-3">
-<p><a href="https://docs.microsoft.com/en-us/archive/msdn-magazine/2009/november/xml-denial-of-service-attacks-and-defenses">microsoft: xml-denial-of-service-attacks-and-defenses</a></p>
-</li>
-<li class="lvl-3">
-<p><a href="https://kate.io/blog/git-bomb">kate’s blog</a></p>
-</li>
-<li class="lvl-3">
-<p><a href="https://github.com/Katee/git-bomb">kate: original git-bomb repo on Github</a></p>
-</li>
-<li class="lvl-3">
-<p><a href="https://public-inbox.org/git/20171013123521.hop5hrfsyagu7znl@sigill.intra.peff.net/T/#m58c560c18f93476e23110a0656a8d525170d14a2">git upstream discussion</a></p>
-</li>
-<li class="lvl-3">
-<p><a href="https://github.com/Cactusinhand/git/commit/a937b37e766479c8e780b17cce9c4b252fd97e40">git upstream fix</a></p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Git</category>
-      </categories>
-      <tags>
-        <tag>Git-bomb</tag>
-        <tag>Xml</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>git bundle 格式及应用</title>
-    <url>/posts/32c910d1.html</url>
-    <content><![CDATA[<p><code>git-bundle</code> 文件是一种将 <code>git objects</code> 数据(git packfile)与仓库引用 <code>refs</code> 结合在一起的一种数据包格式，通过 <code>objects + refs</code> 就能恢复出一个完整的 <code>git</code> 仓库，因此可以用 <code>git-bundle</code> 文件来备份 <code>git</code> 仓库。</p>
-<!--  more -->
-<h3 id="格式">格式</h3>
-<p><code>git bundle v2</code> 格式：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bundle    = signature *prerequisite *reference LF pack</span><br><span class="line">signature = <span class="string">&quot;# v2 git bundle&quot;</span> LF</span><br><span class="line"></span><br><span class="line">prerequisite = <span class="string">&quot;-&quot;</span> obj-id SP comment LF</span><br><span class="line">comment      = *CHAR</span><br><span class="line">reference    = obj-id SP refname LF</span><br><span class="line"></span><br><span class="line">pack         = ... ; packfile</span><br></pre></td></tr></table></figure>
-<p><code>git bundle v3</code> 格式：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bundle    = signature *capability *prerequisite *reference LF pack</span><br><span class="line">signature = <span class="string">&quot;# v3 git bundle&quot;</span> LF</span><br><span class="line"></span><br><span class="line">capability   = <span class="string">&quot;@&quot;</span> key [<span class="string">&quot;=&quot;</span> value] LF</span><br><span class="line">prerequisite = <span class="string">&quot;-&quot;</span> obj-id SP comment LF</span><br><span class="line">comment      = *CHAR</span><br><span class="line">reference    = obj-id SP refname LF</span><br><span class="line">key          = 1*(ALPHA / DIGIT / <span class="string">&quot;-&quot;</span>)</span><br><span class="line">value        = *(%01-09 / %0b-FF)</span><br><span class="line"></span><br><span class="line">pack         = ... ; packfile</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>注：以上均采用 <code>ABNF</code> 标记法</p>
-</blockquote>
-<p>可以看出：</p>
-<p><code>git bundle v2</code> 包含四个部分：</p>
-<ol>
-<li class="lvl-3">
-<p>签名。标识 <code>git bundle</code> 版本</p>
-</li>
-<li class="lvl-3">
-<p>必要依赖。不包含在当前 <code>bundle包</code> 中，但是被 <code>bundle包</code> 中的数据引用到的数据。</p>
-</li>
-<li class="lvl-3">
-<p>引用。当前 <code>bundle包</code> 中包含的引用。</p>
-</li>
-<li class="lvl-3">
-<p><code>pack文件</code>。<code>git packfile</code></p>
-</li>
-</ol>
-<p><code>git bundle</code> <code>v3</code> 仅比 <code>v2</code> 多了一个 <code>capability</code> 部分。</p>
-<p>前面提到过 <code>prerequisite</code> 的概念，其格式为 <code>prerequisite = &quot;-&quot; obj-id SP comment LF</code>，所以来看下这个实际是什么意思。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 先打包master分支上最近三次提交</span></span><br><span class="line">$ git bundle create recent.bundle master~3..master</span><br><span class="line">Enumerating objects: 13, <span class="keyword">done</span>.</span><br><span class="line">Counting objects: 100% (13/13), <span class="keyword">done</span>.</span><br><span class="line">Compressing objects: 100% (8/8), <span class="keyword">done</span>.</span><br><span class="line">Total 9 (delta 3), reused 0 (delta 0), pack-reused 0</span><br><span class="line"></span><br><span class="line"><span class="comment"># 再用 git bundle verify 验证一下这个bundle包有没有外部依赖</span></span><br><span class="line">$ git bundle verify recent.bundle</span><br><span class="line">The bundle contains this ref:</span><br><span class="line">0a831168aa94dffaa92f5d73f3e873ef5fd89603 refs/heads/master</span><br><span class="line">The bundle requires this ref:</span><br><span class="line">d5d9b1c95f0012cb7da18deaff6a806f89e48867</span><br><span class="line">recen.bundle is okay</span><br></pre></td></tr></table></figure>
-<p>上面的结果很明显：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">The bundle requires this ref:</span><br><span class="line">d5d9b1c95f0012cb7da18deaff6a806f89e48867</span><br></pre></td></tr></table></figure>
-<p>再打开这个bundle包文件看下：</p>
-<figure class="highlight tex"><table><tr><td class="code"><pre><span class="line"><span class="params">#</span> v2 git bundle</span><br><span class="line">-d5d9b1c95f0012cb7da18deaff6a806f89e48867 demo.tar.gz</span><br><span class="line">0a831168aa94dffaa92f5d73f3e873ef5fd89603 refs/heads/master</span><br></pre></td></tr></table></figure>
-<p>第二行的内容 <code>-d5d9b1c95f0012cb7da18deaff6a806f89e48867 demo.tar.gz</code> 即是<code>prerequisite</code></p>
-<p>并且符合格式 <code>prerequisite = &quot;-&quot; obj-id SP comment LF</code></p>
-<p>我们看一个实际的 <code>git pack</code> 文件：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">PACK^@^@^@^B^@^@^@^C&lt;91&gt;^Kx^A^A±^@Nÿtree 212ccb4755ab7c489bee69200388139d7f081e7c</span><br><span class="line">author Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line">committer Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line"></span><br><span class="line">add aa.txt</span><br><span class="line">©&amp;5A5x^A^A^E^@úÿaaaa</span><br><span class="line">^E]^A&lt;8f&gt;¢^Bx^A^A<span class="string">&quot;^@Ýÿ100644 aa.txt^@]0&lt;8e&gt;^]^F^K^L8&#125;E,ôt^?&lt;89&gt;ì¹&lt;93&gt;XQ£÷^KlK&lt;9a&gt;&lt;93&gt;pÃ^@ò&amp;bL37©&lt;85&gt;(ÐâWa^X</span></span><br><span class="line"><span class="string">~</span></span><br></pre></td></tr></table></figure>
-<p>而此时的 <code>git bundle v2</code> 文件如下：</p>
-<blockquote>
-<p>git bundle create master.bundle master</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># v2 git bundle</span></span><br><span class="line">e0caba68a7281d4ff86693745a1617ffc72c3e7d refs/heads/master</span><br><span class="line"></span><br><span class="line">PACK^@^@^@^B^@^@^@^C&lt;91&gt;^Kx^A^A±^@Nÿtree 212ccb4755ab7c489bee69200388139d7f081e7c</span><br><span class="line">author Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line">committer Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line"></span><br><span class="line">add aa.txt</span><br><span class="line">©&amp;5A¢^Bx^A^A<span class="string">&quot;^@Ýÿ100644 aa.txt^@]0&lt;8e&gt;^]^F^K^L8&#125;E,ôt^?&lt;89&gt;ì¹&lt;93&gt;XQ£÷^Kl5x^A^A^E^@úÿaaaa</span></span><br><span class="line"><span class="string">^E]^A&lt;8f&gt;,^B&lt;9d&gt;ï&lt;89&gt;DIr^\&lt;87&gt;*&lt;9b&gt;Æû^X¹É&#125;PÖ</span></span><br></pre></td></tr></table></figure>
-<p><code>git bundle v3</code> 文件如下:</p>
-<blockquote>
-<p>git bundle create --version=3 master-v3.bundle master</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># v3 git bundle</span></span><br><span class="line">@object-format=sha1</span><br><span class="line">e0caba68a7281d4ff86693745a1617ffc72c3e7d refs/heads/master</span><br><span class="line"></span><br><span class="line">PACK^@^@^@^B^@^@^@^C&lt;91&gt;^Kx^A^A±^@Nÿtree 212ccb4755ab7c489bee69200388139d7f081e7c</span><br><span class="line">author Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line">committer Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line"></span><br><span class="line">add aa.txt</span><br><span class="line">©&amp;5A¢^Bx^A^A<span class="string">&quot;^@Ýÿ100644 aa.txt^@]0&lt;8e&gt;^]^F^K^L8&#125;E,ôt^?&lt;89&gt;ì¹&lt;93&gt;XQ£÷^Kl5x^A^A^E^@úÿaaaa</span></span><br><span class="line"><span class="string">^E]^A&lt;8f&gt;,^B&lt;9d&gt;ï&lt;89&gt;DIr^\&lt;87&gt;*&lt;9b&gt;Æû^X¹É&#125;PÖ</span></span><br></pre></td></tr></table></figure>
-<h3 id="操作实践">操作实践</h3>
-<p>在机器A中的仓库 <code>R1</code> 中：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git bundle create file.bundle master</span><br><span class="line"><span class="comment"># 做个标记</span></span><br><span class="line">$ git tag -f lastR2bundle master</span><br></pre></td></tr></table></figure>
-<p>将 <code>file.bundle</code> 转移到机器B上，克隆仓库 <code>R2</code>：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> -b master /path/to/file.bundle R2</span><br><span class="line">Cloning into <span class="string">&#x27;R2&#x27;</span>...</span><br><span class="line">Receiving objects: 100% (38/38), 7.97 KiB | 7.97 MiB/s, <span class="keyword">done</span>.</span><br><span class="line">Resolving deltas: 100% (6/6), <span class="keyword">done</span>.</span><br></pre></td></tr></table></figure>
-<p>回到仓库 <code>R1</code>，仓库 <code>R1</code> 有了新的提交。然后继续打包：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git bundle create file.bundle lastR2bundle..master</span><br><span class="line"><span class="comment"># 做个标记，下次打包时使用</span></span><br><span class="line">$ git tag -f lastR2bundle master</span><br></pre></td></tr></table></figure>
-<p>将 <code>file.bundle</code> 转移到机器 <code>B</code> 上，再到 <code>R2</code> 仓库中进行更新：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git fetch</span><br><span class="line">Receiving objects: 100% (41/41), 8.28 KiB | 8.28 MiB/s, <span class="keyword">done</span>.</span><br><span class="line">Resolving deltas: 100% (7/7), <span class="keyword">done</span>.</span><br><span class="line">From /home/git/test-git/example/repo.bundle</span><br><span class="line">   d4f54d9..6a33e12  master     -&gt; origin/master</span><br><span class="line">   </span><br><span class="line"> <span class="comment"># 还是在cloned-repo中</span></span><br><span class="line">$ git ls-remote</span><br><span class="line">From /path/to/file.bundle</span><br><span class="line">6a33e12f3d7116863a19bf48471c74c597421f8a        HEAD</span><br><span class="line">45eab37d3cb8b5be02a59d3690cb63d3f692f6b9        refs/remotes/origin/master</span><br><span class="line">45eab37d3cb8b5be02a59d3690cb63d3f692f6b9        refs/remotes/origin/HEAD</span><br><span class="line">6a33e12f3d7116863a19bf48471c74c597421f8a        refs/heads/master</span><br></pre></td></tr></table></figure>
-<p>以上操作，看起来都跟读取 Git 远程仓库的一样。<br>
-<strong>但是不支持写仓库操作，即 <code>git push</code> 操作。</strong></p>
-<p>以上操作就完成了仓库的全量备份和增量备份。</p>
-<p>还可以用其它形式进行打包：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git bundle create mybundle v1.0.0..master</span><br><span class="line">$ git bundle create mybundle --since=10.days master</span><br><span class="line">$ git bundle create mybundle -10 master</span><br></pre></td></tr></table></figure>
-<p>只要是 <code>git rev-list</code> 能接受的参数，就可以放在 <code>git bundle create mybundle</code> 后面。比如可以使用 <code>--max-age</code> 选项，实现根据时间戳来进行备份，大致过程如下：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">```Bash</span><br><span class="line"><span class="comment"># 当前HEAD的时间戳，作为下次备份的起点时间</span></span><br><span class="line">$ git cat-file commit HEAD | sed -n <span class="string">&quot;s/^committer .*&gt; \([0-9]*\) .*/\1/p&quot;</span> </span><br><span class="line">1660809497</span><br><span class="line"></span><br><span class="line"><span class="comment"># --branches 获取refs/heads/下所有相关commits</span></span><br><span class="line"><span class="comment"># --tags 获取refs/tags/下所有相关commits</span></span><br><span class="line"><span class="comment"># --remotes 获取refs/remotes/下所有相关commits</span></span><br><span class="line"><span class="comment"># --all 获取refs/下所有相关commits</span></span><br><span class="line"><span class="comment"># --objects 表示commit所关联的所有对象</span></span><br><span class="line">$ git bundle create latest.bundle  --max-age=1660807920 --all --objects</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取bundle包中的引用信息，可以通过其它选项筛选出部分引用。</span></span><br><span class="line">$ git bundle list-heads latest.bundle &gt; latest.list</span><br><span class="line"></span><br><span class="line"><span class="comment"># 通过git-ls-remote获取bundle包中的所有引用信息。</span></span><br><span class="line">$ git ls-remote latest.bundle &gt; latest.lsremote</span><br></pre></td></tr></table></figure>
-<h3 id="应用">应用</h3>
-<p>目前 Gitlab 的<a href="https://docs.gitlab.com/ee/user/project/settings/import_export.html">仓库导出、导入功能</a>以及阿里云效 CodeUp 的<a href="https://help.aliyun.com/document_detail/217005.html?spm=a2cl9.codeup_devops2020_goldlog_organization.0.0.3bcb1510bKSmJi">仓库备份</a>功能主要就是利用 Git-bundle 特性对 Git 仓库进行打包。</p>
-<h3 id="参考链接">参考链接</h3>
-<ol>
-<li class="lvl-3">
-<p><a href="https://git-scm.com/docs/git-bundle">https://git-scm.com/docs/git-bundle</a></p>
-</li>
-<li class="lvl-3">
-<p><a href="https://git-scm.com/docs/bundle-format">https://git-scm.com/docs/bundle-format</a></p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Git</category>
-      </categories>
-      <tags>
-        <tag>Git-bundle</tag>
       </tags>
   </entry>
   <entry>
