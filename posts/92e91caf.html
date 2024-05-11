@@ -74,7 +74,7 @@
 <div class="widgets">
 
 
-<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="23bf24d1.html"><span class="title">如何向 Git 社区提交代码(2)</span></a><a class="item title" href="d699447b.html"><span class="title">如何向 Git 社区提交代码</span></a><a class="item title" href="f8df64f6.html"><span class="title">GitOps: 一种 DevOps 的最佳实践</span></a><a class="item title" href=""><span class="title">一种 Git 插件工具：git repo-clean</span></a><a class="item title" href="4fad1e06.html"><span class="title">Git 内部原理</span></a><a class="item title" href="c5ceb3cc.html"><span class="title">Git 炸弹</span></a><a class="item title" href="32c910d1.html"><span class="title">git bundle 格式及应用</span></a><a class="item title" href="341c748.html"><span class="title">Design pattern in Gitlay(Git PRC service)</span></a><a class="item title" href="767b1d3c.html"><span class="title">学习 Rust 的一些笔记</span></a><a class="item title" href="3be69b54.html"><span class="title">认证(Authentication)和授权(Authorization)</span></a></div></widget>
+<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="4da024a6.html"><span class="title">docker 的使用笔记</span></a><a class="item title" href="767b1d3c.html"><span class="title">学习 Rust 的一些笔记</span></a><a class="item title" href="c5ceb3cc.html"><span class="title">Git 炸弹</span></a><a class="item title" href="23bf24d1.html"><span class="title">如何向 Git 社区提交代码(2)</span></a><a class="item title" href="d699447b.html"><span class="title">如何向 Git 社区提交代码</span></a><a class="item title" href="f8df64f6.html"><span class="title">GitOps: 一种 DevOps 的最佳实践</span></a><a class="item title" href=""><span class="title">一种 Git 插件工具：git repo-clean</span></a><a class="item title" href="4fad1e06.html"><span class="title">Git 内部原理</span></a><a class="item title" href="32c910d1.html"><span class="title">git bundle 格式及应用</span></a><a class="item title" href="341c748.html"><span class="title">Design pattern in Gitlay(Git PRC service)</span></a></div></widget>
 </div>
 
 </div></aside><div class="l_main" id="main">
@@ -167,7 +167,11 @@
 <p>特点：</p>
 <p>Git 内部自带的命令，只要有 Git 环境，就能使用这个工具。</p>
 <p><strong>使用示例：</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$</span> git <span class="keyword">filter</span><span class="literal">-branch</span> <span class="literal">--tree-filter</span> <span class="string">&#x27;rm -f path/to/large/file&#x27;</span> <span class="literal">--tag-name-filter</span> <span class="built_in">cat</span> <span class="literal">--</span> <span class="literal">--all</span></span><br><span class="line"><span class="variable">$</span> git reflog expire <span class="literal">--expire</span>=now <span class="literal">--all</span></span><br><span class="line"><span class="variable">$</span> git <span class="built_in">gc</span> <span class="literal">--prune</span>=now <span class="literal">--aggressive</span></span><br><span class="line"><span class="variable">$</span> git push origin <span class="literal">--tags</span> <span class="literal">--force</span></span><br><span class="line"><span class="variable">$</span> git push origin <span class="literal">--all</span> <span class="literal">--force</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-PowerShell" data-language="PowerShell"><code class="language-PowerShell">$ git filter-branch --tree-filter &#39;rm -f path&#x2F;to&#x2F;large&#x2F;file&#39; --tag-name-filter cat -- --all
+$ git reflog expire --expire&#x3D;now --all
+$ git gc --prune&#x3D;now --aggressive
+$ git push origin --tags --force
+$ git push origin --all --force<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>问题：</strong></p>
 <ol>
 <li class="lvl-3">
@@ -195,7 +199,9 @@
 <p>git filter-branch 的官方替代，官方推荐使用该工具来代替原生 <code>git-filter-branch</code> 命令。</p>
 <p>速度快，功能多，使用灵活。</p>
 <p><strong>使用示例：</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$</span> git <span class="keyword">filter</span><span class="literal">-repo</span> <span class="literal">--path</span> bigfile.zip <span class="literal">--path</span> big/files/<span class="built_in">dir</span>/ <span class="literal">--invert-paths</span></span><br><span class="line"><span class="variable">$</span> git push origin <span class="literal">--tags</span> <span class="literal">--force</span></span><br><span class="line"><span class="variable">$</span> git push origin <span class="literal">--all</span> <span class="literal">--force</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-PowerShell" data-language="PowerShell"><code class="language-PowerShell">$ git filter-repo --path bigfile.zip --path big&#x2F;files&#x2F;dir&#x2F; --invert-paths
+$ git push origin --tags --force
+$ git push origin --all --force<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p><strong>问题：</strong></p>
 <ol>
 <li class="lvl-3">
@@ -213,7 +219,12 @@
 <p><strong>特点：</strong></p>
 <p>速度快，使用比较简单。</p>
 <p><strong>使用示例：</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$</span> java <span class="literal">-jar</span> bfg.jar <span class="literal">--strip-blobs-bigger-than</span> <span class="number">100</span>M my<span class="literal">-big-repo</span>.git</span><br><span class="line"><span class="variable">$</span> <span class="built_in">cd</span> my<span class="literal">-big-repo</span>.git</span><br><span class="line"><span class="variable">$</span> git reflog expire <span class="literal">--expire</span>=now <span class="literal">--all</span></span><br><span class="line"><span class="variable">$</span> git <span class="built_in">gc</span> <span class="literal">--prune</span>=now <span class="literal">--aggressive</span></span><br><span class="line"><span class="variable">$</span> git push origin <span class="literal">--tags</span> <span class="literal">--force</span></span><br><span class="line"><span class="variable">$</span> git push origin <span class="literal">--all</span> <span class="literal">--force</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-PowerShell" data-language="PowerShell"><code class="language-PowerShell">$ java -jar bfg.jar --strip-blobs-bigger-than 100M my-big-repo.git
+$ cd my-big-repo.git
+$ git reflog expire --expire&#x3D;now --all
+$ git gc --prune&#x3D;now --aggressive
+$ git push origin --tags --force
+$ git push origin --all --force<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>问题：</strong></p>
 <ol>
 <li class="lvl-3">
@@ -243,7 +254,7 @@
 <p><strong>特点：</strong></p>
 <p>对 Git 仓库中的数据指标进行详细的统计。</p>
 <p><strong>使用实例：</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$</span> git sizer  <span class="literal">--threshold</span>=<span class="number">0</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-PowerShell" data-language="PowerShell"><code class="language-PowerShell">$ git sizer  --threshold&#x3D;0<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><strong>问题：</strong></p>
 <ol>
 <li class="lvl-3">
@@ -293,11 +304,26 @@
 </ul>
 <h5 id="git-repo-clean-技术原理：">git-repo-clean 技术原理：</h5>
 <p>一般来说，我们要创建一个 Git 仓库，需要以下操作：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$</span> git init mini<span class="literal">-repo</span> &amp;&amp; <span class="built_in">cd</span> mini<span class="literal">-repo</span></span><br><span class="line"><span class="variable">$</span> touch README &amp;&amp; <span class="built_in">echo</span> <span class="string">&quot;first file in repo&quot;</span> &gt; README</span><br><span class="line"><span class="variable">$</span> git add README &amp;&amp; git commit <span class="literal">-m</span> <span class="string">&quot;init commit&quot;</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-PowerShell" data-language="PowerShell"><code class="language-PowerShell">$ git init mini-repo &amp;&amp; cd mini-repo
+$ touch README &amp;&amp; echo &quot;first file in repo&quot; &gt; README
+$ git add README &amp;&amp; git commit -m &quot;init commit&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>Git 内部提供了两个命令: <code>git-fast-export</code>, <code>git-fast-import</code>， 他们分别的作用是将 Git 仓库数据(.git/objects)导出为特定格式的 <code>元数据</code>，然后流式读取这种特定格式的元数据，于是就成一个完整的 Git 仓库。</p>
 <p>任何符合格式的完整的元数据，输入给 <code>git-fast-import</code> 都能创建一个 Git 仓库。</p>
 <p>我们先来看下一组最小完整的 Git 元数据：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">blob</span>    <span class="comment"># blob类型，即文件</span></span><br><span class="line"><span class="string">mark</span> <span class="string">:1</span> <span class="comment"># 标号1</span></span><br><span class="line"><span class="string">data</span> <span class="number">32</span> <span class="comment"># 文件大小</span></span><br><span class="line"><span class="attr">FILE:</span> <span class="string">this</span> <span class="string">is</span> <span class="string">the</span> <span class="string">file</span> <span class="string">content.</span> <span class="comment"># 文件内容</span></span><br><span class="line"></span><br><span class="line"><span class="string">reset</span> <span class="string">refs/heads/master</span>  <span class="comment"># 分支</span></span><br><span class="line"><span class="string">commit</span> <span class="string">refs/heads/master</span> <span class="comment"># commit指向的分支</span></span><br><span class="line"><span class="string">mark</span> <span class="string">:2</span> <span class="comment"># 标号2</span></span><br><span class="line"><span class="string">author</span> <span class="string">Li</span> <span class="string">Linchao</span> <span class="string">&lt;lilinchao@oschina.cn&gt;</span> <span class="number">1633749750</span> <span class="string">+0800</span>        <span class="comment"># commit作者</span></span><br><span class="line"><span class="string">committer</span> <span class="string">Li</span> <span class="string">Linchao</span> <span class="string">&lt;lilinchao@oschina.cn&gt;</span> <span class="number">1633749750</span> <span class="string">+0800</span>     <span class="comment"># commit提交者</span></span><br><span class="line"><span class="string">data</span> <span class="number">65</span>                                                          <span class="comment"># commit信息大小</span></span><br><span class="line"><span class="attr">COMMIT:</span> <span class="string">this</span> <span class="string">is</span> <span class="string">the</span> <span class="string">commit</span> <span class="string">message.</span> <span class="string">The</span> <span class="string">file</span> <span class="string">name</span> <span class="string">will</span> <span class="string">be</span> <span class="string">README</span> <span class="comment"># commit信息</span></span><br><span class="line"><span class="string">M</span> <span class="number">100644</span> <span class="string">:1</span> <span class="string">README</span>                          <span class="comment"># commit修改的文件，相当于tree,即文件名</span></span><br><span class="line"><span class="comment"># M表示修改modify(新增也是修改)，100644表示文件类型，1表示指向标号为1的blob，README表示blob标号为1的文件名</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-YAML" data-language="YAML"><code class="language-YAML">blob    # blob类型，即文件
+mark :1 # 标号1
+data 32 # 文件大小
+FILE: this is the file content. # 文件内容
+
+reset refs&#x2F;heads&#x2F;master  # 分支
+commit refs&#x2F;heads&#x2F;master # commit指向的分支
+mark :2 # 标号2
+author Li Linchao &lt;lilinchao@oschina.cn&gt; 1633749750 +0800        # commit作者
+committer Li Linchao &lt;lilinchao@oschina.cn&gt; 1633749750 +0800     # commit提交者
+data 65                                                          # commit信息大小
+COMMIT: this is the commit message. The file name will be README # commit信息
+M 100644 :1 README                          # commit修改的文件，相当于tree,即文件名
+# M表示修改modify(新增也是修改)，100644表示文件类型，1表示指向标号为1的blob，README表示blob标号为1的文件名<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>通过这组元数据，使用 <code>git fast-import</code> 命令，就能创建出一个完整的仓库，里面包含:</p>
 <ol>
 <li class="lvl-3">
@@ -314,14 +340,16 @@
 <p>首先需要在一个空的 Git 仓库中进行操作，然后将上述元数据输入到 <code>git fast-import</code> 中。</p>
 <p>假设上述元数据存放在文件 <code>meatadata</code> 中。</p>
 <p>接下来，具体操作如下：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$</span> git init fake<span class="literal">-repo</span> &amp;&amp; <span class="built_in">cd</span> fake<span class="literal">-repo</span></span><br><span class="line"><span class="variable">$</span> git fast<span class="literal">-import</span> <span class="literal">--force</span> <span class="literal">--quiet</span> <span class="literal">--date-format</span>=raw<span class="literal">-permissive</span> &lt; ../metadata</span><br><span class="line"><span class="variable">$</span> git reset <span class="literal">--hard</span> HEAD <span class="comment"># 清除缓存区，和工作区，回到最新的commit上</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-PowerShell" data-language="PowerShell"><code class="language-PowerShell">$ git init fake-repo &amp;&amp; cd fake-repo
+$ git fast-import --force --quiet --date-format&#x3D;raw-permissive &lt; ..&#x2F;metadata
+$ git reset --hard HEAD # 清除缓存区，和工作区，回到最新的commit上<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/init_git_repo.png" alt=""></p>
 <p>成功之后，刚创建的新仓库 <code>fake-repo</code> 下就有了一个 README 文件，一个 commit 提交，一个 master 分支：</p>
 <p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/git_commit.png" alt=""></p>
 <p>README 文件信息和 commit 信息都是根据元数据 <code>metadata</code> 中的定义而来，我们可以任意修改。</p>
 <p>可以说，Git 元数据是对 Git 仓库中的底层数据(blob, tree, commit, tag)进行结构化表示。</p>
 <p>那么，如果我们想对一个现存的 Git 仓库进行有目的修改，可以先获得该仓库的元数据，然后进行相应操作。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">如何获得一个 Git 仓库的元数据呢？</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">如何获得一个 Git 仓库的元数据呢？<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>那就是前面提到的 <code>git fast-export</code> 命令。</p>
 <p><code>git fast-export</code> 命令可以接受很多参数，比如：</p>
 <ul class="lvl-0">
@@ -340,35 +368,84 @@
 <p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/git_fast_export.png" alt=""></p>
 <p>到目前为止，我们已经知道如何获取仓库元数据，也知道怎么根据元数据生成一个新的仓库，那么如果我们想要对仓库进行修改，只需要在这个过程中进行<strong>元数据过滤</strong>即可。</p>
 <p>所以 <code>git-clean-repo</code> 的大致流程如下：</p>
-<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">git-fast-export</span><br><span class="line">     |<span class="string"></span></span><br><span class="line"><span class="string">     </span>|<span class="string"> output stream</span></span><br><span class="line"><span class="string">     V</span></span><br><span class="line"><span class="string">     ---&gt; parser(blob, tree, commit...)</span></span><br><span class="line"><span class="string">             </span>|</span><br><span class="line">             |<span class="string"></span></span><br><span class="line"><span class="string">             V</span></span><br><span class="line"><span class="string">             ----&gt; filter(blob size, blob id, blob diectory...)</span></span><br><span class="line"><span class="string">                         </span>|</span><br><span class="line">                         |<span class="string">  input stream</span></span><br><span class="line"><span class="string">                         V</span></span><br><span class="line"><span class="string">                         ----&gt; git-fast-import</span></span><br><span class="line"><span class="string">                                            </span>|</span><br><span class="line">                                            |<span class="string"></span></span><br><span class="line"><span class="string">                                            V</span></span><br><span class="line"><span class="string">                                         new repo</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-Gherkin" data-language="Gherkin"><code class="language-Gherkin">git-fast-export
+     |
+     | output stream
+     V
+     ---&gt; parser(blob, tree, commit...)
+             |
+             |
+             V
+             ----&gt; filter(blob size, blob id, blob diectory...)
+                         |
+                         |  input stream
+                         V
+                         ----&gt; git-fast-import
+                                            |
+                                            |
+                                            V
+                                         new repo<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>要解析的元数据中存在不同的数据类型， 它们的格式为：</p>
 <ul class="lvl-0">
 <li class="lvl-2">
 <p><strong>blob</strong></p>
 </li>
 </ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">blob</span></span><br><span class="line"><span class="string">mark</span> [<span class="string">mark</span> <span class="string">id</span>]</span><br><span class="line"><span class="string">data</span> [<span class="string">file</span> <span class="string">size</span>]</span><br><span class="line">[<span class="string">file</span> <span class="string">content</span>]</span><br><span class="line"><span class="comment"># LF换行</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-YAML" data-language="YAML"><code class="language-YAML">blob
+mark [mark id]
+data [file size]
+[file content]
+# LF换行<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>其中，mark id 的格式为 <code>:n</code>, 比如：<code>:2</code></p>
 <ul class="lvl-0">
 <li class="lvl-2">
 <p><strong>reset</strong></p>
 </li>
 </ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">reset</span> [<span class="string">ref</span> <span class="string">name</span>]</span><br><span class="line"><span class="string">from</span> [<span class="string">parent</span> <span class="string">id</span>] <span class="string">(optional)</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-YAML" data-language="YAML"><code class="language-YAML">reset [ref name]
+from [parent id] (optional)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <ul class="lvl-0">
 <li class="lvl-2">
 <p><strong>commit</strong></p>
 </li>
 </ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">commit</span> [<span class="string">ref</span> <span class="string">name</span>]</span><br><span class="line"><span class="string">mark</span> [<span class="string">mark</span> <span class="string">id</span>]</span><br><span class="line"><span class="string">author</span> [<span class="string">author</span> <span class="string">info</span>]</span><br><span class="line"><span class="string">committer</span> [<span class="string">committer</span> <span class="string">info</span>]</span><br><span class="line"><span class="string">data</span> [<span class="string">commit</span> <span class="string">message</span> <span class="string">info</span> <span class="string">size</span>]</span><br><span class="line">[<span class="string">commit</span> <span class="string">message</span> <span class="string">info</span>]</span><br><span class="line"><span class="string">merge</span> [<span class="string">merge</span> <span class="string">parent</span>]</span><br><span class="line"><span class="string">from</span> [<span class="string">from</span> <span class="string">parent</span>]</span><br><span class="line"><span class="string">filechanges</span></span><br><span class="line"><span class="comment"># LF</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-YAML" data-language="YAML"><code class="language-YAML">commit [ref name]
+mark [mark id]
+author [author info]
+committer [committer info]
+data [commit message info size]
+[commit message info]
+merge [merge parent]
+from [from parent]
+filechanges
+# LF<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>其中，<code>filechanges</code> 格式如下：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">type</span>] [<span class="string">file-mode</span>] [<span class="string">file-id</span>] [<span class="string">file-path</span>]</span><br><span class="line"><span class="comment"># type:</span></span><br><span class="line"><span class="comment"># M: modify</span></span><br><span class="line"><span class="comment"># A: add</span></span><br><span class="line"><span class="comment"># C: copy</span></span><br><span class="line"><span class="comment"># D: delete</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># file mode:</span></span><br><span class="line"><span class="comment"># 100644 or 644: normal, but non executable file</span></span><br><span class="line"><span class="comment"># 100755 or 755: normal, but executable file</span></span><br><span class="line"><span class="comment"># 120000: symlink</span></span><br><span class="line"><span class="comment"># 160000: gitlink</span></span><br><span class="line"><span class="comment"># 040000: *subdirectory</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-YAML" data-language="YAML"><code class="language-YAML">[type] [file-mode] [file-id] [file-path]
+# type:
+# M: modify
+# A: add
+# C: copy
+# D: delete
+
+# file mode:
+# 100644 or 644: normal, but non executable file
+# 100755 or 755: normal, but executable file
+# 120000: symlink
+# 160000: gitlink
+# 040000: *subdirectory<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ul class="lvl-0">
 <li class="lvl-2">
 <p><strong>tag</strong></p>
 </li>
 </ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">tag</span> [<span class="string">tag</span> <span class="string">name</span>]</span><br><span class="line"><span class="string">mark</span> [<span class="string">mark</span> <span class="string">id</span>]</span><br><span class="line"><span class="string">from</span> [<span class="string">parent</span> <span class="string">id</span>]</span><br><span class="line"><span class="string">original-oid</span> [<span class="string">original</span> <span class="string">object</span> <span class="string">id</span>]</span><br><span class="line"><span class="string">tagger</span> [<span class="string">tagger</span> <span class="string">info</span>]</span><br><span class="line"><span class="string">data</span> [<span class="string">tag</span> <span class="string">message</span> <span class="string">info</span> <span class="string">size</span>]</span><br><span class="line">[<span class="string">tag</span> <span class="string">message</span>]</span><br><span class="line"><span class="comment"># LF</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-YAML" data-language="YAML"><code class="language-YAML">tag [tag name]
+mark [mark id]
+from [parent id]
+original-oid [original object id]
+tagger [tagger info]
+data [tag message info size]
+[tag message]
+# LF<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><code>git-fast-export</code> 的输出中，mark 标号(<code>mark ID</code>)比较关键，它是每种数据的原始顺序，以及引用时的索引号。</p>
 <p>每当从 <code>git-fast-export</code> 输出流中解析到一种完整的数据，需要对数据中我们关心的字段进行检查。</p>
 <p>比如，我们要根据文件大小来过滤掉仓库中的大文件，在解析到 <code>blob</code> 数据类型时，当获取到 <code>blob size</code> 信息时，可以与我们的预期大小进行对比，如果超过预期大小，则可以把这个 <code>blob</code> 标记为可删除状态，整条 <code>blob</code> 数据都不会输入到 <code>git-fast-import</code> 中，这样就做到了文件删除， 同时记住这个 <code>blob</code> 的 <code>mark ID</code>, 后续继续流式输出时，只要涉及到引用该 <code>mark ID</code> 的 <code>commit</code>，需要将其中的 <code>filechanges</code> 进行修改。如果一个 <code>commit</code> 的 <code>filechanges</code> 删减到为零，则整条 <code>commit</code> 需要丢掉，这样就实现了与删除文件相关的 <code>commit</code>的更新。</p>

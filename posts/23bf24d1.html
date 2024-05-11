@@ -30,13 +30,13 @@
 <meta property="article:published_time" content="2022-08-29T16:02:28.000Z">
 <meta property="article:modified_time" content="2024-05-10T14:18:37.211Z">
 <meta property="article:author" content="Cactusinhand">
-<meta property="article:tag" content="Git">
 <meta property="article:tag" content="Workflow">
+<meta property="article:tag" content="Git">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <meta name="keywords" content="Git,Workflow">
+  <meta name="keywords" content="Workflow,Git">
 
   <!-- feed -->
   
@@ -65,7 +65,7 @@
 <div class="widgets">
 
 
-<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href=""><span class="title">如何向 Git 社区提交代码(2)</span></a><a class="item title" href="d699447b.html"><span class="title">如何向 Git 社区提交代码</span></a><a class="item title" href="f8df64f6.html"><span class="title">GitOps: 一种 DevOps 的最佳实践</span></a><a class="item title" href="92e91caf.html"><span class="title">一种 Git 插件工具：git repo-clean</span></a><a class="item title" href="4fad1e06.html"><span class="title">Git 内部原理</span></a><a class="item title" href="c5ceb3cc.html"><span class="title">Git 炸弹</span></a><a class="item title" href="32c910d1.html"><span class="title">git bundle 格式及应用</span></a><a class="item title" href="341c748.html"><span class="title">Design pattern in Gitlay(Git PRC service)</span></a><a class="item title" href="767b1d3c.html"><span class="title">学习 Rust 的一些笔记</span></a><a class="item title" href="3be69b54.html"><span class="title">认证(Authentication)和授权(Authorization)</span></a></div></widget>
+<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="4da024a6.html"><span class="title">docker 的使用笔记</span></a><a class="item title" href="767b1d3c.html"><span class="title">学习 Rust 的一些笔记</span></a><a class="item title" href="c5ceb3cc.html"><span class="title">Git 炸弹</span></a><a class="item title" href=""><span class="title">如何向 Git 社区提交代码(2)</span></a><a class="item title" href="d699447b.html"><span class="title">如何向 Git 社区提交代码</span></a><a class="item title" href="f8df64f6.html"><span class="title">GitOps: 一种 DevOps 的最佳实践</span></a><a class="item title" href="92e91caf.html"><span class="title">一种 Git 插件工具：git repo-clean</span></a><a class="item title" href="4fad1e06.html"><span class="title">Git 内部原理</span></a><a class="item title" href="32c910d1.html"><span class="title">git bundle 格式及应用</span></a><a class="item title" href="341c748.html"><span class="title">Design pattern in Gitlay(Git PRC service)</span></a></div></widget>
 </div>
 
 </div></aside><div class="l_main" id="main">
@@ -98,39 +98,356 @@
 <p>commit 信息中说明不清，英文语法错误：</p>
 </li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&gt; This patch add a new option that reject to clone a shallow repository.</span><br><span class="line"></span><br><span class="line">A canonical form of our log message starts by explaining the need,</span><br><span class="line">and then presents the solution at the end.</span><br><span class="line">一条规范的 commit 信息格式应该是在开始就解释更改需求，然后在结尾提供解决方案。</span><br><span class="line"></span><br><span class="line">&gt; Clients don&#x27;t know it&#x27;s a shallow repository until they download it</span><br><span class="line">&gt; locally, in some scenariors, clients just don&#x27;t want to clone this kind</span><br><span class="line"></span><br><span class="line">&quot;scenarios&quot;.  &quot;in some scenarios&quot; would have to be clarified a bit</span><br><span class="line">more to justify why it is a good idea to have such a feature.</span><br><span class="line">这里的需求场景描述地不够有说服力。</span><br><span class="line"></span><br><span class="line">&gt; of repository, and want to exit the process immediately without creating</span><br><span class="line">&gt; any unnecessary files.</span><br><span class="line"></span><br><span class="line">&quot;clients don&#x27;t know it&#x27;s a shallow repository until they download&quot;</span><br><span class="line">leading to &quot;so let&#x27;s reject immediately upon finding out that they</span><br><span class="line">are shallow&quot; does make sense as a flow of thought, though.</span><br><span class="line">这里表述不够清晰，Junio 顺便提供了他的建议</span><br><span class="line">&gt; +--no-shallow::</span><br><span class="line">&gt; +	Don&#x27;t clone a shallow source repository. In some scenariors, clients</span><br><span class="line"></span><br><span class="line">&quot;scenarios&quot; (no &#x27;r&#x27;).</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-none"><code class="language-none">&gt; This patch add a new option that reject to clone a shallow repository.
+
+A canonical form of our log message starts by explaining the need,
+and then presents the solution at the end.
+一条规范的 commit 信息格式应该是在开始就解释更改需求，然后在结尾提供解决方案。
+
+&gt; Clients don&#39;t know it&#39;s a shallow repository until they download it
+&gt; locally, in some scenariors, clients just don&#39;t want to clone this kind
+
+&quot;scenarios&quot;.  &quot;in some scenarios&quot; would have to be clarified a bit
+more to justify why it is a good idea to have such a feature.
+这里的需求场景描述地不够有说服力。
+
+&gt; of repository, and want to exit the process immediately without creating
+&gt; any unnecessary files.
+
+&quot;clients don&#39;t know it&#39;s a shallow repository until they download&quot;
+leading to &quot;so let&#39;s reject immediately upon finding out that they
+are shallow&quot; does make sense as a flow of thought, though.
+这里表述不够清晰，Junio 顺便提供了他的建议
+&gt; +--no-shallow::
+&gt; +	Don&#39;t clone a shallow source repository. In some scenariors, clients
+
+&quot;scenarios&quot; (no &#39;r&#39;).<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ul class="lvl-0">
 <li class="lvl-2">
 <p>新增选项 <code>--no-shallow</code> 不对，应该考虑到布尔类选项存在反选情况，即 <code>--no-no-shallow</code> ，因此不应该这么写，建议改为 <code>--reject-shallow</code>， 它的反选即为 <code>--no-reject-shallow</code>，这样语义上也更符合直觉：</p>
 </li>
 </ul>
-<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">&gt; diff --git a/builtin/clone.c b/builtin/clone.c</span><br><span class="line"></span><br><span class="line">&gt; @@ -90,6 +91,7 @@ static struct option builtin_clone_options[] = &#123;</span><br><span class="line">&gt;  	OPT__VERBOSITY(&amp;option_verbosity),</span><br><span class="line">&gt;  	OPT_BOOL(0, &quot;progress&quot;, &amp;option_progress,</span><br><span class="line">&gt;  		 N_(&quot;force progress reporting&quot;)),</span><br><span class="line">&gt; +	OPT_BOOL(0, &quot;no-shallow&quot;, &amp;option_no_shallow, N_(&quot;don&#x27;t clone shallow repository&quot;)),</span><br><span class="line">&gt;  	OPT_BOOL(&#x27;n&#x27;, &quot;no-checkout&quot;, &amp;option_no_checkout,</span><br><span class="line">&gt;  		 N_(&quot;don&#x27;t create a checkout&quot;)),</span><br><span class="line">&gt;  	OPT_BOOL(0, &quot;bare&quot;, &amp;option_bare, N_(&quot;create a bare repository&quot;)),</span><br><span class="line"></span><br><span class="line">It is a bad idea to give a name that begins with &quot;no-&quot; to an option</span><br><span class="line">whose default can be tweaked by a configuration variable [*].  If</span><br><span class="line">the configuration is named &quot;rejectshallow&quot;, perhaps it is better to</span><br><span class="line">call it &quot;--reject-shallow&quot; instead.</span><br><span class="line"></span><br><span class="line">This is because configured default must be overridable from the</span><br><span class="line">command line.  I.e. even if you have in your ~/.gitconfig this:</span><br><span class="line"></span><br><span class="line">    [clone]</span><br><span class="line">        rejectshallow = true</span><br><span class="line"></span><br><span class="line">you should be able to say &quot;allow it only this time&quot;, with</span><br><span class="line"></span><br><span class="line">    $ git clone --no-reject-shallow http://github.com/git/git/ git</span><br><span class="line"></span><br><span class="line">and you do not want to have to say &quot;--no-no-shallow&quot;, which sounds</span><br><span class="line">just silly.</span><br><span class="line"></span><br><span class="line">	Side note. it is a bad idea in general, even if the option</span><br><span class="line">	does not have corresponding configuration variable.  The</span><br><span class="line">	existing &quot;no-checkout&quot; is a historical accident that</span><br><span class="line">	happened long time ago and cannot be removed due to</span><br><span class="line">	compatibility.  Let&#x27;s not introduce a new option that</span><br><span class="line">	follows such a bad pattern.</span><br><span class="line"></span><br><span class="line">	Junio 进一步解释：现存的选项 `no-checkout` 是一个很久之前的历史错误，</span><br><span class="line">	由于兼容性，已经无法移除这个错误了，现在新的选项不应该按照这种模式命名。</span><br><span class="line">	P.S. 刚好我就是按照`no-checkout`选项的模式创造出`no-shllow`选项的-:)</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-diff" data-language="diff"><code class="language-diff"><span class="token inserted-arrow inserted"><span class="token prefix inserted">></span><span class="token line"> diff --git a/builtin/clone.c b/builtin/clone.c
+</span></span>
+<span class="token inserted-arrow inserted"><span class="token prefix inserted">></span><span class="token line"> @@ -90,6 +91,7 @@ static struct option builtin_clone_options[] = &#123;
+</span><span class="token prefix inserted">></span><span class="token line">  	OPT__VERBOSITY(&amp;option_verbosity),
+</span><span class="token prefix inserted">></span><span class="token line">  	OPT_BOOL(0, "progress", &amp;option_progress,
+</span><span class="token prefix inserted">></span><span class="token line">  		 N_("force progress reporting")),
+</span><span class="token prefix inserted">></span><span class="token line"> +	OPT_BOOL(0, "no-shallow", &amp;option_no_shallow, N_("don't clone shallow repository")),
+</span><span class="token prefix inserted">></span><span class="token line">  	OPT_BOOL('n', "no-checkout", &amp;option_no_checkout,
+</span><span class="token prefix inserted">></span><span class="token line">  		 N_("don't create a checkout")),
+</span><span class="token prefix inserted">></span><span class="token line">  	OPT_BOOL(0, "bare", &amp;option_bare, N_("create a bare repository")),
+</span></span>
+It is a bad idea to give a name that begins with "no-" to an option
+whose default can be tweaked by a configuration variable [*].  If
+the configuration is named "rejectshallow", perhaps it is better to
+call it "--reject-shallow" instead.
+
+This is because configured default must be overridable from the
+command line.  I.e. even if you have in your ~/.gitconfig this:
+
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">   [clone]
+</span><span class="token prefix unchanged"> </span><span class="token line">       rejectshallow = true
+</span></span>
+you should be able to say "allow it only this time", with
+
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">   $ git clone --no-reject-shallow http://github.com/git/git/ git
+</span></span>
+and you do not want to have to say "--no-no-shallow", which sounds
+just silly.
+
+	Side note. it is a bad idea in general, even if the option
+	does not have corresponding configuration variable.  The
+	existing "no-checkout" is a historical accident that
+	happened long time ago and cannot be removed due to
+	compatibility.  Let's not introduce a new option that
+	follows such a bad pattern.
+
+	Junio 进一步解释：现存的选项 `no-checkout` 是一个很久之前的历史错误，
+	由于兼容性，已经无法移除这个错误了，现在新的选项不应该按照这种模式命名。
+	P.S. 刚好我就是按照`no-checkout`选项的模式创造出`no-shllow`选项的-:)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>更重要的是，<strong>命令行优先于配置</strong>，即命令行选项要能够覆盖配置文件选项。当配置文件从全局上不允许克隆 shllow 仓库时，而用户想要允许单次克隆 shallow 仓库时，自然地，他会使用 <code>--no-shallow</code> 选项的反选项 <code>--no-no-shallow</code> 来覆盖掉配置中的选项 。但这样 <code>--no-no-shallow</code> 听来去就很傻。</p>
 <ul class="lvl-0">
 <li class="lvl-2">
 <p>由于 Git 存在多种传输协议，目前的修改只是解决了本地克隆问题，因此仍需改进：</p>
 </li>
 </ul>
-<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">&gt; @@ -963,6 +968,7 @@ static int path_exists(const char *path)</span><br><span class="line">&gt;  int cmd_clone(int argc, const char **argv, const char *prefix)</span><br><span class="line">&gt;  &#123;</span><br><span class="line">&gt;  	int is_bundle = 0, is_local;</span><br><span class="line">&gt; +	int is_shallow = 0;</span><br><span class="line">&gt;  	const char *repo_name, *repo, *work_tree, *git_dir;</span><br><span class="line">&gt;  	char *path, *dir, *display_repo = NULL;</span><br><span class="line">&gt;  	int dest_exists, real_dest_exists = 0;</span><br><span class="line">&gt; @@ -1215,6 +1221,7 @@ int cmd_clone(int argc, const char **argv, const char *prefix)</span><br><span class="line">&gt;  		if (filter_options.choice)</span><br><span class="line">&gt;  			warning(_(&quot;--filter is ignored in local clones; use file:// instead.&quot;));</span><br><span class="line">&gt;  		if (!access(mkpath(&quot;%s/shallow&quot;, path), F_OK)) &#123;</span><br><span class="line">&gt; +			is_shallow = 1;</span><br><span class="line">&gt;  			if (option_local &gt; 0)</span><br><span class="line">&gt;  				warning(_(&quot;source repository is shallow, ignoring --local&quot;));</span><br><span class="line">&gt;  			is_local = 0;</span><br><span class="line"></span><br><span class="line">This change is to the local clone codepath.  Cloning over the wire</span><br><span class="line">would not go through this part.  And throughout the patch, this is</span><br><span class="line">the only place that sets is_shallow to 1.</span><br><span class="line"></span><br><span class="line">Also let&#x27;s note that this is after we called parse_options(), so the</span><br><span class="line">value of option_no_shallow is known at this point.</span><br><span class="line"></span><br><span class="line">So, this patch does not even *need* to introduce a new &quot;is_shallow&quot;</span><br><span class="line">variable at all.  It only needs to add</span><br><span class="line"></span><br><span class="line">                        if (option_no_shallow)</span><br><span class="line">                                die(...);</span><br><span class="line"></span><br><span class="line">instead of adding &quot;is_shallow = 1&quot; to the above hunk.</span><br><span class="line"></span><br><span class="line">I somehow think that this is only half a feature---wouldn&#x27;t it be</span><br><span class="line">more useful if we also rejected a non-local clone from a shallow</span><br><span class="line">repository?</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-diff" data-language="diff"><code class="language-diff"><span class="token inserted-arrow inserted"><span class="token prefix inserted">></span><span class="token line"> @@ -963,6 +968,7 @@ static int path_exists(const char *path)
+</span><span class="token prefix inserted">></span><span class="token line">  int cmd_clone(int argc, const char **argv, const char *prefix)
+</span><span class="token prefix inserted">></span><span class="token line">  &#123;
+</span><span class="token prefix inserted">></span><span class="token line">  	int is_bundle = 0, is_local;
+</span><span class="token prefix inserted">></span><span class="token line"> +	int is_shallow = 0;
+</span><span class="token prefix inserted">></span><span class="token line">  	const char *repo_name, *repo, *work_tree, *git_dir;
+</span><span class="token prefix inserted">></span><span class="token line">  	char *path, *dir, *display_repo = NULL;
+</span><span class="token prefix inserted">></span><span class="token line">  	int dest_exists, real_dest_exists = 0;
+</span><span class="token prefix inserted">></span><span class="token line"> @@ -1215,6 +1221,7 @@ int cmd_clone(int argc, const char **argv, const char *prefix)
+</span><span class="token prefix inserted">></span><span class="token line">  		if (filter_options.choice)
+</span><span class="token prefix inserted">></span><span class="token line">  			warning(_("--filter is ignored in local clones; use file:// instead."));
+</span><span class="token prefix inserted">></span><span class="token line">  		if (!access(mkpath("%s/shallow", path), F_OK)) &#123;
+</span><span class="token prefix inserted">></span><span class="token line"> +			is_shallow = 1;
+</span><span class="token prefix inserted">></span><span class="token line">  			if (option_local > 0)
+</span><span class="token prefix inserted">></span><span class="token line">  				warning(_("source repository is shallow, ignoring --local"));
+</span><span class="token prefix inserted">></span><span class="token line">  			is_local = 0;
+</span></span>
+This change is to the local clone codepath.  Cloning over the wire
+would not go through this part.  And throughout the patch, this is
+the only place that sets is_shallow to 1.
+
+Also let's note that this is after we called parse_options(), so the
+value of option_no_shallow is known at this point.
+
+So, this patch does not even *need* to introduce a new "is_shallow"
+variable at all.  It only needs to add
+
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">                       if (option_no_shallow)
+</span><span class="token prefix unchanged"> </span><span class="token line">                               die(...);
+</span></span>
+instead of adding "is_shallow = 1" to the above hunk.
+
+I somehow think that this is only half a feature---wouldn't it be
+more useful if we also rejected a non-local clone from a shallow
+repository?
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ul class="lvl-0">
 <li class="lvl-2">
 <p>测试代码中的问题：</p>
 </li>
 </ul>
-<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">And for that ...</span><br><span class="line"></span><br><span class="line">&gt; diff --git a/t/t5606-clone-options.sh b/t/t5606-clone-options.sh</span><br><span class="line">&gt; index 7f082fb23b6a..9d310dbb158a 100755</span><br><span class="line">&gt; --- a/t/t5606-clone-options.sh</span><br><span class="line">&gt; +++ b/t/t5606-clone-options.sh</span><br><span class="line">&gt; @@ -42,6 +42,13 @@ test_expect_success &#x27;disallows --bare with --separate-git-dir&#x27; &#x27;</span><br><span class="line">&gt;  </span><br><span class="line">&gt;  &#x27;</span><br><span class="line">&gt;  </span><br><span class="line">&gt; +test_expect_success &#x27;reject clone shallow repository&#x27; &#x27;</span><br><span class="line">&gt; +	git clone --depth=1 --no-local parent shallow-repo &amp;&amp;</span><br><span class="line">&gt; +	test_must_fail git clone --no-shallow shallow-repo out 2&gt;err &amp;&amp;</span><br><span class="line">&gt; +	test_i18ngrep -e &quot;source repository is shallow, reject to clone.&quot; err</span><br><span class="line">&gt; +</span><br><span class="line">&gt; +&#x27;</span><br><span class="line">&gt; +</span><br><span class="line"></span><br><span class="line">... in addition to the test for a local clone above, you&#x27;d also want</span><br><span class="line">to test a non-local clone, perhaps like so:</span><br><span class="line"></span><br><span class="line">test_expect_success &#x27;reject clone shallow repository&#x27; &#x27;</span><br><span class="line">	rm -fr shallow-repo &amp;&amp;</span><br><span class="line">	git clone --depth=1 --no-local parent shallow-repo &amp;&amp;</span><br><span class="line">	test_must_fail git clone --no-shallow --no-local shallow-repo out 2&gt;err &amp;&amp;</span><br><span class="line">	test_i18ngrep -e &quot;source repository is shallow, reject to clone.&quot; err</span><br><span class="line"></span><br><span class="line">&#x27;</span><br><span class="line"></span><br><span class="line">Ditto for the other test script.</span><br><span class="line"></span><br><span class="line">Also, you would want to make sure that the command line overrides</span><br><span class="line">the configured default.  I.e.</span><br><span class="line"></span><br><span class="line">	git -c clone.rejectshallow=false clone --reject-shallow</span><br><span class="line"></span><br><span class="line">should refuse to clone from a shallow one, while there should be a</span><br><span class="line">way to countermand a configured &quot;I always refuse to clone from a</span><br><span class="line">shallow repository&quot; with &quot;but let&#x27;s allow it only this time&quot;, i.e.</span><br><span class="line"></span><br><span class="line">	git -c clone.rejectshallow=true clone --no-reject-shallow</span><br><span class="line"></span><br><span class="line">or something along the line.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt; diff --git a/t/t5611-clone-config.sh b/t/t5611-clone-config.sh</span><br><span class="line">&gt; index 8e0fd398236b..3aab86ad4def 100755</span><br><span class="line">&gt; --- a/t/t5611-clone-config.sh</span><br><span class="line">&gt; +++ b/t/t5611-clone-config.sh</span><br><span class="line">&gt; @@ -92,6 +92,13 @@ test_expect_success &#x27;clone -c remote.&lt;remote&gt;.fetch=&lt;refspec&gt; --origin=&lt;name&gt;&#x27; &#x27;</span><br><span class="line">&gt;  	test_cmp expect actual</span><br><span class="line">&gt;  &#x27;</span><br><span class="line">&gt;  </span><br><span class="line">&gt; +test_expect_success &#x27;clone -c clone.rejectshallow&#x27; &#x27;</span><br><span class="line">&gt; +	rm -rf child &amp;&amp;</span><br><span class="line">&gt; +	git clone --depth=1 --no-local . child &amp;&amp;</span><br><span class="line">&gt; +	test_must_fail git clone -c clone.rejectshallow child out 2&gt;err &amp;&amp;</span><br><span class="line"></span><br><span class="line">This is not quite right, even though it may happen to work.  The</span><br><span class="line">&quot;clone.rejectshallow&quot; variable is a configuration about what should</span><br><span class="line">happen when creating a new repository by cloning, so letting &quot;git</span><br><span class="line">clone -c var[=val]&quot; to set the variable _in_ the resulting repository</span><br><span class="line">would not make much sense.  Even if the clone succeeded, nobody would</span><br><span class="line">look at that particular configuration variable that is set in the</span><br><span class="line">resulting repository.</span><br><span class="line"></span><br><span class="line">I think it would communicate to the readers better what we are</span><br><span class="line">trying to do, if we write</span><br><span class="line"></span><br><span class="line">	test_must_fail git -c clone.rejectshallow=true clone child out</span><br><span class="line"></span><br><span class="line">instead.</span><br><span class="line"></span><br><span class="line">Thanks.</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-diff" data-language="diff"><code class="language-diff">And for that ...
+
+<span class="token inserted-arrow inserted"><span class="token prefix inserted">></span><span class="token line"> diff --git a/t/t5606-clone-options.sh b/t/t5606-clone-options.sh
+</span><span class="token prefix inserted">></span><span class="token line"> index 7f082fb23b6a..9d310dbb158a 100755
+</span><span class="token prefix inserted">></span><span class="token line"> --- a/t/t5606-clone-options.sh
+</span><span class="token prefix inserted">></span><span class="token line"> +++ b/t/t5606-clone-options.sh
+</span><span class="token prefix inserted">></span><span class="token line"> @@ -42,6 +42,13 @@ test_expect_success 'disallows --bare with --separate-git-dir' '
+</span><span class="token prefix inserted">></span><span class="token line">  
+</span><span class="token prefix inserted">></span><span class="token line">  '
+</span><span class="token prefix inserted">></span><span class="token line">  
+</span><span class="token prefix inserted">></span><span class="token line"> +test_expect_success 'reject clone shallow repository' '
+</span><span class="token prefix inserted">></span><span class="token line"> +	git clone --depth=1 --no-local parent shallow-repo &amp;&amp;
+</span><span class="token prefix inserted">></span><span class="token line"> +	test_must_fail git clone --no-shallow shallow-repo out 2>err &amp;&amp;
+</span><span class="token prefix inserted">></span><span class="token line"> +	test_i18ngrep -e "source repository is shallow, reject to clone." err
+</span><span class="token prefix inserted">></span><span class="token line"> +
+</span><span class="token prefix inserted">></span><span class="token line"> +'
+</span><span class="token prefix inserted">></span><span class="token line"> +
+</span></span>
+... in addition to the test for a local clone above, you'd also want
+to test a non-local clone, perhaps like so:
+
+test_expect_success 'reject clone shallow repository' '
+	rm -fr shallow-repo &amp;&amp;
+	git clone --depth=1 --no-local parent shallow-repo &amp;&amp;
+	test_must_fail git clone --no-shallow --no-local shallow-repo out 2>err &amp;&amp;
+	test_i18ngrep -e "source repository is shallow, reject to clone." err
+
+'
+
+Ditto for the other test script.
+
+Also, you would want to make sure that the command line overrides
+the configured default.  I.e.
+
+	git -c clone.rejectshallow=false clone --reject-shallow
+
+should refuse to clone from a shallow one, while there should be a
+way to countermand a configured "I always refuse to clone from a
+shallow repository" with "but let's allow it only this time", i.e.
+
+	git -c clone.rejectshallow=true clone --no-reject-shallow
+
+or something along the line.
+
+
+<span class="token inserted-arrow inserted"><span class="token prefix inserted">></span><span class="token line"> diff --git a/t/t5611-clone-config.sh b/t/t5611-clone-config.sh
+</span><span class="token prefix inserted">></span><span class="token line"> index 8e0fd398236b..3aab86ad4def 100755
+</span><span class="token prefix inserted">></span><span class="token line"> --- a/t/t5611-clone-config.sh
+</span><span class="token prefix inserted">></span><span class="token line"> +++ b/t/t5611-clone-config.sh
+</span><span class="token prefix inserted">></span><span class="token line"> @@ -92,6 +92,13 @@ test_expect_success 'clone -c remote.&lt;remote>.fetch=&lt;refspec> --origin=&lt;name>' '
+</span><span class="token prefix inserted">></span><span class="token line">  	test_cmp expect actual
+</span><span class="token prefix inserted">></span><span class="token line">  '
+</span><span class="token prefix inserted">></span><span class="token line">  
+</span><span class="token prefix inserted">></span><span class="token line"> +test_expect_success 'clone -c clone.rejectshallow' '
+</span><span class="token prefix inserted">></span><span class="token line"> +	rm -rf child &amp;&amp;
+</span><span class="token prefix inserted">></span><span class="token line"> +	git clone --depth=1 --no-local . child &amp;&amp;
+</span><span class="token prefix inserted">></span><span class="token line"> +	test_must_fail git clone -c clone.rejectshallow child out 2>err &amp;&amp;
+</span></span>
+This is not quite right, even though it may happen to work.  The
+"clone.rejectshallow" variable is a configuration about what should
+happen when creating a new repository by cloning, so letting "git
+clone -c var[=val]" to set the variable _in_ the resulting repository
+would not make much sense.  Even if the clone succeeded, nobody would
+look at that particular configuration variable that is set in the
+resulting repository.
+
+I think it would communicate to the readers better what we are
+trying to do, if we write
+
+	test_must_fail git -c clone.rejectshallow=true clone child out
+
+instead.
+
+Thanks.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>通过测试代码 Junio 指出： <code>clone.rejectshallow</code> 配置和命令行选项 <code>--reject-shallow</code> 存在逻辑上的交叉重叠问题，因此测试时应该体现出这一点。</p>
 <p>以上就是我第一次提交的代码，没想到能很快收到那么多宝贵的检视建议。但是，这只是开始，后面还有更多的检视回合，收到了更加细致的检视意见。</p>
 <p>比如 <a target="_blank" rel="noopener" href="https://public-inbox.org/git/nycvar.QRO.7.76.6.2103311146210.52@tvgsbejvaqbjf.bet/">Johannes Schindelin</a> 给了一些意见：</p>
-<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">我觉得这个补丁大部分都很好，但我还有一点点改进建议</span><br><span class="line">I like most of the patch, and will only point out a couple of things that</span><br><span class="line">I think can be improved even further.</span><br><span class="line"></span><br><span class="line">&gt; diff --git a/Documentation/git-clone.txt b/Documentation/git-clone.txt</span><br><span class="line">&gt; index 02d9c19cec75..0adc98fa7eee 100644</span><br><span class="line">&gt; --- a/Documentation/git-clone.txt</span><br><span class="line">&gt; +++ b/Documentation/git-clone.txt</span><br><span class="line">&gt; @@ -149,6 +149,11 @@ objects from the source repository into a pack in t=</span><br><span class="line">he cloned repository.</span><br><span class="line">&gt;  --no-checkout::</span><br><span class="line">&gt;  	No checkout of HEAD is performed after the clone is complete.</span><br><span class="line">&gt;</span><br><span class="line">&gt; +--[no-]reject-shallow::</span><br><span class="line">&gt; +	Fail if the source repository is a shallow repository.</span><br><span class="line">&gt; +	The &#x27;clone.rejectShallow&#x27; configuration variable can be used to</span><br><span class="line">&gt; +	give the default.</span><br><span class="line"></span><br><span class="line">使用 `to specify the default` 说起来更顺口一些</span><br><span class="line">I am not a native speaker, either, but I believe that it would &quot;roll off</span><br><span class="line">the tongue&quot; a bit better to say &quot;to specify the default&quot;.</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-diff" data-language="diff"><code class="language-diff">我觉得这个补丁大部分都很好，但我还有一点点改进建议
+I like most of the patch, and will only point out a couple of things that
+I think can be improved even further.
+
+<span class="token inserted-arrow inserted"><span class="token prefix inserted">></span><span class="token line"> diff --git a/Documentation/git-clone.txt b/Documentation/git-clone.txt
+</span><span class="token prefix inserted">></span><span class="token line"> index 02d9c19cec75..0adc98fa7eee 100644
+</span><span class="token prefix inserted">></span><span class="token line"> --- a/Documentation/git-clone.txt
+</span><span class="token prefix inserted">></span><span class="token line"> +++ b/Documentation/git-clone.txt
+</span><span class="token prefix inserted">></span><span class="token line"> @@ -149,6 +149,11 @@ objects from the source repository into a pack in t=
+</span></span>he cloned repository.
+<span class="token inserted-arrow inserted"><span class="token prefix inserted">></span><span class="token line">  --no-checkout::
+</span><span class="token prefix inserted">></span><span class="token line">  	No checkout of HEAD is performed after the clone is complete.
+</span><span class="token prefix inserted">></span><span class="token line">
+</span><span class="token prefix inserted">></span><span class="token line"> +--[no-]reject-shallow::
+</span><span class="token prefix inserted">></span><span class="token line"> +	Fail if the source repository is a shallow repository.
+</span><span class="token prefix inserted">></span><span class="token line"> +	The 'clone.rejectShallow' configuration variable can be used to
+</span><span class="token prefix inserted">></span><span class="token line"> +	give the default.
+</span></span>
+使用 `to specify the default` 说起来更顺口一些
+I am not a native speaker, either, but I believe that it would "roll off
+the tongue" a bit better to say "to specify the default".<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>变量命名问题：</p>
-<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">&gt; diff --git a/builtin/clone.c b/builtin/clone.c</span><br><span class="line">&gt; index 51e844a2de0a..eeddd68a51f4 100644</span><br><span class="line">&gt; --- a/builtin/clone.c</span><br><span class="line">&gt; +++ b/builtin/clone.c</span><br><span class="line">&gt; @@ -50,6 +50,8 @@ static int option_no_checkout, option_bare, option_mir=</span><br><span class="line">ror, option_single_branch</span><br><span class="line">&gt;  static int option_local =3D -1, option_no_hardlinks, option_shared;</span><br><span class="line">&gt;  static int option_no_tags;</span><br><span class="line">&gt;  static int option_shallow_submodules;</span><br><span class="line">&gt; +static int option_shallow = -1;    /* unspecified */</span><br><span class="line">&gt; +static int config_shallow = -1;    /* unspecified */</span><br><span class="line"></span><br><span class="line">I would much prefer those variable names to include an indicator that this</span><br><span class="line">is about _rejecting_ shallow clones. I.e. `option_reject_shallow`.</span><br><span class="line"></span><br><span class="line">Also, I think that we can do with just a single `option_reject_shallow`</span><br><span class="line">(we do not even need that `reject_shallow` variable in `cmd_clone()`):</span><br><span class="line"></span><br><span class="line"><span class="deletion">- in `git_clone_config()`, only override it if it is still unspecified:</span></span><br><span class="line"></span><br><span class="line">	if (!strcmp(k, &quot;clone.rejectshallow&quot;) &amp;&amp; option_reject_shallow &lt; 0)</span><br><span class="line">		option_reject_shallow =3D git_config_bool(k,v);</span><br><span class="line"></span><br><span class="line"><span class="deletion">- in `cmd_clone()`, test for a _positive_ value:</span></span><br><span class="line"></span><br><span class="line">	if (option_reject_shallow &gt; 0)</span><br><span class="line">		die(_(&quot;source repository is shallow, reject to clone.&quot;));</span><br><span class="line"></span><br><span class="line">  and</span><br><span class="line"></span><br><span class="line">	if (option_reject_shallow &gt; 0)</span><br><span class="line"> 		transport_set_option(transport, TRANS_OPT_REJECT_SHALLOW, &quot;1&quot;);</span><br><span class="line"></span><br><span class="line">One thing to note (in the commit message, would be my preference) is that</span><br><span class="line">`cmd_clone()` is _particular_ in that it runs `git_config()` _twice_. Once</span><br><span class="line">before the command-line options are parsed, and once after the new Git</span><br><span class="line">repository has been initialized. Note that my suggestion still works with</span><br><span class="line">that: if either the original config, or the new config set</span><br><span class="line">`clone.rejectShallow`, it is picked up correctly, with the latter</span><br><span class="line">overriding the former if both configs want to set it.</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-diff" data-language="diff"><code class="language-diff"><span class="token inserted-arrow inserted"><span class="token prefix inserted">></span><span class="token line"> diff --git a/builtin/clone.c b/builtin/clone.c
+</span><span class="token prefix inserted">></span><span class="token line"> index 51e844a2de0a..eeddd68a51f4 100644
+</span><span class="token prefix inserted">></span><span class="token line"> --- a/builtin/clone.c
+</span><span class="token prefix inserted">></span><span class="token line"> +++ b/builtin/clone.c
+</span><span class="token prefix inserted">></span><span class="token line"> @@ -50,6 +50,8 @@ static int option_no_checkout, option_bare, option_mir=
+</span></span>ror, option_single_branch
+<span class="token inserted-arrow inserted"><span class="token prefix inserted">></span><span class="token line">  static int option_local =3D -1, option_no_hardlinks, option_shared;
+</span><span class="token prefix inserted">></span><span class="token line">  static int option_no_tags;
+</span><span class="token prefix inserted">></span><span class="token line">  static int option_shallow_submodules;
+</span><span class="token prefix inserted">></span><span class="token line"> +static int option_shallow = -1;    /* unspecified */
+</span><span class="token prefix inserted">></span><span class="token line"> +static int config_shallow = -1;    /* unspecified */
+</span></span>
+I would much prefer those variable names to include an indicator that this
+is about _rejecting_ shallow clones. I.e. `option_reject_shallow`.
+
+Also, I think that we can do with just a single `option_reject_shallow`
+(we do not even need that `reject_shallow` variable in `cmd_clone()`):
+
+<span class="token deleted-sign deleted"><span class="token prefix deleted">-</span><span class="token line"> in `git_clone_config()`, only override it if it is still unspecified:
+</span></span>
+	if (!strcmp(k, "clone.rejectshallow") &amp;&amp; option_reject_shallow &lt; 0)
+		option_reject_shallow =3D git_config_bool(k,v);
+
+<span class="token deleted-sign deleted"><span class="token prefix deleted">-</span><span class="token line"> in `cmd_clone()`, test for a _positive_ value:
+</span></span>
+	if (option_reject_shallow > 0)
+		die(_("source repository is shallow, reject to clone."));
+
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> and
+</span></span>
+	if (option_reject_shallow > 0)
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">		transport_set_option(transport, TRANS_OPT_REJECT_SHALLOW, "1");
+</span></span>
+One thing to note (in the commit message, would be my preference) is that
+`cmd_clone()` is _particular_ in that it runs `git_config()` _twice_. Once
+before the command-line options are parsed, and once after the new Git
+repository has been initialized. Note that my suggestion still works with
+that: if either the original config, or the new config set
+`clone.rejectShallow`, it is picked up correctly, with the latter
+overriding the former if both configs want to set it.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>使用 <code>option_reject_shallow</code> 比 <code>config_shallow</code> 更好一些，它能更直接地表明这个选项是要拒绝 <em>shallow clone</em> 的。<s>同时他提醒，在 <code>cmd_clone()</code>函数中 <code>git_config</code> 会被调用两次，使用 <code>option_reject_shallow</code> 能避免在 <code>cmd_clone</code> 中使用 <code>reject_shallow</code></s> 。</p>
 <p>P.S. 划线这段话是错误的，见 Johannes 本人回复：<a target="_blank" rel="noopener" href="https://public-inbox.org/git/nycvar.QRO.7.76.6.2104010021510.54@tvgsbejvaqbjf.bet/">Johannes’reply</a>，以及 Junio 的回复：<a target="_blank" rel="noopener" href="https://public-inbox.org/git/xmqqim5754rl.fsf@gitster.g/">Junio’s reply</a>。最后用了两个变量: <code>option_reject_shallow</code>，<code>config_reject_shallow</code>，在 <code>cmd_clone()</code> 中它们共同决定另一个变量：<code>reject_shallow</code>。</p>
 <p>后面同样变量命名：</p>
-<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&gt; diff --git a/fetch-pack.c b/fetch-pack.c</span><br><span class="line">&gt; index fb04a76ca263..34d0c2896e2e 100644</span><br><span class="line">&gt; --- a/fetch-pack.c</span><br><span class="line">&gt; +++ b/fetch-pack.c</span><br><span class="line">&gt; @@ -1129,9 +1129,11 @@ static struct ref *do_fetch_pack(struct fetch_pac=</span><br><span class="line">k_args *args,</span><br><span class="line">&gt;  	if (args-&gt;deepen)</span><br><span class="line">&gt;  		setup_alternate_shallow(&amp;shallow_lock, &amp;alternate_shallow_file,</span><br><span class="line">&gt;  					NULL);</span><br><span class="line">&gt; -	else if (si-&gt;nr_ours || si-&gt;nr_theirs)</span><br><span class="line">&gt; +	else if (si-&gt;nr_ours || si-&gt;nr_theirs) &#123;</span><br><span class="line">&gt; +		if (args-&gt;remote_shallow)</span><br><span class="line"></span><br><span class="line">Even as a non-casual reader, this name `remote_shallow` leads me to assume</span><br><span class="line">incorrect things. This option is not about wanting a remote shallow</span><br><span class="line">repository, it is about rejecting a remote shallow repository.</span><br><span class="line">用 `reject_shallow` 代替 `remote_shllow`</span><br><span class="line">Please name this attribute `reject_shallow` instead of `remote_shallow`.</span><br><span class="line">That will prevent future puzzlement.</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-diff" data-language="diff"><code class="language-diff"><span class="token inserted-arrow inserted"><span class="token prefix inserted">></span><span class="token line"> diff --git a/fetch-pack.c b/fetch-pack.c
+</span><span class="token prefix inserted">></span><span class="token line"> index fb04a76ca263..34d0c2896e2e 100644
+</span><span class="token prefix inserted">></span><span class="token line"> --- a/fetch-pack.c
+</span><span class="token prefix inserted">></span><span class="token line"> +++ b/fetch-pack.c
+</span><span class="token prefix inserted">></span><span class="token line"> @@ -1129,9 +1129,11 @@ static struct ref *do_fetch_pack(struct fetch_pac=
+</span></span>k_args *args,
+<span class="token inserted-arrow inserted"><span class="token prefix inserted">></span><span class="token line">  	if (args->deepen)
+</span><span class="token prefix inserted">></span><span class="token line">  		setup_alternate_shallow(&amp;shallow_lock, &amp;alternate_shallow_file,
+</span><span class="token prefix inserted">></span><span class="token line">  					NULL);
+</span><span class="token prefix inserted">></span><span class="token line"> -	else if (si->nr_ours || si->nr_theirs)
+</span><span class="token prefix inserted">></span><span class="token line"> +	else if (si->nr_ours || si->nr_theirs) &#123;
+</span><span class="token prefix inserted">></span><span class="token line"> +		if (args->remote_shallow)
+</span></span>
+Even as a non-casual reader, this name `remote_shallow` leads me to assume
+incorrect things. This option is not about wanting a remote shallow
+repository, it is about rejecting a remote shallow repository.
+用 `reject_shallow` 代替 `remote_shllow`
+Please name this attribute `reject_shallow` instead of `remote_shallow`.
+That will prevent future puzzlement.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Johannes 还对测试用例提出了一些检视意见，篇幅有限，这里省略。</p>
 <p>在最后几个回合，Junio 又给出了很多有意义的检视意见：</p>
-<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line">&gt; In some scenarios, users may want more history than the repository</span><br><span class="line">&gt; offered for cloning, which happens to be a shallow repository, can</span><br><span class="line">&gt; give them. But because users don&#x27;t know it is a shallow repository</span><br><span class="line">&gt; until they download it to local, users should have the option to</span><br><span class="line"></span><br><span class="line">&#x27;should&#x27; 在这里感觉语气太重了</span><br><span class="line">I find the &quot;should&quot; too strong, but let&#x27;s keep reading.</span><br><span class="line"></span><br><span class="line">&gt; refuse to clone this kind of repository, and may want to exit the</span><br><span class="line">&gt; process immediately without creating any unnecessary files.</span><br><span class="line">确认是语气重了。同时存在冗余。</span><br><span class="line">Yes, that is too strong and also redundant.</span><br><span class="line"></span><br><span class="line">&gt; Althought there is an option &#x27;--depth=x&#x27; for users to decide how</span><br><span class="line">&gt; deep history they can fetch, but as the unshallow cloning&#x27;s depth</span><br><span class="line">句子若以 &#x27;although&#x27; 开头，则后面不应该用 `but`做转折。</span><br><span class="line">&quot;Although&quot;; if you begin with &quot;although&quot;, you shouldn&#x27;t write &quot;but&quot;.</span><br><span class="line"></span><br><span class="line">&gt; is INFINITY, we can&#x27;t know exactly the minimun &#x27;x&#x27; value that can</span><br><span class="line">&gt; satisfy the minimum integrity,</span><br><span class="line">&gt; so we can&#x27;t pass &#x27;x&#x27; value to --depth,</span><br><span class="line">&gt; and expect this can obtain a complete history of a repository.</span><br><span class="line"></span><br><span class="line">If the argument were &quot;we might start with depth x, and the source</span><br><span class="line">may be deep enough to give us x right now, but we may want to deepen</span><br><span class="line">more than they can offer, and such a user would want to be able to</span><br><span class="line">say &#x27;I want depth=x now, but make sure they are not shallow&#x27;&quot;, I</span><br><span class="line">would understand it, but I do not see where the &quot;minimum integrity&quot;</span><br><span class="line">comes from---there doesn&#x27;t appear to be anything related to</span><br><span class="line">integrity here.</span><br><span class="line"></span><br><span class="line">&gt; In other scenarios, if we have an API that allow us to import external</span><br><span class="line"></span><br><span class="line">&quot;allows&quot;</span><br><span class="line"></span><br><span class="line">&gt; repository, and then perform various operations on the repo.</span><br><span class="line">&gt; But if the imported is a shallow one(which is actually possible), it</span><br><span class="line">&gt; will affect the subsequent operations. So we can choose to refuse to</span><br><span class="line">&gt; clone, and let&#x27;s just import a normal repository.</span><br><span class="line">建议丢掉这一整段，因为它跟前面讲的场景差不多，并没有提供新信息。</span><br><span class="line">I&#x27;d suggest dropping this entire paragraph.  That is not any new</span><br><span class="line">scenario at all.  API or not, you essentially just said &quot;you can do</span><br><span class="line">various things on your clone once you have it, but some things you</span><br><span class="line">may want to do you would want a full history&quot;.  That is what you</span><br><span class="line">started the whole discussion above and does not add any new</span><br><span class="line">information.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt; @@ -858,6 +861,9 @@ static int git_clone_config(const char *k, const char *v, void *cb)</span><br><span class="line">&gt;  		free(remote_name);</span><br><span class="line">&gt;  		remote_name = xstrdup(v);</span><br><span class="line">&gt;  	&#125;</span><br><span class="line">&gt; +	if (!strcmp(k, &quot;clone.rejectshallow&quot;) &amp;&amp; option_reject_shallow &lt; 0)</span><br><span class="line">&gt; +		option_reject_shallow = git_config_bool(k, v);</span><br><span class="line"></span><br><span class="line">Does this &quot;single variable is enough&quot; really work?</span><br><span class="line"></span><br><span class="line">Imagine that the first time around we&#x27;d read from $HOME/.gitconfig</span><br><span class="line">that says true (flips the variable from &quot;unspecified&quot;).  Further</span><br><span class="line">imagine that we are running &quot;git clone -c config.rejectShallow=no&quot;</span><br><span class="line">to countermand the global config.  We call write_config() to write</span><br><span class="line">the extra configuration value out, and then call git_config() to</span><br><span class="line">read from the repository configuration again.</span><br><span class="line"></span><br><span class="line">Because of the value taken from $HOME/.gitconfig, however, the</span><br><span class="line">attempt to override is silently ignored, isn&#x27;t it?</span><br><span class="line"></span><br><span class="line">Other than that, the changes to the code from the previous round</span><br><span class="line">looked sensible.</span><br><span class="line"></span><br><span class="line">虽然比上一版的更新好了很多，但Junio并没有放弃任何可能的问题，仍对config配置</span><br><span class="line">和option配置有疑问，他的顾虑是正确的，这为下一版的更新提供了正确的思路。</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-diff" data-language="diff"><code class="language-diff"><span class="token inserted-arrow inserted"><span class="token prefix inserted">></span><span class="token line"> In some scenarios, users may want more history than the repository
+</span><span class="token prefix inserted">></span><span class="token line"> offered for cloning, which happens to be a shallow repository, can
+</span><span class="token prefix inserted">></span><span class="token line"> give them. But because users don't know it is a shallow repository
+</span><span class="token prefix inserted">></span><span class="token line"> until they download it to local, users should have the option to
+</span></span>
+'should' 在这里感觉语气太重了
+I find the "should" too strong, but let's keep reading.
+
+<span class="token inserted-arrow inserted"><span class="token prefix inserted">></span><span class="token line"> refuse to clone this kind of repository, and may want to exit the
+</span><span class="token prefix inserted">></span><span class="token line"> process immediately without creating any unnecessary files.
+</span></span>确认是语气重了。同时存在冗余。
+Yes, that is too strong and also redundant.
+
+<span class="token inserted-arrow inserted"><span class="token prefix inserted">></span><span class="token line"> Althought there is an option '--depth=x' for users to decide how
+</span><span class="token prefix inserted">></span><span class="token line"> deep history they can fetch, but as the unshallow cloning's depth
+</span></span>句子若以 'although' 开头，则后面不应该用 `but`做转折。
+"Although"; if you begin with "although", you shouldn't write "but".
+
+<span class="token inserted-arrow inserted"><span class="token prefix inserted">></span><span class="token line"> is INFINITY, we can't know exactly the minimun 'x' value that can
+</span><span class="token prefix inserted">></span><span class="token line"> satisfy the minimum integrity,
+</span><span class="token prefix inserted">></span><span class="token line"> so we can't pass 'x' value to --depth,
+</span><span class="token prefix inserted">></span><span class="token line"> and expect this can obtain a complete history of a repository.
+</span></span>
+If the argument were "we might start with depth x, and the source
+may be deep enough to give us x right now, but we may want to deepen
+more than they can offer, and such a user would want to be able to
+say 'I want depth=x now, but make sure they are not shallow'", I
+would understand it, but I do not see where the "minimum integrity"
+comes from---there doesn't appear to be anything related to
+integrity here.
+
+<span class="token inserted-arrow inserted"><span class="token prefix inserted">></span><span class="token line"> In other scenarios, if we have an API that allow us to import external
+</span></span>
+"allows"
+
+<span class="token inserted-arrow inserted"><span class="token prefix inserted">></span><span class="token line"> repository, and then perform various operations on the repo.
+</span><span class="token prefix inserted">></span><span class="token line"> But if the imported is a shallow one(which is actually possible), it
+</span><span class="token prefix inserted">></span><span class="token line"> will affect the subsequent operations. So we can choose to refuse to
+</span><span class="token prefix inserted">></span><span class="token line"> clone, and let's just import a normal repository.
+</span></span>建议丢掉这一整段，因为它跟前面讲的场景差不多，并没有提供新信息。
+I'd suggest dropping this entire paragraph.  That is not any new
+scenario at all.  API or not, you essentially just said "you can do
+various things on your clone once you have it, but some things you
+may want to do you would want a full history".  That is what you
+started the whole discussion above and does not add any new
+information.
+
+
+<span class="token inserted-arrow inserted"><span class="token prefix inserted">></span><span class="token line"> @@ -858,6 +861,9 @@ static int git_clone_config(const char *k, const char *v, void *cb)
+</span><span class="token prefix inserted">></span><span class="token line">  		free(remote_name);
+</span><span class="token prefix inserted">></span><span class="token line">  		remote_name = xstrdup(v);
+</span><span class="token prefix inserted">></span><span class="token line">  	&#125;
+</span><span class="token prefix inserted">></span><span class="token line"> +	if (!strcmp(k, "clone.rejectshallow") &amp;&amp; option_reject_shallow &lt; 0)
+</span><span class="token prefix inserted">></span><span class="token line"> +		option_reject_shallow = git_config_bool(k, v);
+</span></span>
+Does this "single variable is enough" really work?
+
+Imagine that the first time around we'd read from $HOME/.gitconfig
+that says true (flips the variable from "unspecified").  Further
+imagine that we are running "git clone -c config.rejectShallow=no"
+to countermand the global config.  We call write_config() to write
+the extra configuration value out, and then call git_config() to
+read from the repository configuration again.
+
+Because of the value taken from $HOME/.gitconfig, however, the
+attempt to override is silently ignored, isn't it?
+
+Other than that, the changes to the code from the previous round
+looked sensible.
+
+虽然比上一版的更新好了很多，但Junio并没有放弃任何可能的问题，仍对config配置
+和option配置有疑问，他的顾虑是正确的，这为下一版的更新提供了正确的思路。<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>这就是我第一次向 Git 社区提交代码的情况：问题多多，反馈多多。各种严谨细致又有启发性的检视意见让我感受到了 Git 社区的技术氛围。这个过程中让我不断思考如何让代码写得更好：更有逻辑，更简洁，更严谨，而不仅仅是实现功能。</p>
 <p>这个经验让我想到，在英语中有个两个单词可以很贴切的形容他们对待代码的态度：<code>polish</code>，<code>cooking</code>。<br>
 <code>polish</code> 动词意为润色，修改，抛光，打磨。用在代码上， commit 信息上，甚至写文档上，意味着这些过程是不断改进，不断变得更好。<br>
@@ -145,7 +462,7 @@
     </section>
     </div>
 </article>
-<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"></div><div class="item" id="next"><div class="note">较早文章</div><a href="d699447b.html">如何向 Git 社区提交代码</a></div></section></div>
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">较新文章</div><a href="4da024a6.html">docker 的使用笔记</a></div><div class="item" id="next"><div class="note">较早文章</div><a href="d699447b.html">如何向 Git 社区提交代码</a></div></section></div>
 
 
 

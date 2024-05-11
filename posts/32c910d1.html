@@ -20,12 +20,12 @@
   <title>git bundle 格式及应用 - 高桥一郎</title>
 
   
-    <meta name="description" content="git-bundle 文件是一种将 git objects 数据(git packfile)与仓库引用 refs 结合在一起的一种数据包格式，通过 objects + refs 就能恢复出一个完整的 git 仓库，因此可以用 git-bundle 文件来备份 git 仓库。  格式 git bundle v2 格式： 12345678bundle    &#x3D; signature *prerequis">
+    <meta name="description" content="git-bundle 文件是一种将 git objects 数据(git packfile)与仓库引用 refs 结合在一起的一种数据包格式，通过 objects + refs 就能恢复出一个完整的 git 仓库，因此可以用 git-bundle 文件来备份 git 仓库。  格式 git bundle v2 格式： bundle    &#x3D; signature *prerequisite *ref">
 <meta property="og:type" content="article">
 <meta property="og:title" content="git bundle 格式及应用">
 <meta property="og:url" content="https://cactusinhand.github.io/posts/32c910d1.html">
 <meta property="og:site_name" content="高桥一郎">
-<meta property="og:description" content="git-bundle 文件是一种将 git objects 数据(git packfile)与仓库引用 refs 结合在一起的一种数据包格式，通过 objects + refs 就能恢复出一个完整的 git 仓库，因此可以用 git-bundle 文件来备份 git 仓库。  格式 git bundle v2 格式： 12345678bundle    &#x3D; signature *prerequis">
+<meta property="og:description" content="git-bundle 文件是一种将 git objects 数据(git packfile)与仓库引用 refs 结合在一起的一种数据包格式，通过 objects + refs 就能恢复出一个完整的 git 仓库，因此可以用 git-bundle 文件来备份 git 仓库。  格式 git bundle v2 格式： bundle    &#x3D; signature *prerequisite *ref">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-03-01T12:10:45.000Z">
 <meta property="article:modified_time" content="2022-09-05T08:22:48.696Z">
@@ -64,7 +64,7 @@
 <div class="widgets">
 
 
-<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="23bf24d1.html"><span class="title">如何向 Git 社区提交代码(2)</span></a><a class="item title" href="d699447b.html"><span class="title">如何向 Git 社区提交代码</span></a><a class="item title" href="f8df64f6.html"><span class="title">GitOps: 一种 DevOps 的最佳实践</span></a><a class="item title" href="92e91caf.html"><span class="title">一种 Git 插件工具：git repo-clean</span></a><a class="item title" href="4fad1e06.html"><span class="title">Git 内部原理</span></a><a class="item title" href="c5ceb3cc.html"><span class="title">Git 炸弹</span></a><a class="item title" href=""><span class="title">git bundle 格式及应用</span></a><a class="item title" href="341c748.html"><span class="title">Design pattern in Gitlay(Git PRC service)</span></a><a class="item title" href="767b1d3c.html"><span class="title">学习 Rust 的一些笔记</span></a><a class="item title" href="3be69b54.html"><span class="title">认证(Authentication)和授权(Authorization)</span></a></div></widget>
+<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="4da024a6.html"><span class="title">docker 的使用笔记</span></a><a class="item title" href="767b1d3c.html"><span class="title">学习 Rust 的一些笔记</span></a><a class="item title" href="c5ceb3cc.html"><span class="title">Git 炸弹</span></a><a class="item title" href="23bf24d1.html"><span class="title">如何向 Git 社区提交代码(2)</span></a><a class="item title" href="d699447b.html"><span class="title">如何向 Git 社区提交代码</span></a><a class="item title" href="f8df64f6.html"><span class="title">GitOps: 一种 DevOps 的最佳实践</span></a><a class="item title" href="92e91caf.html"><span class="title">一种 Git 插件工具：git repo-clean</span></a><a class="item title" href="4fad1e06.html"><span class="title">Git 内部原理</span></a><a class="item title" href=""><span class="title">git bundle 格式及应用</span></a><a class="item title" href="341c748.html"><span class="title">Design pattern in Gitlay(Git PRC service)</span></a></div></widget>
 </div>
 
 </div></aside><div class="l_main" id="main">
@@ -92,9 +92,26 @@
 <!--  more -->
 <h3 id="格式">格式</h3>
 <p><code>git bundle v2</code> 格式：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">bundle    = signature *prerequisite *reference LF pack</span><br><span class="line">signature = <span class="string">&quot;# v2 git bundle&quot;</span> LF</span><br><span class="line"></span><br><span class="line">prerequisite = <span class="string">&quot;-&quot;</span> obj-id SP comment LF</span><br><span class="line">comment      = *CHAR</span><br><span class="line">reference    = obj-id SP refname LF</span><br><span class="line"></span><br><span class="line">pack         = ... ; packfile</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">bundle    <span class="token operator">=</span> signature *prerequisite *reference LF pack
+signature <span class="token operator">=</span> <span class="token string">"# v2 git bundle"</span> LF
+
+prerequisite <span class="token operator">=</span> <span class="token string">"-"</span> obj-id SP comment LF
+comment      <span class="token operator">=</span> *CHAR
+reference    <span class="token operator">=</span> obj-id SP refname LF
+
+pack         <span class="token operator">=</span> <span class="token punctuation">..</span>. <span class="token punctuation">;</span> packfile<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><code>git bundle v3</code> 格式：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">bundle    = signature *capability *prerequisite *reference LF pack</span><br><span class="line">signature = <span class="string">&quot;# v3 git bundle&quot;</span> LF</span><br><span class="line"></span><br><span class="line">capability   = <span class="string">&quot;@&quot;</span> key [<span class="string">&quot;=&quot;</span> value] LF</span><br><span class="line">prerequisite = <span class="string">&quot;-&quot;</span> obj-id SP comment LF</span><br><span class="line">comment      = *CHAR</span><br><span class="line">reference    = obj-id SP refname LF</span><br><span class="line">key          = 1*(ALPHA / DIGIT / <span class="string">&quot;-&quot;</span>)</span><br><span class="line">value        = *(%01-09 / %0b-FF)</span><br><span class="line"></span><br><span class="line">pack         = ... ; packfile</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">bundle    <span class="token operator">=</span> signature *capability *prerequisite *reference LF pack
+signature <span class="token operator">=</span> <span class="token string">"# v3 git bundle"</span> LF
+
+capability   <span class="token operator">=</span> <span class="token string">"@"</span> key <span class="token punctuation">[</span><span class="token string">"="</span> value<span class="token punctuation">]</span> LF
+prerequisite <span class="token operator">=</span> <span class="token string">"-"</span> obj-id SP comment LF
+comment      <span class="token operator">=</span> *CHAR
+reference    <span class="token operator">=</span> obj-id SP refname LF
+key          <span class="token operator">=</span> <span class="token number">1</span>*<span class="token punctuation">(</span>ALPHA / DIGIT / <span class="token string">"-"</span><span class="token punctuation">)</span>
+value        <span class="token operator">=</span> *<span class="token punctuation">(</span>%01-09 / %0b-FF<span class="token punctuation">)</span>
+
+pack         <span class="token operator">=</span> <span class="token punctuation">..</span>. <span class="token punctuation">;</span> packfile<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <blockquote>
 <p>注：以上均采用 <code>ABNF</code> 标记法</p>
 </blockquote>
@@ -116,41 +133,120 @@
 </ol>
 <p><code>git bundle</code> <code>v3</code> 仅比 <code>v2</code> 多了一个 <code>capability</code> 部分。</p>
 <p>前面提到过 <code>prerequisite</code> 的概念，其格式为 <code>prerequisite = &quot;-&quot; obj-id SP comment LF</code>，所以来看下这个实际是什么意思。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 先打包master分支上最近三次提交</span></span><br><span class="line">$ git bundle create recent.bundle master~3..master</span><br><span class="line">Enumerating objects: 13, <span class="keyword">done</span>.</span><br><span class="line">Counting objects: 100% (13/13), <span class="keyword">done</span>.</span><br><span class="line">Compressing objects: 100% (8/8), <span class="keyword">done</span>.</span><br><span class="line">Total 9 (delta 3), reused 0 (delta 0), pack-reused 0</span><br><span class="line"></span><br><span class="line"><span class="comment"># 再用 git bundle verify 验证一下这个bundle包有没有外部依赖</span></span><br><span class="line">$ git bundle verify recent.bundle</span><br><span class="line">The bundle contains this ref:</span><br><span class="line">0a831168aa94dffaa92f5d73f3e873ef5fd89603 refs/heads/master</span><br><span class="line">The bundle requires this ref:</span><br><span class="line">d5d9b1c95f0012cb7da18deaff6a806f89e48867</span><br><span class="line">recen.bundle is okay</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 先打包master分支上最近三次提交</span>
+$ <span class="token function">git</span> bundle create recent.bundle master~3<span class="token punctuation">..</span>master
+Enumerating objects: <span class="token number">13</span>, done.
+Counting objects: <span class="token number">100</span>% <span class="token punctuation">(</span><span class="token number">13</span>/13<span class="token punctuation">)</span>, done.
+Compressing objects: <span class="token number">100</span>% <span class="token punctuation">(</span><span class="token number">8</span>/8<span class="token punctuation">)</span>, done.
+Total <span class="token number">9</span> <span class="token punctuation">(</span>delta <span class="token number">3</span><span class="token punctuation">)</span>, reused <span class="token number">0</span> <span class="token punctuation">(</span>delta <span class="token number">0</span><span class="token punctuation">)</span>, pack-reused <span class="token number">0</span>
+
+<span class="token comment"># 再用 git bundle verify 验证一下这个bundle包有没有外部依赖</span>
+$ <span class="token function">git</span> bundle verify recent.bundle
+The bundle contains this ref:
+0a831168aa94dffaa92f5d73f3e873ef5fd89603 refs/heads/master
+The bundle requires this ref:
+d5d9b1c95f0012cb7da18deaff6a806f89e48867
+recen.bundle is okay<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>上面的结果很明显：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">The bundle requires this ref:</span><br><span class="line">d5d9b1c95f0012cb7da18deaff6a806f89e48867</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">The bundle requires this ref:
+d5d9b1c95f0012cb7da18deaff6a806f89e48867<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>再打开这个bundle包文件看下：</p>
-<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="params">#</span> v2 git bundle</span><br><span class="line">-d5d9b1c95f0012cb7da18deaff6a806f89e48867 demo.tar.gz</span><br><span class="line">0a831168aa94dffaa92f5d73f3e873ef5fd89603 refs/heads/master</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-tex" data-language="tex"><code class="language-tex"># v2 git bundle
+-d5d9b1c95f0012cb7da18deaff6a806f89e48867 demo.tar.gz
+0a831168aa94dffaa92f5d73f3e873ef5fd89603 refs&#x2F;heads&#x2F;master<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>第二行的内容 <code>-d5d9b1c95f0012cb7da18deaff6a806f89e48867 demo.tar.gz</code> 即是<code>prerequisite</code></p>
 <p>并且符合格式 <code>prerequisite = &quot;-&quot; obj-id SP comment LF</code></p>
 <p>我们看一个实际的 <code>git pack</code> 文件：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">PACK^@^@^@^B^@^@^@^C&lt;91&gt;^Kx^A^A±^@Nÿtree 212ccb4755ab7c489bee69200388139d7f081e7c</span><br><span class="line">author Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line">committer Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line"></span><br><span class="line">add aa.txt</span><br><span class="line">©&amp;5A5x^A^A^E^@úÿaaaa</span><br><span class="line">^E]^A&lt;8f&gt;¢^Bx^A^A<span class="string">&quot;^@Ýÿ100644 aa.txt^@]0&lt;8e&gt;^]^F^K^L8&#125;E,ôt^?&lt;89&gt;ì¹&lt;93&gt;XQ£÷^KlK&lt;9a&gt;&lt;93&gt;pÃ^@ò&amp;bL37©&lt;85&gt;(ÐâWa^X</span></span><br><span class="line"><span class="string">~</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">PACK^@^@^@^B^@^@^@^C<span class="token operator">&lt;</span><span class="token number">9</span><span class="token operator"><span class="token file-descriptor important">1</span>></span>^Kx^A^A±^@Nÿtree 212ccb4755ab7c489bee69200388139d7f081e7c
+author Li Linchao <span class="token operator">&lt;</span>lilinchao@oschina.cn<span class="token operator">></span> <span class="token number">1646124003</span> +0800
+committer Li Linchao <span class="token operator">&lt;</span>lilinchao@oschina.cn<span class="token operator">></span> <span class="token number">1646124003</span> +0800
+
+<span class="token function">add</span> aa.txt
+©<span class="token operator">&amp;</span>5A5x^A^A^E^@úÿaaaa
+^E<span class="token punctuation">]</span>^A<span class="token operator">&lt;</span>8f<span class="token operator">></span>¢^Bx^A^A"^@Ýÿ100644 aa.txt^@<span class="token punctuation">]</span><span class="token operator"><span class="token file-descriptor important">0</span>&lt;</span>8e<span class="token operator">></span>^<span class="token punctuation">]</span>^F^K^L8<span class="token punctuation">&#125;</span>E,ôt^?<span class="token operator">&lt;</span><span class="token number">8</span><span class="token operator"><span class="token file-descriptor important">9</span>></span>ì¹<span class="token operator">&lt;</span><span class="token number">9</span><span class="token operator"><span class="token file-descriptor important">3</span>></span>XQ£÷^KlK<span class="token operator">&lt;</span>9a<span class="token operator">></span><span class="token operator">&lt;</span><span class="token number">9</span><span class="token operator"><span class="token file-descriptor important">3</span>></span>pÃ^@ò<span class="token operator">&amp;</span>bL37©<span class="token operator">&lt;</span><span class="token number">8</span><span class="token operator"><span class="token file-descriptor important">5</span>></span><span class="token punctuation">(</span>ÐâWa^X
+~<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>而此时的 <code>git bundle v2</code> 文件如下：</p>
 <blockquote>
 <p>git bundle create master.bundle master</p>
 </blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># v2 git bundle</span></span><br><span class="line">e0caba68a7281d4ff86693745a1617ffc72c3e7d refs/heads/master</span><br><span class="line"></span><br><span class="line">PACK^@^@^@^B^@^@^@^C&lt;91&gt;^Kx^A^A±^@Nÿtree 212ccb4755ab7c489bee69200388139d7f081e7c</span><br><span class="line">author Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line">committer Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line"></span><br><span class="line">add aa.txt</span><br><span class="line">©&amp;5A¢^Bx^A^A<span class="string">&quot;^@Ýÿ100644 aa.txt^@]0&lt;8e&gt;^]^F^K^L8&#125;E,ôt^?&lt;89&gt;ì¹&lt;93&gt;XQ£÷^Kl5x^A^A^E^@úÿaaaa</span></span><br><span class="line"><span class="string">^E]^A&lt;8f&gt;,^B&lt;9d&gt;ï&lt;89&gt;DIr^\&lt;87&gt;*&lt;9b&gt;Æû^X¹É&#125;PÖ</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># v2 git bundle</span>
+e0caba68a7281d4ff86693745a1617ffc72c3e7d refs/heads/master
+
+PACK^@^@^@^B^@^@^@^C<span class="token operator">&lt;</span><span class="token number">9</span><span class="token operator"><span class="token file-descriptor important">1</span>></span>^Kx^A^A±^@Nÿtree 212ccb4755ab7c489bee69200388139d7f081e7c
+author Li Linchao <span class="token operator">&lt;</span>lilinchao@oschina.cn<span class="token operator">></span> <span class="token number">1646124003</span> +0800
+committer Li Linchao <span class="token operator">&lt;</span>lilinchao@oschina.cn<span class="token operator">></span> <span class="token number">1646124003</span> +0800
+
+<span class="token function">add</span> aa.txt
+©<span class="token operator">&amp;</span>5A¢^Bx^A^A"^@Ýÿ100644 aa.txt^@<span class="token punctuation">]</span><span class="token operator"><span class="token file-descriptor important">0</span>&lt;</span>8e<span class="token operator">></span>^<span class="token punctuation">]</span>^F^K^L8<span class="token punctuation">&#125;</span>E,ôt^?<span class="token operator">&lt;</span><span class="token number">8</span><span class="token operator"><span class="token file-descriptor important">9</span>></span>ì¹<span class="token operator">&lt;</span><span class="token number">9</span><span class="token operator"><span class="token file-descriptor important">3</span>></span>XQ£÷^Kl5x^A^A^E^@úÿaaaa
+^E<span class="token punctuation">]</span>^A<span class="token operator">&lt;</span>8f<span class="token operator">></span>,^B<span class="token operator">&lt;</span>9d<span class="token operator">></span>ï<span class="token operator">&lt;</span><span class="token number">8</span><span class="token operator"><span class="token file-descriptor important">9</span>></span>DIr^<span class="token punctuation">\</span><span class="token operator">&lt;</span><span class="token number">8</span><span class="token operator"><span class="token file-descriptor important">7</span>></span>*<span class="token operator">&lt;</span>9b<span class="token operator">></span>Æû^X¹É<span class="token punctuation">&#125;</span>PÖ<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><code>git bundle v3</code> 文件如下:</p>
 <blockquote>
 <p>git bundle create --version=3 master-v3.bundle master</p>
 </blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># v3 git bundle</span></span><br><span class="line">@object-format=sha1</span><br><span class="line">e0caba68a7281d4ff86693745a1617ffc72c3e7d refs/heads/master</span><br><span class="line"></span><br><span class="line">PACK^@^@^@^B^@^@^@^C&lt;91&gt;^Kx^A^A±^@Nÿtree 212ccb4755ab7c489bee69200388139d7f081e7c</span><br><span class="line">author Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line">committer Li Linchao &lt;lilinchao@oschina.cn&gt; 1646124003 +0800</span><br><span class="line"></span><br><span class="line">add aa.txt</span><br><span class="line">©&amp;5A¢^Bx^A^A<span class="string">&quot;^@Ýÿ100644 aa.txt^@]0&lt;8e&gt;^]^F^K^L8&#125;E,ôt^?&lt;89&gt;ì¹&lt;93&gt;XQ£÷^Kl5x^A^A^E^@úÿaaaa</span></span><br><span class="line"><span class="string">^E]^A&lt;8f&gt;,^B&lt;9d&gt;ï&lt;89&gt;DIr^\&lt;87&gt;*&lt;9b&gt;Æû^X¹É&#125;PÖ</span></span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># v3 git bundle</span>
+@object-format<span class="token operator">=</span>sha1
+e0caba68a7281d4ff86693745a1617ffc72c3e7d refs/heads/master
+
+PACK^@^@^@^B^@^@^@^C<span class="token operator">&lt;</span><span class="token number">9</span><span class="token operator"><span class="token file-descriptor important">1</span>></span>^Kx^A^A±^@Nÿtree 212ccb4755ab7c489bee69200388139d7f081e7c
+author Li Linchao <span class="token operator">&lt;</span>lilinchao@oschina.cn<span class="token operator">></span> <span class="token number">1646124003</span> +0800
+committer Li Linchao <span class="token operator">&lt;</span>lilinchao@oschina.cn<span class="token operator">></span> <span class="token number">1646124003</span> +0800
+
+<span class="token function">add</span> aa.txt
+©<span class="token operator">&amp;</span>5A¢^Bx^A^A"^@Ýÿ100644 aa.txt^@<span class="token punctuation">]</span><span class="token operator"><span class="token file-descriptor important">0</span>&lt;</span>8e<span class="token operator">></span>^<span class="token punctuation">]</span>^F^K^L8<span class="token punctuation">&#125;</span>E,ôt^?<span class="token operator">&lt;</span><span class="token number">8</span><span class="token operator"><span class="token file-descriptor important">9</span>></span>ì¹<span class="token operator">&lt;</span><span class="token number">9</span><span class="token operator"><span class="token file-descriptor important">3</span>></span>XQ£÷^Kl5x^A^A^E^@úÿaaaa
+^E<span class="token punctuation">]</span>^A<span class="token operator">&lt;</span>8f<span class="token operator">></span>,^B<span class="token operator">&lt;</span>9d<span class="token operator">></span>ï<span class="token operator">&lt;</span><span class="token number">8</span><span class="token operator"><span class="token file-descriptor important">9</span>></span>DIr^<span class="token punctuation">\</span><span class="token operator">&lt;</span><span class="token number">8</span><span class="token operator"><span class="token file-descriptor important">7</span>></span>*<span class="token operator">&lt;</span>9b<span class="token operator">></span>Æû^X¹É<span class="token punctuation">&#125;</span>PÖ<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="操作实践">操作实践</h3>
 <p>在机器A中的仓库 <code>R1</code> 中：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git bundle create file.bundle master</span><br><span class="line"><span class="comment"># 做个标记</span></span><br><span class="line">$ git tag -f lastR2bundle master</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">git</span> bundle create file.bundle master
+<span class="token comment"># 做个标记</span>
+$ <span class="token function">git</span> tag -f lastR2bundle master<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>将 <code>file.bundle</code> 转移到机器B上，克隆仓库 <code>R2</code>：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> -b master /path/to/file.bundle R2</span><br><span class="line">Cloning into <span class="string">&#x27;R2&#x27;</span>...</span><br><span class="line">Receiving objects: 100% (38/38), 7.97 KiB | 7.97 MiB/s, <span class="keyword">done</span>.</span><br><span class="line">Resolving deltas: 100% (6/6), <span class="keyword">done</span>.</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">git</span> clone -b master /path/to/file.bundle R2
+Cloning into <span class="token string">'R2'</span><span class="token punctuation">..</span>.
+Receiving objects: <span class="token number">100</span>% <span class="token punctuation">(</span><span class="token number">38</span>/38<span class="token punctuation">)</span>, <span class="token number">7.97</span> KiB <span class="token operator">|</span> <span class="token number">7.97</span> MiB/s, done.
+Resolving deltas: <span class="token number">100</span>% <span class="token punctuation">(</span><span class="token number">6</span>/6<span class="token punctuation">)</span>, done.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>回到仓库 <code>R1</code>，仓库 <code>R1</code> 有了新的提交。然后继续打包：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git bundle create file.bundle lastR2bundle..master</span><br><span class="line"><span class="comment"># 做个标记，下次打包时使用</span></span><br><span class="line">$ git tag -f lastR2bundle master</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">git</span> bundle create file.bundle lastR2bundle<span class="token punctuation">..</span>master
+<span class="token comment"># 做个标记，下次打包时使用</span>
+$ <span class="token function">git</span> tag -f lastR2bundle master<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>将 <code>file.bundle</code> 转移到机器 <code>B</code> 上，再到 <code>R2</code> 仓库中进行更新：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ git fetch</span><br><span class="line">Receiving objects: 100% (41/41), 8.28 KiB | 8.28 MiB/s, <span class="keyword">done</span>.</span><br><span class="line">Resolving deltas: 100% (7/7), <span class="keyword">done</span>.</span><br><span class="line">From /home/git/test-git/example/repo.bundle</span><br><span class="line">   d4f54d9..6a33e12  master     -&gt; origin/master</span><br><span class="line">   </span><br><span class="line"> <span class="comment"># 还是在cloned-repo中</span></span><br><span class="line">$ git ls-remote</span><br><span class="line">From /path/to/file.bundle</span><br><span class="line">6a33e12f3d7116863a19bf48471c74c597421f8a        HEAD</span><br><span class="line">45eab37d3cb8b5be02a59d3690cb63d3f692f6b9        refs/remotes/origin/master</span><br><span class="line">45eab37d3cb8b5be02a59d3690cb63d3f692f6b9        refs/remotes/origin/HEAD</span><br><span class="line">6a33e12f3d7116863a19bf48471c74c597421f8a        refs/heads/master</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">git</span> fetch
+Receiving objects: <span class="token number">100</span>% <span class="token punctuation">(</span><span class="token number">41</span>/41<span class="token punctuation">)</span>, <span class="token number">8.28</span> KiB <span class="token operator">|</span> <span class="token number">8.28</span> MiB/s, done.
+Resolving deltas: <span class="token number">100</span>% <span class="token punctuation">(</span><span class="token number">7</span>/7<span class="token punctuation">)</span>, done.
+From /home/git/test-git/example/repo.bundle
+   d4f54d9<span class="token punctuation">..</span>6a33e12  master     -<span class="token operator">></span> origin/master
+   
+ <span class="token comment"># 还是在cloned-repo中</span>
+$ <span class="token function">git</span> ls-remote
+From /path/to/file.bundle
+6a33e12f3d7116863a19bf48471c74c597421f8a        HEAD
+45eab37d3cb8b5be02a59d3690cb63d3f692f6b9        refs/remotes/origin/master
+45eab37d3cb8b5be02a59d3690cb63d3f692f6b9        refs/remotes/origin/HEAD
+6a33e12f3d7116863a19bf48471c74c597421f8a        refs/heads/master<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>以上操作，看起来都跟读取 Git 远程仓库的一样。<br>
 <strong>但是不支持写仓库操作，即 <code>git push</code> 操作。</strong></p>
 <p>以上操作就完成了仓库的全量备份和增量备份。</p>
 <p>还可以用其它形式进行打包：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git bundle create mybundle v1.0.0..master</span><br><span class="line">$ git bundle create mybundle --since=10.days master</span><br><span class="line">$ git bundle create mybundle -10 master</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">git</span> bundle create mybundle v1.0.0<span class="token punctuation">..</span>master
+$ <span class="token function">git</span> bundle create mybundle --since<span class="token operator">=</span><span class="token number">10</span>.days master
+$ <span class="token function">git</span> bundle create mybundle -10 master<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>只要是 <code>git rev-list</code> 能接受的参数，就可以放在 <code>git bundle create mybundle</code> 后面。比如可以使用 <code>--max-age</code> 选项，实现根据时间戳来进行备份，大致过程如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">```Bash</span><br><span class="line"><span class="comment"># 当前HEAD的时间戳，作为下次备份的起点时间</span></span><br><span class="line">$ git cat-file commit HEAD | sed -n <span class="string">&quot;s/^committer .*&gt; \([0-9]*\) .*/\1/p&quot;</span> </span><br><span class="line">1660809497</span><br><span class="line"></span><br><span class="line"><span class="comment"># --branches 获取refs/heads/下所有相关commits</span></span><br><span class="line"><span class="comment"># --tags 获取refs/tags/下所有相关commits</span></span><br><span class="line"><span class="comment"># --remotes 获取refs/remotes/下所有相关commits</span></span><br><span class="line"><span class="comment"># --all 获取refs/下所有相关commits</span></span><br><span class="line"><span class="comment"># --objects 表示commit所关联的所有对象</span></span><br><span class="line">$ git bundle create latest.bundle  --max-age=1660807920 --all --objects</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取bundle包中的引用信息，可以通过其它选项筛选出部分引用。</span></span><br><span class="line">$ git bundle list-heads latest.bundle &gt; latest.list</span><br><span class="line"></span><br><span class="line"><span class="comment"># 通过git-ls-remote获取bundle包中的所有引用信息。</span></span><br><span class="line">$ git ls-remote latest.bundle &gt; latest.lsremote</span><br></pre></td></tr></table></figure>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">```Bash
+<span class="token comment"># 当前HEAD的时间戳，作为下次备份的起点时间</span>
+$ <span class="token function">git</span> cat-file commit HEAD <span class="token operator">|</span> <span class="token function">sed</span> -n <span class="token string">"s/^committer .*> \([0-9]*\) .*/<span class="token entity" title="\1">\1</span>/p"</span> 
+<span class="token number">1660809497</span>
+
+<span class="token comment"># --branches 获取refs/heads/下所有相关commits</span>
+<span class="token comment"># --tags 获取refs/tags/下所有相关commits</span>
+<span class="token comment"># --remotes 获取refs/remotes/下所有相关commits</span>
+<span class="token comment"># --all 获取refs/下所有相关commits</span>
+<span class="token comment"># --objects 表示commit所关联的所有对象</span>
+$ <span class="token function">git</span> bundle create latest.bundle  --max-age<span class="token operator">=</span><span class="token number">1660807920</span> --all --objects
+
+<span class="token comment"># 获取bundle包中的引用信息，可以通过其它选项筛选出部分引用。</span>
+$ <span class="token function">git</span> bundle list-heads latest.bundle <span class="token operator">></span> latest.list
+
+<span class="token comment"># 通过git-ls-remote获取bundle包中的所有引用信息。</span>
+$ <span class="token function">git</span> ls-remote latest.bundle <span class="token operator">></span> latest.lsremote<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="应用">应用</h3>
 <p>目前 Gitlab 的<a target="_blank" rel="noopener" href="https://docs.gitlab.com/ee/user/project/settings/import_export.html">仓库导出、导入功能</a>以及阿里云效 CodeUp 的<a target="_blank" rel="noopener" href="https://help.aliyun.com/document_detail/217005.html?spm=a2cl9.codeup_devops2020_goldlog_organization.0.0.3bcb1510bKSmJi">仓库备份</a>功能主要就是利用 Git-bundle 特性对 Git 仓库进行打包。</p>
 <h3 id="参考链接">参考链接</h3>
