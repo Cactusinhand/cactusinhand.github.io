@@ -20,12 +20,12 @@
   <title>git-repo-clean：一种Git仓库瘦身工具 - 高桥一郎</title>
 
   
-    <meta name="description" content="安装：   二进制包安装： 见下载链接：https:&#x2F;&#x2F;gitee.com&#x2F;oschina&#x2F;git-repo-clean&#x2F;releases&#x2F;   源码编译安装：   $ git clone https:&#x2F;&#x2F;gitee.com&#x2F;oschina&#x2F;git-repo-clean # 进入源码目录，编译 $ cd git-repo-clean  # 在bin&#x2F;目录下即是编译后的程序包 $ make  # c">
+    <meta name="description" content="安装：   二进制包安装： 见下载链接：https:&#x2F;&#x2F;gitee.com&#x2F;oschina&#x2F;git-repo-clean&#x2F;releases&#x2F;   源码编译安装：   123456789$ git clone https:&#x2F;&#x2F;gitee.com&#x2F;oschina&#x2F;git-repo-clean# 进入源码目录，编译$ cd git-repo-clean# 在bin&#x2F;目录下即是编译后的程序包$ make#">
 <meta property="og:type" content="website">
 <meta property="og:title" content="一种Git仓库瘦身工具">
 <meta property="og:url" content="https://cactusinhand.github.io/wiki/git-tools/index.html">
 <meta property="og:site_name" content="高桥一郎">
-<meta property="og:description" content="安装：   二进制包安装： 见下载链接：https:&#x2F;&#x2F;gitee.com&#x2F;oschina&#x2F;git-repo-clean&#x2F;releases&#x2F;   源码编译安装：   $ git clone https:&#x2F;&#x2F;gitee.com&#x2F;oschina&#x2F;git-repo-clean # 进入源码目录，编译 $ cd git-repo-clean  # 在bin&#x2F;目录下即是编译后的程序包 $ make  # c">
+<meta property="og:description" content="安装：   二进制包安装： 见下载链接：https:&#x2F;&#x2F;gitee.com&#x2F;oschina&#x2F;git-repo-clean&#x2F;releases&#x2F;   源码编译安装：   123456789$ git clone https:&#x2F;&#x2F;gitee.com&#x2F;oschina&#x2F;git-repo-clean# 进入源码目录，编译$ cd git-repo-clean# 在bin&#x2F;目录下即是编译后的程序包$ make#">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-02-04T05:35:40.798Z">
 <meta property="article:modified_time" content="2022-09-02T07:06:43.493Z">
@@ -105,15 +105,7 @@
 <p>源码编译安装：</p>
 </li>
 </ul>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">git</span> clone https://gitee.com/oschina/git-repo-clean
-<span class="token comment"># 进入源码目录，编译</span>
-$ <span class="token builtin class-name">cd</span> git-repo-clean
-
-<span class="token comment"># 在bin/目录下即是编译后的程序包</span>
-$ <span class="token function">make</span>
-
-<span class="token comment"># cp bin/git-repo-clean $(shell git --exec-path)</span>
-$ <span class="token function">make</span> <span class="token function">install</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> https://gitee.com/oschina/git-repo-clean</span><br><span class="line"><span class="comment"># 进入源码目录，编译</span></span><br><span class="line">$ <span class="built_in">cd</span> git-repo-clean</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在bin/目录下即是编译后的程序包</span></span><br><span class="line">$ make</span><br><span class="line"></span><br><span class="line"><span class="comment"># cp bin/git-repo-clean $(shell git --exec-path)</span></span><br><span class="line">$ make install</span><br></pre></td></tr></table></figure>
 <p>用法:<br>
 <code>git repo-clean [选项]</code></p>
 <p>********************* 重要! *****************<br>
@@ -122,19 +114,7 @@ $ <span class="token function">make</span> <span class="token function">install<
 <hr>
 <p><code>git repo-clean</code> 是一款扫描Git仓库元数据，然后根据指定的文件类型以及大小来过滤出文件，并且从仓库中完全删除掉这些指定文件的工具，它将重写跟删除的文件相关的提交以及之后的提交的历史。</p>
 <p>选项：</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">-v, --verbose         显示处理的详细过程
--V, --version         显示 git-repo-clean 版本号
--h, --help            显示使用信息
--p, --path            指定Git仓库的路径, 默认是当前目录，即<span class="token string">'.'</span>
--s, --scan            扫描Git仓库数据，默认是扫描所有分支中的数据
--f, --file            直接指定仓库中的文件或目录，与<span class="token string">'--scan'</span>不兼容
--b, --branch          设置需要删除文件的分支, 默认是从所有分支中删除文件
--l, --limit           设置扫描文件阈值, 比如: <span class="token string">'--limit=10m'</span>
--n, --number          设置显示扫描结果的数量
--t, --type            设置扫描文件后缀名，即文件类型
--i, --interactive     开启交互式操作
--d, --delete          执行文件删除和历史重写过程
--L, --lfs             将大文件转换为Git LFS指针文件<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">-v, --verbose         显示处理的详细过程</span><br><span class="line">-V, --version         显示 git-repo-clean 版本号</span><br><span class="line">-h, --help            显示使用信息</span><br><span class="line">-p, --path            指定Git仓库的路径, 默认是当前目录，即&#x27;.&#x27;</span><br><span class="line">-s, --scan            扫描Git仓库数据，默认是扫描所有分支中的数据</span><br><span class="line">-f, --file            直接指定仓库中的文件或目录，与&#x27;--scan&#x27;不兼容</span><br><span class="line">-b, --branch          设置需要删除文件的分支, 默认是从所有分支中删除文件</span><br><span class="line">-l, --limit           设置扫描文件阈值, 比如: &#x27;--limit=10m&#x27;</span><br><span class="line">-n, --number          设置显示扫描结果的数量</span><br><span class="line">-t, --type            设置扫描文件后缀名，即文件类型</span><br><span class="line">-i, --interactive     开启交互式操作</span><br><span class="line">-d, --delete          执行文件删除和历史重写过程</span><br><span class="line">-L, --lfs             将大文件转换为Git LFS指针文件</span><br></pre></td></tr></table></figure>
 <p>这些选项主要可以给用户提供两种使用方法：交互式、命令行式</p>
 <p><strong>交互式用法:</strong><br>
 直接执行 <em>git repo-clean</em> 或 <em>git repo-clean -i</em> 进入交互式界面程序与用户通过问答的方式进行交互，使得用户在处理文件筛选、备份、删除、历史重写的整个过程变得更加简单。</p>

@@ -28,7 +28,7 @@
 <meta property="og:description" content="Rust是一门偏底层的，安全的，高效的开源编程语言。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-02-13T11:26:44.000Z">
-<meta property="article:modified_time" content="2024-05-11T10:57:07.241Z">
+<meta property="article:modified_time" content="2024-05-11T11:07:52.962Z">
 <meta property="article:author" content="Cactusinhand">
 <meta property="article:tag" content="Rust">
 <meta name="twitter:card" content="summary_large_image">
@@ -64,7 +64,7 @@
 <div class="widgets">
 
 
-<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="4da024a6.html"><span class="title">docker 的使用笔记</span></a><a class="item title" href=""><span class="title">学习 Rust 的一些笔记</span></a><a class="item title" href="c5ceb3cc.html"><span class="title">Git 炸弹</span></a><a class="item title" href="23bf24d1.html"><span class="title">如何向 Git 社区提交代码(2)</span></a><a class="item title" href="d699447b.html"><span class="title">如何向 Git 社区提交代码</span></a><a class="item title" href="f8df64f6.html"><span class="title">GitOps: 一种 DevOps 的最佳实践</span></a><a class="item title" href="92e91caf.html"><span class="title">一种 Git 插件工具：git repo-clean</span></a><a class="item title" href="4fad1e06.html"><span class="title">Git 内部原理</span></a><a class="item title" href="32c910d1.html"><span class="title">git bundle 格式及应用</span></a><a class="item title" href="341c748.html"><span class="title">Design pattern in Gitlay(Git PRC service)</span></a></div></widget>
+<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href=""><span class="title">学习 Rust 的一些笔记</span></a><a class="item title" href="4da024a6.html"><span class="title">docker 的使用笔记</span></a><a class="item title" href="c5ceb3cc.html"><span class="title">Git 炸弹</span></a><a class="item title" href="23bf24d1.html"><span class="title">如何向 Git 社区提交代码(2)</span></a><a class="item title" href="d699447b.html"><span class="title">如何向 Git 社区提交代码</span></a><a class="item title" href="f8df64f6.html"><span class="title">GitOps: 一种 DevOps 的最佳实践</span></a><a class="item title" href="92e91caf.html"><span class="title">一种 Git 插件工具：git repo-clean</span></a><a class="item title" href="4fad1e06.html"><span class="title">Git 内部原理</span></a><a class="item title" href="32c910d1.html"><span class="title">git bundle 格式及应用</span></a><a class="item title" href="341c748.html"><span class="title">Design pattern in Gitlay(Git PRC service)</span></a></div></widget>
 </div>
 
 </div></aside><div class="l_main" id="main">
@@ -77,7 +77,7 @@
   <div class="content">
     <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="../index.html">主页</a>
 <span class="sep"></span><a class="cap breadcrumb" href="../">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="../categories/Rust/">Rust</a></div>
-<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2022-02-13T11:26:44.000Z">2022-02-13</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2024-05-11T10:57:07.241Z">2024-05-11</time></span></div></div></div>
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2022-02-13T11:26:44.000Z">2022-02-13</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2024-05-11T11:07:52.962Z">2024-05-11</time></span></div></div></div>
     
     <div class="bottom only-title">
       
@@ -104,15 +104,7 @@
 <p><code>rustc</code>类似于C/C++中的<code>gcc/clang</code></p>
 <p><code>Cargo</code> 是 <code>Rust</code> 的构建系统和包管理器。可以进行构建代码、下载依赖库并编译这些库等。</p>
 <p><code>cargo new rust-proj</code> 创建一个Rust项目，</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ cargo new rust-proj
-     Created binary <span class="token punctuation">(</span>application<span class="token punctuation">)</span> <span class="token variable"><span class="token variable">`</span>rust-proj<span class="token variable">`</span></span> package
-$ tree rust-proj
-rust-proj
-├── Cargo.toml
-└── src
-    └── main.rs
-
-<span class="token number">1</span> directory, <span class="token number">2</span> files<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ cargo new rust-proj</span><br><span class="line">     Created binary (application) `rust-proj` package</span><br><span class="line">$ tree rust-proj</span><br><span class="line">rust-proj</span><br><span class="line">├── Cargo.toml</span><br><span class="line">└── src</span><br><span class="line">    └── main.rs</span><br><span class="line"></span><br><span class="line">1 directory, 2 files</span><br></pre></td></tr></table></figure>
 <p><code>Cargo</code>会在 <em>hello_cargo</em> 目录初始化一个 git 仓库，以及一个<code>.gitignore</code>文件。如果你在现有的 git 仓库中运行 <code>cargo new</code>，则不会生成 git 文件；你可以通过使用<code>cargo new --vcs=git</code> 来覆盖此行为。</p>
 <p>可以通过 <code>--vcs</code> 参数使 <code>cargo new</code> 切换到其它版本控制系统（<code>VCS</code>），或者不使用 <code>VCS</code>。运行 <code>cargo new --help</code> 参看可用的选项。</p>
 <p><code>cargo build</code>构建项目，目标可执行文件在<code>target/debug/</code>下</p>
@@ -121,9 +113,7 @@ rust-proj
 <p><code>cargo build</code>默认构建是debug模式。如果项目一切都OK，可以运行<code>cargo build --release</code>执行发布构建，这会对项目进行一定编译优化，从而使得代码运行得更快，但是相应地，编译时间会更长。</p>
 <p><code>cargo doc --open</code> 会生成当前项目中的依赖库(crate)的文档，并转到浏览器可以查询。</p>
 <h3 id="Hello-World">Hello, World!</h3>
-<pre class="line-numbers language-rust" data-language="rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function-definition function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token macro property">println!</span><span class="token punctuation">(</span><span class="token string">"Hello, world!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <ul class="lvl-0">
 <li class="lvl-2">
 <p><code>println!</code> 调用了一个 Rust 宏（macro）。如果是调用函数，则应输入 <code>println</code>（没有<code>!</code>）。我们将在第十九章详细讨论宏。现在你只需记住，当看到符号 <code>!</code> 的时候，就意味着调用的是宏而不是普通函数，并且宏并不总是遵循与函数相同的规则。</p>
@@ -131,9 +121,7 @@ rust-proj
 </ul>
 <p><code>cargo new</code>生成的项目中，包含配置文件<code>Cargo.toml</code></p>
 <p>文件名: <code>Cargo.toml</code></p>
-<pre class="line-numbers language-toml" data-language="toml"><code class="language-toml"><span class="token punctuation">[</span><span class="token table class-name">dependencies</span><span class="token punctuation">]</span>
-
-<span class="token key property">rand</span> <span class="token punctuation">=</span> <span class="token string">"0.8.3"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"></span><br><span class="line"><span class="attr">rand</span> = <span class="string">&quot;0.8.3&quot;</span></span><br></pre></td></tr></table></figure>
 <p>其中“0.8.3”指定依赖版本，其语法遵循语义化版本<a target="_blank" rel="noopener" href="http://semver.org/">（Semantic Versioning）</a></p>
 <p>这里的<code>0.8.3</code> 实际上是 <code>^0.8.3</code> 的简写，它表示 任何不低于 <code>0.8.3</code>， 但是低于 <code>0.9.0</code> 的版本。Cargo将这些版本视作与 <code>0.8.3</code> 版本公有 API 相兼容的版本，这个声明确保你将获得最新的补丁版本，它仍然可以与本章中的代码正常编译。<code>0.9.0</code> 或以上版本不保证拥有接下来示例中使用到的API。</p>
 <hr>
@@ -242,31 +230,15 @@ rust-proj
 <p>Rust可以直接将数据附加到枚举的每个成员上，这样就不需要一个额外的结构体了。</p>
 </li>
 </ul>
-<pre class="line-numbers language-rust" data-language="rust"><code class="language-rust"><span class="token keyword">enum</span> <span class="token type-definition class-name">IpAddr</span> <span class="token punctuation">&#123;</span>
-    <span class="token constant">V4</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-    <span class="token constant">V6</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-<span class="token punctuation">&#125;</span>
-<span class="token keyword">let</span> home <span class="token operator">=</span> <span class="token class-name">IpAddr</span><span class="token punctuation">::</span><span class="token constant">V4</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">::</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">"127.0.0.1"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token keyword">let</span> loopback <span class="token operator">=</span> <span class="token class-name">IpAddr</span><span class="token punctuation">::</span><span class="token constant">V6</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">::</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">"::1"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">IpAddr</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">V4</span>(<span class="type">String</span>),</span><br><span class="line">    <span class="title function_ invoke__">V6</span>(<span class="type">String</span>),</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">home</span> = IpAddr::<span class="title function_ invoke__">V4</span>(String::<span class="title function_ invoke__">from</span>(<span class="string">&quot;127.0.0.1&quot;</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">loopback</span> = IpAddr::<span class="title function_ invoke__">V6</span>(String::<span class="title function_ invoke__">from</span>(<span class="string">&quot;::1&quot;</span>));</span><br></pre></td></tr></table></figure>
 <ul class="lvl-0">
 <li class="lvl-2">
 <p>Rust没有空值(Null)，因为空值会导致很多错误，而是实现了一个枚举变量<code>Option&lt;T&gt;</code>：</p>
 </li>
 </ul>
-<pre class="line-numbers language-rust" data-language="rust"><code class="language-rust"><span class="token keyword">enum</span> <span class="token type-definition class-name">Option</span><span class="token operator">&lt;</span><span class="token class-name">T</span><span class="token operator">></span> <span class="token punctuation">&#123;</span>
-    <span class="token class-name">Some</span><span class="token punctuation">(</span><span class="token class-name">T</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-    <span class="token class-name">None</span><span class="token punctuation">,</span>
-<span class="token punctuation">&#125;</span>
-
-
-<span class="token keyword">let</span> some_number <span class="token operator">=</span> <span class="token class-name">Some</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">let</span> some_string <span class="token operator">=</span> <span class="token class-name">Some</span><span class="token punctuation">(</span><span class="token string">"a string"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-# 当为<span class="token class-name">None</span>时，必须显示指定类型<span class="token operator">&lt;</span><span class="token class-name">T</span><span class="token operator">></span>
-<span class="token keyword">let</span> absent_number<span class="token punctuation">:</span> <span class="token class-name">Option</span><span class="token operator">&lt;</span><span class="token keyword">i32</span><span class="token operator">></span> <span class="token operator">=</span> <span class="token class-name">None</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">Option</span>&lt;T&gt; &#123;</span><br><span class="line">    <span class="title function_ invoke__">Some</span>(T),</span><br><span class="line">    <span class="literal">None</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">some_number</span> = <span class="title function_ invoke__">Some</span>(<span class="number">5</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">some_string</span> = <span class="title function_ invoke__">Some</span>(<span class="string">&quot;a string&quot;</span>);</span><br><span class="line"># 当为<span class="literal">None</span>时，必须显示指定类型&lt;T&gt;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">absent_number</span>: <span class="type">Option</span>&lt;<span class="type">i32</span>&gt; = <span class="literal">None</span>;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>关于字符串方法，以下两种方法等效：</p>
-<pre class="line-numbers language-rust" data-language="rust"><code class="language-rust"><span class="token keyword">let</span> s1 <span class="token operator">=</span> <span class="token class-name">String</span><span class="token punctuation">::</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">"initial contents"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">let</span> s2 <span class="token operator">=</span> <span class="token string">"initial contents"</span><span class="token punctuation">.</span><span class="token function">to_string</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">s1</span> = String::<span class="title function_ invoke__">from</span>(<span class="string">&quot;initial contents&quot;</span>);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">s2</span> = <span class="string">&quot;initial contents&quot;</span>.<span class="title function_ invoke__">to_string</span>();</span><br></pre></td></tr></table></figure>
 <p>参考链接：</p>
 <ul class="lvl-0">
 <li class="lvl-2">

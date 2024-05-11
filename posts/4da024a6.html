@@ -64,7 +64,7 @@
 <div class="widgets">
 
 
-<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href=""><span class="title">docker 的使用笔记</span></a><a class="item title" href="767b1d3c.html"><span class="title">学习 Rust 的一些笔记</span></a><a class="item title" href="c5ceb3cc.html"><span class="title">Git 炸弹</span></a><a class="item title" href="23bf24d1.html"><span class="title">如何向 Git 社区提交代码(2)</span></a><a class="item title" href="d699447b.html"><span class="title">如何向 Git 社区提交代码</span></a><a class="item title" href="f8df64f6.html"><span class="title">GitOps: 一种 DevOps 的最佳实践</span></a><a class="item title" href="92e91caf.html"><span class="title">一种 Git 插件工具：git repo-clean</span></a><a class="item title" href="4fad1e06.html"><span class="title">Git 内部原理</span></a><a class="item title" href="32c910d1.html"><span class="title">git bundle 格式及应用</span></a><a class="item title" href="341c748.html"><span class="title">Design pattern in Gitlay(Git PRC service)</span></a></div></widget>
+<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="767b1d3c.html"><span class="title">学习 Rust 的一些笔记</span></a><a class="item title" href=""><span class="title">docker 的使用笔记</span></a><a class="item title" href="c5ceb3cc.html"><span class="title">Git 炸弹</span></a><a class="item title" href="23bf24d1.html"><span class="title">如何向 Git 社区提交代码(2)</span></a><a class="item title" href="d699447b.html"><span class="title">如何向 Git 社区提交代码</span></a><a class="item title" href="f8df64f6.html"><span class="title">GitOps: 一种 DevOps 的最佳实践</span></a><a class="item title" href="92e91caf.html"><span class="title">一种 Git 插件工具：git repo-clean</span></a><a class="item title" href="4fad1e06.html"><span class="title">Git 内部原理</span></a><a class="item title" href="32c910d1.html"><span class="title">git bundle 格式及应用</span></a><a class="item title" href="341c748.html"><span class="title">Design pattern in Gitlay(Git PRC service)</span></a></div></widget>
 </div>
 
 </div></aside><div class="l_main" id="main">
@@ -97,28 +97,7 @@
 <p>另外一种方式是我们自己定制自己需要的镜像，因为直接拉取别人制作好的镜像可能不满足我们自己的实际需要，比如别人的镜像中安装了一些我们不需要的依赖。</p>
 <h3 id="2-使用-Dockerfile-制作镜像">2. 使用 Dockerfile 制作镜像</h3>
 <p>先看示例：</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"><span class="token comment"># 使用官方 Python 运行时作为基础镜像</span>
-FROM python:3.8-slim
-
-<span class="token comment"># 在容器中设置工作目录</span>
-WORKDIR /app
-
-<span class="token comment"># 将当前目录的内容复制到容器中的 /app</span>
-COPY <span class="token builtin class-name">.</span> /app
-
-<span class="token comment"># 指定 pip 源</span>
-COPY pip.conf /root/.pip/pip.conf
-<span class="token comment"># 安装 requirements.txt 中指定的必需包</span>
-RUN pip <span class="token function">install</span> -r requirements.txt
-
-<span class="token comment"># 对外暴露端口</span>
-EXPOSE <span class="token number">80</span>
-
-<span class="token comment"># 定义环境变量</span>
-ENV NAME World
-
-<span class="token comment"># 在容器启动时运行应用程序</span>
-CMD <span class="token punctuation">[</span><span class="token string">"python"</span>, <span class="token string">"app.py"</span><span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># </span><span class="language-bash">使用官方 Python 运行时作为基础镜像</span></span><br><span class="line">FROM python:3.8-slim</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta"># </span><span class="language-bash">在容器中设置工作目录</span></span><br><span class="line">WORKDIR /app</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta"># </span><span class="language-bash">将当前目录的内容复制到容器中的 /app</span></span><br><span class="line">COPY . /app</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta"># </span><span class="language-bash">指定 pip 源</span></span><br><span class="line">COPY pip.conf /root/.pip/pip.conf</span><br><span class="line"><span class="meta"># </span><span class="language-bash">安装 requirements.txt 中指定的必需包</span></span><br><span class="line">RUN pip install -r requirements.txt</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta"># </span><span class="language-bash">对外暴露端口</span></span><br><span class="line">EXPOSE 80</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta"># </span><span class="language-bash">定义环境变量</span></span><br><span class="line">ENV NAME World</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta"># </span><span class="language-bash">在容器启动时运行应用程序</span></span><br><span class="line">CMD [&quot;python&quot;, &quot;app.py&quot;]</span><br></pre></td></tr></table></figure>
 <p>关键指令的解释：</p>
 <ul class="lvl-0">
 <li class="lvl-2">
@@ -144,22 +123,22 @@ CMD <span class="token punctuation">[</span><span class="token string">"python"<
 </li>
 </ul>
 <p>定义了我们自己的 Dockerfile 文件后，在存在 dockerfile 文件的目录下就可以开始制作镜像了，方式为：</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"><span class="token function">docker</span> build --network<span class="token operator">=</span>host -t <span class="token operator">&lt;</span>image-name<span class="token operator">></span>:<span class="token operator">&lt;</span>tag<span class="token operator">></span> -f Dockerfile <span class="token builtin class-name">.</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build --network=host -t &lt;image-name&gt;:&lt;tag&gt; -f Dockerfile .</span><br></pre></td></tr></table></figure>
 <p>这样就从 Dockerfile 中创建了我们自己的 docker 镜像了</p>
 <p>打包镜像：<br>
 docker save 可以将一个或多个镜像归档打包为单个文件，如：</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"><span class="token function">docker</span> save  <span class="token operator">&lt;</span>image-name<span class="token operator">></span>:<span class="token operator">&lt;</span>tag<span class="token operator">></span> -o v1-x86_64.docker<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker save  &lt;image-name&gt;:&lt;tag&gt; -o v1-x86_64.docker</span><br></pre></td></tr></table></figure>
 <h3 id="3-发布镜像">3. 发布镜像</h3>
 <p>前面提到了 Docker Hub，这是存放 docker 镜像的公共仓库。实现存放，分发 docker 镜像的地方称作 <a target="_blank" rel="noopener" href="https://docs.docker.com/registry/">Docker Register</a>。</p>
 <p>我们在运行 docker pull、docker search 时，实际上是通过 docker daemon 与 docker registry 通信。而 Docker Hub 实际是 Docker Register 的一种实现。</p>
 <p>有了公共仓库的概念，那么就有私有仓，但如何创建私有仓库不是现在的主题。在企业内部可以使用 Harbor 来实现 Docker Register， 它在 Docker Registry 上进行了相应的企业级扩展，因此特别适合来搭建企业内部的 docker 镜像仓，提供公司内部使用。</p>
 <p>假设企业内部的的 Harbor 服务的地址为： <a target="_blank" rel="noopener" href="https://my.harbor.com">https://my.harbor.com</a></p>
 <p>要发布前面制作好的镜像，需要先登录：</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"><span class="token function">docker</span> login https://my.harbor.com<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker login https://my.harbor.com</span><br></pre></td></tr></table></figure>
 <p>然后将本地镜像打上特定的 tag：</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"><span class="token function">docker</span> tag source_image<span class="token punctuation">[</span>:tag<span class="token punctuation">]</span> my.harbor.com/my-projects/repository<span class="token punctuation">[</span>:tag<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker tag source_image[:tag] my.harbor.com/my-projects/repository[:tag]</span><br></pre></td></tr></table></figure>
 <p>最后就可以推送了：</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"><span class="token function">docker</span> push my.harbor.com/my-projects/repository<span class="token punctuation">[</span>:tag<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker push my.harbor.com/my-projects/repository[:tag]</span><br></pre></td></tr></table></figure>
 <h2 id="Docker-container">Docker container</h2>
 <p>创建新容器的命令有：docker create， docker run</p>
 <p>通过 docker --help 查看他们的用法如下：</p>
@@ -176,19 +155,17 @@ docker save 可以将一个或多个镜像归档打包为单个文件，如：</
 <p><em><strong>Tips:</strong></em></p>
 <p><strong>一般使用 docker run 命令来创建容器，并加上-d（–detach）选项让新创建的容器在后台（background）运行，而 docker create 命令则没有这个选项。另外要让容器一直保持运行，还可以加上-t（–tty）选项，否则容器会在后台一直是 Exited 状态，当然如果加上了–rm 选项，则会自动将 Exited 状态的容器删除掉，–rm 选项会与–restart 选项冲突，因为当–restart 打开时意味着当容器进入 Exited 状态后会尝试拉起，而–rm 选项则是尝试删除容器，所以它们不能同时使用。</strong></p>
 <p>所以创建容器时会这样做：</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"><span class="token function">docker</span> run -t -d --rm --name my-container <span class="token operator">&lt;</span>image-id<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -t -d --rm --name my-container &lt;image-id&gt;</span><br></pre></td></tr></table></figure>
 <p>实际上要使用容器并不是这样简单，容器还需要网络，需要共享主机上的一些资源等等。比如要使用主机上的网络，需要加上–network 选项（伴随着网络，往往还有端口映射问题，但这里先不管）。</p>
 <p><em><strong>Tips:</strong></em></p>
 <p><strong>要想在容器内部访问主机上的文件，需要–volume 选项将主机上的卷挂载到容器内部，这个能力在有些场景下非常重要。比如，当主机采用了 CST 时区（东八区时间），而容器采用了 UTC 时区（标准时间），它们相差 8 个小时，这在查看容器内服务产生的日志时不太方便，于是我想让容器内的时间与主机上的时间保持一致，这个时候只需要将主机上的/etc/localtime 挂载到容器内即可。</strong></p>
 <p><strong>再比如，如果主机上有多个容器，而我想在一个容器内去另一个容器内执行命令，那么只需要将主机上的/var/run/docker.sock 挂载到这个容器内即可。</strong></p>
 <p>所以实际创建容器时可能是这样：</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"><span class="token function">docker</span> run -t -d --rm --net<span class="token operator">=</span>host -v /etc/localtime:/etc/localtime -v var/run/docker.sock:var/run/docker.sock  --name my-container <span class="token operator">&lt;</span>image-id<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -t -d --rm --net=host -v /etc/localtime:/etc/localtime -v var/run/docker.sock:var/run/docker.sock  --name my-container &lt;image-id&gt;</span><br></pre></td></tr></table></figure>
 <p>当容器运行起来之后，要在容器内执行命令或脚本，可以不进入容器，直接在主机上执行 docker exec</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"><span class="token function">docker</span> <span class="token builtin class-name">exec</span> <span class="token operator">&lt;</span>container-name<span class="token operator">></span> commands
-<span class="token comment"># or</span>
-<span class="token function">docker</span> <span class="token builtin class-name">exec</span> <span class="token operator">&lt;</span>container-name<span class="token operator">></span> <span class="token function">bash</span> -c <span class="token string">"commands"</span> <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker exec &lt;container-name&gt; commands</span><br><span class="line"><span class="meta"># </span><span class="language-bash">or</span></span><br><span class="line">docker exec &lt;container-name&gt; bash -c &quot;commands&quot; </span><br></pre></td></tr></table></figure>
 <p>如果要进入容器内部，则需要加上–tty（-t） 选项和–interactive（-i）选项</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"><span class="token function">docker</span> <span class="token builtin class-name">exec</span> -it <span class="token operator">&lt;</span>contaienr-name<span class="token operator">></span> /bin/bash<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it &lt;contaienr-name&gt; /bin/bash</span><br></pre></td></tr></table></figure>
 <h2 id="Docker-compose">Docker compose</h2>
 <p>Docker compose 是定义和运行多容器服务的工具，它通过 yaml 文件来编排容器服务，官方文档为：<a target="_blank" rel="noopener" href="https://docs.docker.com/compose/">https://docs.docker.com/compose/</a></p>
 <p>具体怎么用就不写了，看官方文档即可。但使用时有一点需要注意，就是 docker compose 文件（即.yml 配置文件）的版本兼容性问题，这个也可以从官方文档了解。</p>

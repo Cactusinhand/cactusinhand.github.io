@@ -32,14 +32,14 @@
 <meta property="article:published_time" content="2022-08-28T03:38:52.000Z">
 <meta property="article:modified_time" content="2024-01-23T10:31:13.286Z">
 <meta property="article:author" content="Cactusinhand">
-<meta property="article:tag" content="Workflow">
 <meta property="article:tag" content="Git">
+<meta property="article:tag" content="Workflow">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://fastly.jsdelivr.net/gh/Cactusinhand/images_repo/images/image-20210209140518653.png">
   
   
   
-  <meta name="keywords" content="Workflow,Git">
+  <meta name="keywords" content="Git,Workflow">
 
   <!-- feed -->
   
@@ -68,7 +68,7 @@
 <div class="widgets">
 
 
-<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="4da024a6.html"><span class="title">docker 的使用笔记</span></a><a class="item title" href="767b1d3c.html"><span class="title">学习 Rust 的一些笔记</span></a><a class="item title" href="c5ceb3cc.html"><span class="title">Git 炸弹</span></a><a class="item title" href="23bf24d1.html"><span class="title">如何向 Git 社区提交代码(2)</span></a><a class="item title" href=""><span class="title">如何向 Git 社区提交代码</span></a><a class="item title" href="f8df64f6.html"><span class="title">GitOps: 一种 DevOps 的最佳实践</span></a><a class="item title" href="92e91caf.html"><span class="title">一种 Git 插件工具：git repo-clean</span></a><a class="item title" href="4fad1e06.html"><span class="title">Git 内部原理</span></a><a class="item title" href="32c910d1.html"><span class="title">git bundle 格式及应用</span></a><a class="item title" href="341c748.html"><span class="title">Design pattern in Gitlay(Git PRC service)</span></a></div></widget>
+<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="767b1d3c.html"><span class="title">学习 Rust 的一些笔记</span></a><a class="item title" href="4da024a6.html"><span class="title">docker 的使用笔记</span></a><a class="item title" href="c5ceb3cc.html"><span class="title">Git 炸弹</span></a><a class="item title" href="23bf24d1.html"><span class="title">如何向 Git 社区提交代码(2)</span></a><a class="item title" href=""><span class="title">如何向 Git 社区提交代码</span></a><a class="item title" href="f8df64f6.html"><span class="title">GitOps: 一种 DevOps 的最佳实践</span></a><a class="item title" href="92e91caf.html"><span class="title">一种 Git 插件工具：git repo-clean</span></a><a class="item title" href="4fad1e06.html"><span class="title">Git 内部原理</span></a><a class="item title" href="32c910d1.html"><span class="title">git bundle 格式及应用</span></a><a class="item title" href="341c748.html"><span class="title">Design pattern in Gitlay(Git PRC service)</span></a></div></widget>
 </div>
 
 </div></aside><div class="l_main" id="main">
@@ -101,15 +101,10 @@
 <p>如果你在使用 Git 时发现了 bug，或者觉得某些命令没有你想要的功能，或者你发现它的帮助文档描述不够清晰让你感到迷惑，你完全可以自己修改 Git 源码，从而实现自己的预期功能。</p>
 <h2 id="获取源码">获取源码</h2>
 <p>首先从 <a target="_blank" rel="noopener" href="https://github.com/git/git">Git 在 Github 镜像仓</a> 上 fork 出一个自己的仓库，然后克隆到本地：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">git</span> clone https://github.com/myfork/git mygit
-$ <span class="token builtin class-name">cd</span> mygit
-<span class="token comment"># 添加上游远程仓库，便于更新最新代码</span>
-$ <span class="token function">git</span> remote <span class="token function">add</span> upstream https://github.com/git/git<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> https://github.com/myfork/git mygit</span><br><span class="line">$ <span class="built_in">cd</span> mygit</span><br><span class="line"><span class="comment"># 添加上游远程仓库，便于更新最新代码</span></span><br><span class="line">$ git remote add upstream https://github.com/git/git</span><br></pre></td></tr></table></figure>
 <h2 id="编译源码">编译源码</h2>
 <p>确保在未作任何修改之前，代码不缺少任何编译依赖，能够正常编译。</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 切出一个自己的主题分支</span>
-$ <span class="token function">git</span> checkout -b myown-topic origin/master
-$ <span class="token function">make</span> <span class="token assign-left variable">DEVELOPER</span><span class="token operator">=</span><span class="token number">1</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 切出一个自己的主题分支</span></span><br><span class="line">$ git checkout -b myown-topic origin/master</span><br><span class="line">$ make DEVELOPER=1</span><br></pre></td></tr></table></figure>
 <blockquote>
 <p><code>topic</code> 是个人主题分支，所谓主题就是自己要修改什么那就是什么主题。</p>
 </blockquote>
@@ -118,17 +113,13 @@ $ <span class="token function">make</span> <span class="token assign-left variab
 <h2 id="测试代码">测试代码</h2>
 <p>测试代码都在 <code>t/</code> 目录下，请阅读 <code>t/README</code> 文档，然后编写测试用例。</p>
 <p>运行单项测试：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">make</span> <span class="token assign-left variable">DEVELOPER</span><span class="token operator">=</span><span class="token number">1</span>
-$ <span class="token builtin class-name">cd</span> t/ <span class="token operator">&amp;&amp;</span> prove t9999-psuh-tutorial.sh<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ make DEVELOPER=1</span><br><span class="line">$ <span class="built_in">cd</span> t/ &amp;&amp; prove t9999-psuh-tutorial.sh</span><br></pre></td></tr></table></figure>
 <p>或者运行全部测试，以确保自己的修改没有影响别的代码运行：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ <span class="token builtin class-name">cd</span> t/
-$ prove -j<span class="token variable"><span class="token variable">$(</span>nproc<span class="token variable">)</span></span> --shuffle t<span class="token punctuation">[</span><span class="token number">0</span>-9<span class="token punctuation">]</span>*.sh<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> t/</span><br><span class="line">$ prove -j$(<span class="built_in">nproc</span>) --shuffle t[0-9]*.sh</span><br></pre></td></tr></table></figure>
 <h2 id="文档更新">文档更新</h2>
 <p>如果修改是新增某个特性，或者增加某个选项配置等，都需要补充文档，使用说明，manpage等。</p>
 <p>Linux环境中需要安装 <code>asciidoc</code> 工具，来支持文档</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> asciidoc
-$ <span class="token function">make</span> all doc
-$ <span class="token function">make</span> check-docs<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get install asciidoc</span><br><span class="line">$ make all doc</span><br><span class="line">$ make check-docs</span><br></pre></td></tr></table></figure>
 <p>对待文档需要跟对待代码一样，因为它们同样重要。和编写代码一样，需要遵循已有文档的风格，详细风格指导文档请参考可参考 <a target="_blank" rel="noopener" href="https://gitee.com/mirrors/git/blob/master/Documentation/CodingGuidelines">Git 代码编写规范</a>中的 <code>Writing Documentation</code> 章节。</p>
 <h2 id="编写-commit">编写 commit</h2>
 <p>编写 commit 信息也是很重要的一步，这个后续系列文章我会专门说明这一点。</p>
